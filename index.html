@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>pocket_sprout</title>
   <meta name="description" content="A tiny browser-based virtual pet game for GitHub Pages.">
-  <link rel="stylesheet" href="style.css?v=20">
+  <link rel="stylesheet" href="style.css?v=21">
 </head>
 <body>
   <main class="page-shell">
@@ -250,16 +250,17 @@
           <div class="nfc-tools">
             <button class="utility-button" id="nfc-write-button" type="button">write_pet_tag</button>
             <button class="utility-button secondary" id="nfc-read-button" type="button">read_pet_tag</button>
+            <button class="utility-button chrome-button" id="nfc-chrome-button" type="button" hidden>open_in_android_chrome</button>
           </div>
 
           <pre class="nfc-summary" id="nfc-summary">loading_nfc_summary...</pre>
-          <p class="nfc-note">writes a url record first, then a tiny text pet summary. works mainly on android chrome with a physical nfc tag.</p>
+          <p class="nfc-note">writes the PocketPetPal page link first, then a small pet summary. if this browser cannot write nfc, open in android chrome and carry this pet across.</p>
         </section>
       </section>
 
       <section class="how-to-play">
         <h2>how_it_works</h2>
-        <p>Egg stage is passive: players can watch the egg and browse or buy from the shop. As soon as it hatches, the player must name the pet before care actions unlock. Care is hands-on directly on the creature after that. Food, sponge, dirt, and syringe all appear inside the normal pet screen with no separate feeding or washing space. If hunger, boredom, exhaustion, dirt, or sickness are neglected for too long, health can reach zero and the creature dies. Dialogue is loaded from the editable dialogue.csv file. Rock_paper_scissors can be played against the pet for streak-based coin rewards. Supplies, equipment, and shop are split into tabs. Equipment is bought and enabled from the equipment tab; the shop only sells consumables. The NFC tab can write the game URL plus a compact pet summary to an NFC tag. Equipped accessories can be dragged directly on the pet and their positions save. The creature now grows through egg, baby, child, teen, adult, and elder stages with visible body changes. Everything still saves locally in the player’s browser using localStorage.</p>
+        <p>Egg stage is passive: players can watch the egg and browse or buy from the shop. As soon as it hatches, the player must name the pet before care actions unlock. Care is hands-on directly on the creature after that. Food, sponge, dirt, and syringe all appear inside the normal pet screen with no separate feeding or washing space. If hunger, boredom, exhaustion, dirt, or sickness are neglected for too long, health can reach zero and the creature dies. Dialogue is loaded from the editable dialogue.csv file. Rock_paper_scissors can be played against the pet for streak-based coin rewards. Supplies, equipment, and shop are split into tabs. Equipment is bought and enabled from the equipment tab; the shop only sells consumables. The NFC tab can write the PocketPetPal URL plus a compact pet summary to an NFC tag, and can carry the current pet into Android Chrome if needed. Equipped accessories can be dragged directly on the pet and their positions save. The creature now grows through egg, baby, child, teen, adult, and elder stages with visible body changes. Everything still saves locally in the player’s browser using localStorage.</p>
       </section>
     </section>
   </main>
@@ -277,6 +278,6 @@
     </div>
   </section>
 
-  <script src="game.js?v=20"></script>
+  <script src="game.js?v=21"></script>
 </body>
 </html>

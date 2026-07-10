@@ -1,7 +1,8 @@
 "use strict";
 
-const SAVE_KEY = "pocket_sprout_save_v20";
-const LEGACY_SAVE_KEYS = ["pocket_sprout_save_v19", "pocket_sprout_save_v18", "pocket_sprout_save_v17", "pocket_sprout_save_v16", "pocket_sprout_save_v15", "pocket_sprout_save_v14", "pocket_sprout_save_v13", "pocket_sprout_save_v12", "pocket_sprout_save_v11", "pocket_sprout_save_v10", "pocket_sprout_save_v9", "pocket_sprout_save_v8", "pocket_sprout_save_v7", "pocket_sprout_save_v5", "pocket_sprout_save_v4", "pocket_sprout_save_v3", "pocket_sprout_save_v2", "pocket_sprout_save_v1"];
+const SAVE_KEY = "pocket_sprout_save_v21";
+const CANONICAL_GAME_URL = "https://cambelljsmith.github.io/PocketPetPal/";
+const LEGACY_SAVE_KEYS = ["pocket_sprout_save_v20", "pocket_sprout_save_v19", "pocket_sprout_save_v18", "pocket_sprout_save_v17", "pocket_sprout_save_v16", "pocket_sprout_save_v15", "pocket_sprout_save_v14", "pocket_sprout_save_v13", "pocket_sprout_save_v12", "pocket_sprout_save_v11", "pocket_sprout_save_v10", "pocket_sprout_save_v9", "pocket_sprout_save_v8", "pocket_sprout_save_v7", "pocket_sprout_save_v5", "pocket_sprout_save_v4", "pocket_sprout_save_v3", "pocket_sprout_save_v2", "pocket_sprout_save_v1"];
 const MINUTES_PER_DAY = 1440;
 const DAILY_DECAY = {
   food: 72,
@@ -143,6 +144,7 @@ const elements = {
   equipmentSummary: document.querySelector("#equipment-summary"),
   nfcWriteButton: document.querySelector("#nfc-write-button"),
   nfcReadButton: document.querySelector("#nfc-read-button"),
+  nfcChromeButton: document.querySelector("#nfc-chrome-button"),
   nfcStatus: document.querySelector("#nfc-status"),
   nfcSummary: document.querySelector("#nfc-summary"),
   tabButtons: [...document.querySelectorAll("[data-tab-target]")],
@@ -187,7 +189,7 @@ const defaultState = () => {
   const species = getRandomSpeciesId();
 
   return {
-    version: 20,
+    version: 21,
     petId: createPetId(),
     name: "sprout",
     birthday: now,
@@ -218,7 +220,7 @@ const defaultState = () => {
   };
 };
 
-let state = loadState();
+let state = importPetTransferFromUrl(loadState());
 let miniGame = {
   active: false,
   timer: null,
@@ -292,9 +294,104 @@ function restoreNfcValue(value) {
 }
 
 function getNfcGameUrl() {
-  const url = new URL(window.location.href);
-  url.hash = "";
+  return CANONICAL_GAME_URL;
+}
+
+function base64UrlEncode(text) {
+  const bytes = new TextEncoder().encode(text);
+  let binary = "";
+
+  bytes.forEach((byte) => {
+    binary += String.fromCharCode(byte);
+  });
+
+  return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
+}
+
+function base64UrlDecode(data) {
+  const base64 = data.replace(/-/g, "+").replace(/_/g, "/") + "=".repeat((4 - (data.length % 4)) % 4);
+  const binary = atob(base64);
+  const bytes = Uint8Array.from(binary, (char) => char.charCodeAt(0));
+
+  return new TextDecoder().decode(bytes);
+}
+
+function getPortablePetState() {
+  return {
+    ...state,
+    version: 21,
+    lastUpdated: Date.now()
+  };
+}
+
+function encodePetTransferForChrome() {
+  return base64UrlEncode(JSON.stringify({
+    kind: "pocket_pet_pal_chrome_transfer",
+    version: 1,
+    exportedAt: Date.now(),
+    state: getPortablePetState()
+  }));
+}
+
+function getChromeTransferUrl() {
+  const url = new URL(CANONICAL_GAME_URL);
+  url.searchParams.set("pet_transfer", encodePetTransferForChrome());
+
   return url.toString();
+}
+
+function getAndroidChromeIntentUrl() {
+  const target = new URL(getChromeTransferUrl());
+  const fallback = encodeURIComponent(target.toString());
+  const scheme = target.protocol.replace(":", "");
+
+  return `intent://${target.host}${target.pathname}${target.search}#Intent;scheme=${scheme};package=com.android.chrome;S.browser_fallback_url=${fallback};end`;
+}
+
+function importPetTransferFromUrl(fallbackState) {
+  const url = new URL(window.location.href);
+  const transferCode = url.searchParams.get("pet_transfer");
+
+  if (!transferCode) {
+    return fallbackState;
+  }
+
+  try {
+    const payload = JSON.parse(base64UrlDecode(transferCode));
+
+    if (payload.kind !== "pocket_pet_pal_chrome_transfer" || !payload.state) {
+      throw new Error("invalid_transfer");
+    }
+
+    const importedState = normalizeState(payload.state);
+    importedState.lastMessage = "pet data carried into this browser.";
+    localStorage.setItem(SAVE_KEY, JSON.stringify(importedState));
+
+    url.searchParams.delete("pet_transfer");
+    window.history.replaceState({}, document.title, url.toString());
+
+    return importedState;
+  } catch {
+    url.searchParams.delete("pet_transfer");
+    window.history.replaceState({}, document.title, url.toString());
+    fallbackState.lastMessage = "could not import pet data from the link.";
+    return fallbackState;
+  }
+}
+
+function openCurrentPetInAndroidChrome() {
+  const transferUrl = getChromeTransferUrl();
+
+  try {
+    navigator.clipboard?.writeText(transferUrl);
+  } catch {
+    // Clipboard is optional. The intent URL below is the important path.
+  }
+
+  state.lastMessage = "opening chrome with this pet data.";
+  saveState();
+
+  window.location.href = getAndroidChromeIntentUrl();
 }
 
 function getPetSummaryObject() {
@@ -351,19 +448,16 @@ function formatNfcSummaryText(summaryText = encodePetSummaryForNfc()) {
   const parsed = decodePetSummaryFromNfc(summaryText);
 
   if (!parsed) {
-    return summaryText;
+    return "could not read pet summary.";
   }
 
   return [
-    `format: ps:v1`,
-    `url: ${getNfcGameUrl()}`,
-    `id: ${parsed.id || "unknown"}`,
-    `name: ${parsed.n || "unnamed"}`,
+    `page: ${getNfcGameUrl()}`,
+    `pet: ${parsed.n || "unnamed"}`,
     `stage: ${parsed.st || "unknown"}`,
     `species: ${parsed.sp || "unknown"}`,
     `mood: ${parsed.m || "unknown"}`,
-    `coins: ${parsed.c || "0"}`,
-    `last_seen: ${parsed.t || "unknown"}`
+    `coins: ${parsed.c || "0"}`
   ].join("\n");
 }
 
@@ -398,14 +492,19 @@ function renderNfcPanel() {
   elements.nfcSummary.textContent = formatNfcSummaryText();
 
   if (unavailableReason) {
-    elements.nfcStatus.textContent = unavailableReason;
+    elements.nfcStatus.textContent = "open_in_android_chrome_to_write_nfc";
   } else {
-    elements.nfcStatus.textContent = "ready_to_write_url_plus_pet_summary";
+    elements.nfcStatus.textContent = "ready_to_write_pet_tag";
   }
 
-  const disabled = Boolean(unavailableReason) || miniGame.active || rpsGame.active || careInteraction.active;
-  elements.nfcWriteButton.disabled = disabled;
-  elements.nfcReadButton.disabled = disabled;
+  const busy = miniGame.active || rpsGame.active || careInteraction.active;
+  elements.nfcWriteButton.disabled = Boolean(unavailableReason) || busy;
+  elements.nfcReadButton.disabled = Boolean(unavailableReason) || busy;
+
+  if (elements.nfcChromeButton) {
+    elements.nfcChromeButton.hidden = !Boolean(unavailableReason);
+    elements.nfcChromeButton.disabled = busy;
+  }
 }
 
 function decodeNfcRecordText(record) {
@@ -966,7 +1065,7 @@ function normalizeState(save) {
   return {
     ...base,
     ...save,
-    version: 20,
+    version: 21,
     petId: typeof save.petId === "string" && save.petId.trim() ? save.petId.slice(0, 24) : base.petId,
     name: typeof save.name === "string" && save.name.trim() ? save.name.slice(0, 14) : base.name,
     birthday: Number.isFinite(save.birthday) ? save.birthday : base.birthday,
@@ -2758,6 +2857,7 @@ elements.tabButtons.forEach((button) => {
 
 elements.nfcWriteButton.addEventListener("click", writePetSummaryToNfc);
 elements.nfcReadButton.addEventListener("click", readPetSummaryFromNfc);
+elements.nfcChromeButton.addEventListener("click", openCurrentPetInAndroidChrome);
 
 elements.shopGrid.addEventListener("click", (event) => {
   const button = event.target.closest("[data-shop-item]");

@@ -240,3 +240,15 @@ Current age thresholds:
 - The game still tracks sleep time internally.
 - Players now see natural wording such as `sleeping_deeply` instead of exact remaining time.
 - Starting a nap says the sleep will last about three hours, without exposing a countdown.
+
+
+## v21 Android Chrome handoff
+
+- The NFC writer now always writes the canonical page URL:
+  `https://cambelljsmith.github.io/PocketPetPal/`
+- If Web NFC is unavailable, the NFC tab shows `open_in_android_chrome_to_write_nfc`.
+- Added `open_in_android_chrome`.
+- The Chrome handoff sends the current pet save through a temporary `pet_transfer` URL parameter.
+- When Chrome opens the page, the game imports that transfer into Chrome's localStorage and removes the transfer parameter from the address bar.
+- This solves the localStorage problem where the pet exists in one browser but Chrome needs the data to write the NFC tag.
+- The NFC tag itself remains clean: canonical URL plus tiny pet summary only.

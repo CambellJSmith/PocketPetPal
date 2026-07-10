@@ -2306,3 +2306,12 @@ h1 {
     grid-template-columns: 1fr;
   }
 }
+
+/* v21 chrome handoff */
+.chrome-button {
+  grid-column: 1 / -1;
+}
+
+.nfc-tools button[hidden] {
+  display: none;
+}
