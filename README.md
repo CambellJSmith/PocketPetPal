@@ -7,6 +7,7 @@ Players can open the page directly in their browser. There is no build step, bac
 ## features
 
 - feed, play, clean, nap, medicine, class, discover, and catch_stars actions
+- direct on-creature care: drag food onto the mouth, rub the sponge across dirt on the creature, and apply medicine to the creature body
 - health can reach zero and the creature can die from neglect, sickness, exhaustion, or overfeeding
 - stat decay over real elapsed time, including time while the browser is closed
 - inventory system stored in `localStorage`
@@ -49,10 +50,10 @@ The creatures and accessories are not sprites. They are generated from CSS shape
 
 ## hands-on care
 
-The main care buttons now open small interaction scenes instead of instantly applying effects.
+The main care buttons now create tools directly inside the normal pet screen instead of opening a separate care window.
 
-- `feed`: drag the selected food to `feed_here` and release it.
-- `clean`: drag the sponge over every visible dirt spot. `bubble_soap` is consumed only after the cleaning is completed.
-- `medicine`: drag the syringe to `safe_spot` and release it to apply the selected medicine.
+- `feed`: drag the selected food onto the creature’s mouth and release it.
+- `clean`: drag the sponge across the creature and rub every visible dirt spot. `bubble_soap` is consumed only after the cleaning is completed.
+- `medicine`: drag the syringe onto the creature’s body and release it to apply the selected medicine.
 
 These interactions use pointer events, so they work with mouse, touch, and stylus input in modern browsers.

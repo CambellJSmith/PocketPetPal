@@ -1808,3 +1808,97 @@ h1 {
     height: 9rem;
   }
 }
+
+/* direct care overlay */
+.inline-care-panel {
+  position: absolute;
+  left: 0.65rem;
+  right: 0.65rem;
+  top: 0.65rem;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.45rem 0.65rem;
+  align-items: start;
+  padding: 0.65rem;
+  border: 0.12rem solid rgba(51, 65, 38, 0.28);
+  border-radius: 0.85rem;
+  background: rgba(247, 255, 224, 0.88);
+  box-shadow: 0 0.55rem 1.3rem rgba(51, 65, 38, 0.14);
+  z-index: 6;
+}
+
+.inline-care-panel.hidden {
+  display: none;
+}
+
+.inline-care-panel #care-instruction {
+  grid-column: 1 / -1;
+  min-height: auto;
+  margin: 0;
+}
+
+.inline-care-panel .care-progress {
+  grid-column: 1 / -1;
+  margin-top: 0;
+}
+
+.pet-area.care-active {
+  touch-action: none;
+}
+
+.pet-area.care-active .pet {
+  z-index: 1;
+}
+
+.pet-area.care-feed.mouth-ready .pet-mouth {
+  border-bottom-color: var(--button);
+  transform: translateX(-50%) scale(1.3);
+}
+
+.pet-area.care-medicine.body-ready .pet-body {
+  outline: 0.18rem dashed rgba(255, 207, 111, 0.88);
+  outline-offset: 0.12rem;
+}
+
+.pet-area.care-clean .pet-body::before,
+.pet-area.care-clean .pet-body::after {
+  opacity: 0.36;
+}
+
+.pet-area .care-tool {
+  z-index: 7;
+}
+
+.pet-area .dirt-spot {
+  z-index: 5;
+}
+
+.dirt-spot-one {
+  left: 47%;
+  top: 35%;
+}
+
+.dirt-spot-two {
+  left: 57%;
+  top: 43%;
+}
+
+.dirt-spot-three {
+  left: 42%;
+  top: 55%;
+}
+
+.dirt-spot-four {
+  left: 61%;
+  top: 59%;
+}
+
+.dirt-spot-five {
+  left: 51%;
+  top: 68%;
+}
+
+.pet-area.care-feed.body-ready .pet-body {
+  outline: 0.18rem dashed rgba(255, 207, 111, 0.88);
+  outline-offset: 0.12rem;
+}

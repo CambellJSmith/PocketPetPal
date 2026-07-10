@@ -101,17 +101,16 @@ const elements = {
   shopGrid: document.querySelector("#shop-grid"),
   inventorySummary: document.querySelector("#inventory-summary"),
   screen: document.querySelector(".screen"),
-  careScene: document.querySelector("#care-scene"),
+  inlineCarePanel: document.querySelector("#inline-care-panel"),
   careTitle: document.querySelector("#care-title"),
   careInstruction: document.querySelector("#care-instruction"),
   careCancel: document.querySelector("#care-cancel"),
-  carePlayfield: document.querySelector("#care-playfield"),
   careProgressBar: document.querySelector("#care-progress-bar"),
+  petBody: document.querySelector("#pet-body"),
+  petMouth: document.querySelector("#pet-mouth"),
   foodTool: document.querySelector("#food-tool"),
   spongeTool: document.querySelector("#sponge-tool"),
   syringeTool: document.querySelector("#syringe-tool"),
-  mouthTarget: document.querySelector("#mouth-target"),
-  injectTarget: document.querySelector("#inject-target"),
   dirtSpots: [...document.querySelectorAll("[data-dirt-spot]")]
 };
 
@@ -671,7 +670,7 @@ function resetCareTool(tool) {
 }
 
 function resetCareScene() {
-  [elements.foodTool, elements.spongeTool, elements.syringeTool, elements.mouthTarget, elements.injectTarget].forEach((element) => {
+  [elements.foodTool, elements.spongeTool, elements.syringeTool].forEach((element) => {
     element.classList.add("hidden");
     element.classList.remove("active-target");
   });
@@ -683,7 +682,7 @@ function resetCareScene() {
   });
 
   elements.careProgressBar.style.width = "0%";
-  elements.petArea.classList.remove("care-active", "care-feed", "care-clean", "care-medicine");
+  elements.petArea.classList.remove("care-active", "care-feed", "care-clean", "care-medicine", "mouth-ready", "body-ready");
 }
 
 function openCareScene(kind, title, instruction, itemId = "") {
@@ -702,8 +701,8 @@ function openCareScene(kind, title, instruction, itemId = "") {
   };
 
   resetCareScene();
-  elements.careScene.classList.remove("hidden");
-  elements.careScene.setAttribute("aria-hidden", "false");
+  elements.inlineCarePanel.classList.remove("hidden");
+  elements.inlineCarePanel.setAttribute("aria-hidden", "false");
   elements.petArea.classList.add("care-active", `care-${kind}`);
   elements.careTitle.textContent = title;
   elements.careInstruction.textContent = instruction;
@@ -722,8 +721,8 @@ function closeCareScene() {
     injecting: false
   };
 
-  elements.careScene.classList.add("hidden");
-  elements.careScene.setAttribute("aria-hidden", "true");
+  elements.inlineCarePanel.classList.add("hidden");
+  elements.inlineCarePanel.setAttribute("aria-hidden", "true");
   resetCareScene();
 }
 
@@ -746,18 +745,19 @@ function startFeedInteraction(itemId) {
     return;
   }
 
-  if (!openCareScene("feed", `feeding ${item.label}`, `drag the food into ${state.name}'s mouth. release it on feed_here to actually feed them.`, itemId)) {
+  const feedInstruction = getStage() === "egg" ? `drag the food directly onto ${state.name}'s shell and release it there.` : `drag the food directly onto ${state.name}'s mouth and release it there.`;
+
+  if (!openCareScene("feed", `feeding ${item.label}`, feedInstruction, itemId)) {
     return;
   }
 
   elements.foodTool.classList.remove("hidden");
-  elements.mouthTarget.classList.remove("hidden");
 }
 
 function startCleanInteraction(itemId = "") {
   const usingSoap = itemId && ITEMS[itemId] && state.inventory[itemId] > 0;
   const title = usingSoap ? `washing with ${ITEMS[itemId].label}` : "basic sponge wash";
-  const instruction = usingSoap ? `rub the sponge over every dirt spot. ${ITEMS[itemId].label} will be used when the wash is complete.` : "rub the sponge over every dirt spot. this basic wash is weaker than bubble_soap.";
+  const instruction = usingSoap ? `rub the sponge directly across ${state.name} until every dirt spot is gone. ${ITEMS[itemId].label} will be used when the wash is complete.` : `rub the sponge directly across ${state.name} until every dirt spot is gone. this basic wash is weaker than bubble_soap.`;
 
   if (!openCareScene("clean", title, instruction, usingSoap ? itemId : "")) {
     return;
@@ -782,12 +782,19 @@ function startMedicineInteraction(itemId) {
     return;
   }
 
-  if (!openCareScene("medicine", `medicine: ${item.label}`, `drag the syringe to safe_spot and release it there to apply the medicine.`, itemId)) {
+  if (!openCareScene("medicine", `medicine: ${item.label}`, `drag the syringe directly onto ${state.name}'s body and release it there to apply the medicine.`, itemId)) {
     return;
   }
 
   elements.syringeTool.classList.remove("hidden");
-  elements.injectTarget.classList.remove("hidden");
+}
+
+function getFeedTarget() {
+  return getStage() === "egg" ? elements.petBody : elements.petMouth;
+}
+
+function getFeedTargetName() {
+  return getStage() === "egg" ? "shell" : "mouth";
 }
 
 function getOverlap(first, second) {
@@ -798,7 +805,7 @@ function getOverlap(first, second) {
 }
 
 function moveCareTool(tool, event) {
-  const field = elements.carePlayfield.getBoundingClientRect();
+  const field = elements.petArea.getBoundingClientRect();
   const toolBox = tool.getBoundingClientRect();
   const x = clamp(event.clientX - field.left - toolBox.width / 2, 4, field.width - toolBox.width - 4);
   const y = clamp(event.clientY - field.top - toolBox.height / 2, 4, field.height - toolBox.height - 4);
@@ -809,8 +816,14 @@ function moveCareTool(tool, event) {
 }
 
 function updateCareTargetHighlights() {
-  elements.mouthTarget.classList.toggle("active-target", careInteraction.kind === "feed" && getOverlap(elements.foodTool, elements.mouthTarget));
-  elements.injectTarget.classList.toggle("active-target", careInteraction.kind === "medicine" && getOverlap(elements.syringeTool, elements.injectTarget));
+  const feedTarget = getFeedTarget();
+  const overFeedTarget = careInteraction.kind === "feed" && getOverlap(elements.foodTool, feedTarget);
+  const overMouth = overFeedTarget && feedTarget === elements.petMouth;
+  const overBody = careInteraction.kind === "medicine" && getOverlap(elements.syringeTool, elements.petBody);
+  const overShell = overFeedTarget && feedTarget === elements.petBody;
+
+  elements.petArea.classList.toggle("mouth-ready", overMouth);
+  elements.petArea.classList.toggle("body-ready", overBody || overShell);
 }
 
 function cleanTouchedDirt() {
@@ -939,20 +952,20 @@ function handleCarePointerUp(event) {
   tool.classList.remove("dragging");
 
   if (careInteraction.kind === "feed") {
-    if (getOverlap(elements.foodTool, elements.mouthTarget)) {
+    if (getOverlap(elements.foodTool, getFeedTarget())) {
       elements.careProgressBar.style.width = "100%";
       elements.careInstruction.textContent = `${state.name} is eating...`;
       window.setTimeout(completeFeedInteraction, 300);
     } else {
-      elements.careInstruction.textContent = "missed. drag the food onto feed_here and release it there.";
+      elements.careInstruction.textContent = `missed. put the food on ${state.name}'s ${getFeedTargetName()} and release it there.`;
     }
   }
 
   if (careInteraction.kind === "medicine") {
-    if (getOverlap(elements.syringeTool, elements.injectTarget)) {
+    if (getOverlap(elements.syringeTool, elements.petBody)) {
       startInjectionAnimation();
     } else {
-      elements.careInstruction.textContent = "missed. drag the syringe onto safe_spot and release it there.";
+      elements.careInstruction.textContent = `missed. put the syringe on ${state.name}'s body and release it there.`;
     }
   }
 
