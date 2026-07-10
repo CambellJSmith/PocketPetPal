@@ -1728,3 +1728,20 @@ h1 {
 .pet-area.care-active .care-tool:not(.hidden) {
   display: block;
 }
+
+
+/* v4 defensive visibility fix */
+.care-tool {
+  min-width: 3.6rem;
+  min-height: 2.6rem;
+}
+
+.pet-area.care-active #food-tool:not(.hidden),
+.pet-area.care-active #sponge-tool:not(.hidden),
+.pet-area.care-active #syringe-tool:not(.hidden),
+.pet-area.care-active [data-dirt-spot]:not(.hidden) {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}

@@ -62,3 +62,8 @@ These interactions use pointer events, so they work with mouse, touch, and stylu
 ## v3 fix
 
 This version restores the missing CSS for the direct-care tools. Food, sponge, syringe, and dirt spots now render visibly inside the normal pet area.
+
+
+## v4 fix
+
+This version fixes the missing `setCareMessage` function that was stopping care interactions before the tool could appear. It also adds defensive inline visibility for food, sponge, syringe, and dirt spots.

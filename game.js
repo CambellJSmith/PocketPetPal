@@ -658,11 +658,40 @@ function buyItem(itemId) {
   render();
 }
 
+function setCareMessage(message) {
+  state.lastMessage = message;
+  elements.petMessage.textContent = message;
+}
+
+function forceShowCareTool(tool) {
+  tool.classList.remove("hidden");
+  tool.removeAttribute("hidden");
+  tool.style.display = "block";
+  tool.style.visibility = "visible";
+  tool.style.opacity = "1";
+  tool.style.pointerEvents = "auto";
+  tool.style.zIndex = "80";
+}
+
+function forceShowDirtSpot(spot) {
+  spot.classList.remove("hidden");
+  spot.removeAttribute("hidden");
+  spot.style.display = "block";
+  spot.style.visibility = "visible";
+  spot.style.opacity = "1";
+  spot.style.zIndex = "70";
+}
+
 function resetCareTool(tool) {
   tool.classList.remove("dragging");
   tool.style.left = "1rem";
   tool.style.top = "";
   tool.style.bottom = "0.9rem";
+  tool.style.display = "";
+  tool.style.visibility = "";
+  tool.style.opacity = "";
+  tool.style.pointerEvents = "";
+  tool.style.zIndex = "";
 }
 
 function resetCareScene() {
@@ -744,7 +773,7 @@ function startFeedInteraction(itemId) {
     return;
   }
 
-  elements.foodTool.classList.remove("hidden");
+  forceShowCareTool(elements.foodTool);
 }
 
 function startCleanInteraction(itemId = "") {
@@ -756,8 +785,8 @@ function startCleanInteraction(itemId = "") {
     return;
   }
 
-  elements.spongeTool.classList.remove("hidden");
-  elements.dirtSpots.forEach((spot) => spot.classList.remove("hidden"));
+  forceShowCareTool(elements.spongeTool);
+  elements.dirtSpots.forEach((spot) => forceShowDirtSpot(spot));
 }
 
 function startMedicineInteraction(itemId) {
@@ -779,7 +808,7 @@ function startMedicineInteraction(itemId) {
     return;
   }
 
-  elements.syringeTool.classList.remove("hidden");
+  forceShowCareTool(elements.syringeTool);
 }
 
 function getFeedTarget() {
