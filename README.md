@@ -57,3 +57,8 @@ The main care buttons now create tools directly inside the normal pet screen. Th
 - `medicine`: drag the syringe onto the creature’s body and release it to apply the selected medicine.
 
 These interactions use pointer events, so they work with mouse, touch, and stylus input in modern browsers.
+
+
+## v3 fix
+
+This version restores the missing CSS for the direct-care tools. Food, sponge, syringe, and dirt spots now render visibly inside the normal pet area.

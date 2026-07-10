@@ -1586,3 +1586,145 @@ h1 {
   z-index: 13;
   touch-action: none;
 }
+
+
+/* fixed visible direct-care tools */
+.care-tool {
+  position: absolute;
+  left: 1rem;
+  bottom: 0.9rem;
+  width: 3.6rem;
+  height: 3.2rem;
+  border: 0.16rem solid var(--screen-dark);
+  background: var(--button);
+  color: var(--screen-dark);
+  box-shadow: 0 0.28rem 0 rgba(51, 65, 38, 0.24);
+  z-index: 14;
+  touch-action: none;
+  user-select: none;
+}
+
+.care-tool.dragging {
+  transform: scale(1.06);
+  box-shadow: 0 0.5rem 0 rgba(51, 65, 38, 0.18);
+}
+
+.care-tool.hidden {
+  display: none;
+}
+
+.food-tool {
+  border-radius: 52% 48% 45% 55%;
+  background: #ffcf6f;
+}
+
+.food-tool span {
+  position: absolute;
+  inset: 0.62rem 0.78rem 0.72rem;
+  border-radius: 50%;
+  background: #ff8a5b;
+  box-shadow:
+    0.55rem -0.24rem 0 #fff2bd,
+    -0.42rem 0.48rem 0 #72df8e;
+}
+
+.sponge-tool {
+  width: 4.2rem;
+  height: 2.65rem;
+  border-radius: 0.62rem;
+  background: #fff2bd;
+}
+
+.sponge-tool::before,
+.sponge-tool::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(51, 65, 38, 0.18);
+}
+
+.sponge-tool::before {
+  left: 0.58rem;
+  top: 0.48rem;
+  width: 0.48rem;
+  height: 0.48rem;
+  box-shadow:
+    1rem 0.8rem 0 rgba(51, 65, 38, 0.18),
+    2.1rem 0.34rem 0 rgba(51, 65, 38, 0.18);
+}
+
+.sponge-tool::after {
+  left: 0.82rem;
+  bottom: -0.52rem;
+  width: 0.54rem;
+  height: 0.54rem;
+  background: #e9fbff;
+  box-shadow:
+    0.9rem 0.28rem 0 #e9fbff,
+    1.95rem -0.04rem 0 #e9fbff;
+}
+
+.syringe-tool {
+  width: 5rem;
+  height: 1.65rem;
+  border-radius: 0.28rem;
+  background: #f0f4ff;
+}
+
+.syringe-tool::before {
+  content: "";
+  position: absolute;
+  right: -1.14rem;
+  top: 50%;
+  width: 1.25rem;
+  height: 0.14rem;
+  border-radius: 999rem;
+  background: var(--screen-dark);
+  transform: translateY(-50%);
+}
+
+.syringe-tool::after {
+  content: "";
+  position: absolute;
+  left: -0.7rem;
+  top: 50%;
+  width: 0.72rem;
+  height: 1.95rem;
+  border: 0.15rem solid var(--screen-dark);
+  border-radius: 0.25rem;
+  background: #d9f0ff;
+  transform: translateY(-50%);
+}
+
+.syringe-tool span {
+  position: absolute;
+  left: 0.5rem;
+  top: 0.46rem;
+  width: 2.4rem;
+  height: 0.48rem;
+  border-radius: 999rem;
+  background: #72df8e;
+}
+
+.dirt-spot {
+  position: absolute;
+  width: 1.05rem;
+  height: 1.05rem;
+  border: 0.12rem solid rgba(51, 65, 38, 0.25);
+  border-radius: 50%;
+  background: #7a5a31;
+  box-shadow:
+    0.35rem 0.1rem 0 rgba(122, 90, 49, 0.72),
+    -0.18rem 0.32rem 0 rgba(122, 90, 49, 0.6);
+  z-index: 6;
+}
+
+.dirt-spot.cleaned {
+  opacity: 0;
+  transform: scale(0.2);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.pet-area.care-active .care-tool:not(.hidden) {
+  display: block;
+}
