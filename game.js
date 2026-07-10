@@ -1,6 +1,7 @@
 "use strict";
 
-const SAVE_KEY = "pocket_sprout_save_v2";
+const SAVE_KEY = "pocket_sprout_save_v3";
+const LEGACY_SAVE_KEYS = ["pocket_sprout_save_v2", "pocket_sprout_save_v1"];
 
 const SPECIES = [
   { id: "sproutling", label: "sproutling", pet: "#8f7dff", light: "#c9c1ff", dark: "#4e3aa8", accent: "#72df8e", extraColor: "#fff2bd", body: "round", ears: "cat", tail: "curled", wings: "none", extra: "sprout", face: "wide" },
@@ -41,6 +42,34 @@ const SPECIES = [
   { id: "acid_toad", label: "acid_toad", pet: "#baff29", light: "#e8ff9c", dark: "#5c7f10", accent: "#ff4d6d", extraColor: "#ffffff", body: "squat", ears: "round", tail: "none", wings: "none", extra: "bubbles", face: "dot" }
 ];
 
+const ITEMS = {
+  berry_bites: { id: "berry_bites", label: "berry_bites", kind: "food", price: 2, description: "small food. safe, cheap, and useful when hunger is low.", effect: { food: 18, fun: 2, cleanliness: -2 } },
+  crisp_snack: { id: "crisp_snack", label: "crisp_snack", kind: "food", price: 3, description: "a crunchy treat that helps food and fun, but should not replace proper meals.", effect: { food: 16, fun: 8, cleanliness: -1 } },
+  warm_meal: { id: "warm_meal", label: "warm_meal", kind: "food", price: 5, description: "a filling meal. best for serious hunger, but it makes a little mess.", effect: { food: 35, energy: 4, cleanliness: -5 } },
+  vitamin_drop: { id: "vitamin_drop", label: "vitamin_drop", kind: "medicine", price: 4, description: "minor health boost. has a chance to clear sickness.", effect: { health: 12 }, cureChance: 0.45 },
+  health_tonic: { id: "health_tonic", label: "health_tonic", kind: "medicine", price: 8, description: "strong medicine. cures sickness and restores health.", effect: { health: 32 }, cures: true },
+  bubble_soap: { id: "bubble_soap", label: "bubble_soap", kind: "care", price: 3, description: "cleans better than a normal wash and slightly improves health.", effect: { cleanliness: 34, health: 3, fun: -1 } },
+  toy_ball: { id: "toy_ball", label: "toy_ball", kind: "toy", price: 7, description: "permanent toy. play gives more fun and sometimes extra coins.", permanent: true },
+  puzzle_class: { id: "puzzle_class", label: "puzzle_class", kind: "class", price: 6, description: "one class pass. improves skill and earns a few coins if the creature has energy.", effect: { discipline: 12, fun: 4, affection: 3, energy: -12, food: -5 } },
+  dance_class: { id: "dance_class", label: "dance_class", kind: "class", price: 6, description: "one class pass. improves bond, fun, and skill, but uses energy.", effect: { discipline: 7, fun: 12, affection: 8, energy: -14, food: -4, cleanliness: -4 } },
+  tiny_hat: { id: "tiny_hat", label: "tiny_hat", kind: "accessory", slot: "hat", price: 10, description: "a small wearable hat for your creature.", permanent: true },
+  wizard_hat: { id: "wizard_hat", label: "wizard_hat", kind: "accessory", slot: "hat", price: 14, description: "a tall magical hat. purely cosmetic.", permanent: true },
+  round_glasses: { id: "round_glasses", label: "round_glasses", kind: "accessory", slot: "face", price: 9, description: "round glasses to wear over the creature face.", permanent: true },
+  star_glasses: { id: "star_glasses", label: "star_glasses", kind: "accessory", slot: "face", price: 12, description: "silly star glasses. purely cosmetic.", permanent: true },
+  ribbon_bow: { id: "ribbon_bow", label: "ribbon_bow", kind: "accessory", slot: "neck", price: 8, description: "a ribbon bow for the creature.", permanent: true },
+  flower_bow: { id: "flower_bow", label: "flower_bow", kind: "accessory", slot: "neck", price: 11, description: "a bright bow with a flower-like shape.", permanent: true }
+};
+
+const SHOP_ORDER = [
+  "berry_bites", "crisp_snack", "warm_meal",
+  "vitamin_drop", "health_tonic", "bubble_soap",
+  "toy_ball", "puzzle_class", "dance_class",
+  "tiny_hat", "wizard_hat", "round_glasses", "star_glasses", "ribbon_bow", "flower_bow"
+];
+
+const QUICK_FOOD_ORDER = ["warm_meal", "crisp_snack", "berry_bites"];
+const QUICK_MEDICINE_ORDER = ["health_tonic", "vitamin_drop"];
+
 const elements = {
   saveStatus: document.querySelector("#save-status"),
   resetButton: document.querySelector("#reset-button"),
@@ -56,6 +85,8 @@ const elements = {
   coinLabel: document.querySelector("#coin-label"),
   moodLabel: document.querySelector("#mood-label"),
   speciesLabel: document.querySelector("#species-label"),
+  affectionLabel: document.querySelector("#affection-label"),
+  disciplineLabel: document.querySelector("#discipline-label"),
   foodValue: document.querySelector("#food-value"),
   funValue: document.querySelector("#fun-value"),
   energyValue: document.querySelector("#energy-value"),
@@ -65,15 +96,43 @@ const elements = {
   funBar: document.querySelector("#fun-bar"),
   energyBar: document.querySelector("#energy-bar"),
   cleanlinessBar: document.querySelector("#cleanliness-bar"),
-  healthBar: document.querySelector("#health-bar")
+  healthBar: document.querySelector("#health-bar"),
+  inventoryGrid: document.querySelector("#inventory-grid"),
+  shopGrid: document.querySelector("#shop-grid"),
+  inventorySummary: document.querySelector("#inventory-summary"),
+  screen: document.querySelector(".screen")
 };
+
+const defaultInventory = () => ({
+  berry_bites: 3,
+  crisp_snack: 1,
+  warm_meal: 0,
+  vitamin_drop: 1,
+  health_tonic: 0,
+  bubble_soap: 1,
+  toy_ball: 0,
+  puzzle_class: 0,
+  dance_class: 0,
+  tiny_hat: 0,
+  wizard_hat: 0,
+  round_glasses: 0,
+  star_glasses: 0,
+  ribbon_bow: 0,
+  flower_bow: 0
+});
+
+const defaultEquipment = () => ({
+  hat: "",
+  face: "",
+  neck: ""
+});
 
 const defaultState = () => {
   const now = Date.now();
   const species = getRandomSpeciesId();
 
   return {
-    version: 2,
+    version: 3,
     name: "sprout",
     birthday: now,
     lastUpdated: now,
@@ -83,10 +142,15 @@ const defaultState = () => {
     energy: 72,
     cleanliness: 78,
     health: 92,
-    coins: 12,
+    affection: 45,
+    discipline: 12,
+    coins: 16,
     careScore: 0,
     sickness: false,
-    hibernating: false,
+    dead: false,
+    deathReason: "",
+    inventory: defaultInventory(),
+    equipment: defaultEquipment(),
     lastMessage: `a tiny ${getSpecies(species).label} egg is waiting for you.`
   };
 };
@@ -117,14 +181,17 @@ function getSpecies(speciesId) {
 function loadState() {
   try {
     const rawSave = localStorage.getItem(SAVE_KEY);
-    const oldSave = localStorage.getItem("pocket_sprout_save_v1");
 
     if (rawSave) {
       return normalizeState(JSON.parse(rawSave));
     }
 
-    if (oldSave) {
-      return normalizeState(JSON.parse(oldSave));
+    for (const key of LEGACY_SAVE_KEYS) {
+      const legacySave = localStorage.getItem(key);
+
+      if (legacySave) {
+        return normalizeState(JSON.parse(legacySave));
+      }
     }
 
     return defaultState();
@@ -136,11 +203,23 @@ function loadState() {
 function normalizeState(save) {
   const base = defaultState();
   const validSpecies = SPECIES.some((species) => species.id === save.speciesId);
+  const inventory = { ...defaultInventory(), ...(save.inventory || {}) };
+  const equipment = { ...defaultEquipment(), ...(save.equipment || {}) };
+
+  Object.keys(inventory).forEach((itemId) => {
+    inventory[itemId] = Math.max(0, Math.floor(Number(inventory[itemId]) || 0));
+  });
+
+  Object.keys(equipment).forEach((slot) => {
+    if (!ITEMS[equipment[slot]] || ITEMS[equipment[slot]].slot !== slot || inventory[equipment[slot]] <= 0) {
+      equipment[slot] = "";
+    }
+  });
 
   return {
     ...base,
     ...save,
-    version: 2,
+    version: 3,
     name: typeof save.name === "string" && save.name.trim() ? save.name.slice(0, 14) : base.name,
     birthday: Number.isFinite(save.birthday) ? save.birthday : base.birthday,
     lastUpdated: Number.isFinite(save.lastUpdated) ? save.lastUpdated : base.lastUpdated,
@@ -150,10 +229,15 @@ function normalizeState(save) {
     energy: clamp(Number(save.energy) || base.energy),
     cleanliness: clamp(Number(save.cleanliness) || base.cleanliness),
     health: clamp(Number(save.health) || base.health),
+    affection: clamp(Number(save.affection) || base.affection),
+    discipline: clamp(Number(save.discipline) || base.discipline),
     coins: Math.max(0, Math.floor(Number(save.coins) || base.coins)),
     careScore: Math.max(0, Math.floor(Number(save.careScore) || base.careScore)),
     sickness: Boolean(save.sickness),
-    hibernating: Boolean(save.hibernating),
+    dead: Boolean(save.dead || save.hibernating || Number(save.health) <= 0),
+    deathReason: typeof save.deathReason === "string" ? save.deathReason : "",
+    inventory,
+    equipment,
     lastMessage: typeof save.lastMessage === "string" ? save.lastMessage : base.lastMessage
   };
 }
@@ -169,9 +253,10 @@ function saveState() {
 
 function applyDecay() {
   const now = Date.now();
-  const elapsedMinutes = Math.min((now - state.lastUpdated) / 60000, 720);
+  const elapsedMinutes = Math.min((now - state.lastUpdated) / 60000, 4320);
 
-  if (elapsedMinutes <= 0) {
+  if (elapsedMinutes <= 0 || state.dead) {
+    state.lastUpdated = now;
     return;
   }
 
@@ -179,26 +264,44 @@ function applyDecay() {
   state.fun = clamp(state.fun - elapsedMinutes * 0.1);
   state.energy = clamp(state.energy - elapsedMinutes * 0.08);
   state.cleanliness = clamp(state.cleanliness - elapsedMinutes * 0.12);
+  state.affection = clamp(state.affection - elapsedMinutes * 0.025);
 
   const criticalNeeds = [state.food, state.fun, state.energy, state.cleanliness].filter((need) => need < 20).length;
+  const emptyNeeds = [state.food, state.fun, state.energy, state.cleanliness].filter((need) => need <= 0).length;
 
   if (criticalNeeds > 0) {
-    state.health = clamp(state.health - elapsedMinutes * criticalNeeds * 0.06);
+    state.health = clamp(state.health - elapsedMinutes * criticalNeeds * 0.015);
   } else if (!state.sickness && state.health < 100) {
-    state.health = clamp(state.health + elapsedMinutes * 0.03);
+    state.health = clamp(state.health + elapsedMinutes * 0.025);
   }
 
-  if (!state.sickness && (state.food < 15 || state.cleanliness < 15) && Math.random() < elapsedMinutes / 900) {
+  if (!state.sickness && (state.food < 15 || state.cleanliness < 15) && Math.random() < elapsedMinutes / 750) {
     state.sickness = true;
-    state.lastMessage = `${state.name} feels poorly. medicine will help.`;
+    state.lastMessage = `${state.name} became sick from neglect. use medicine soon.`;
   }
 
-  if (state.health <= 0) {
-    state.hibernating = true;
-    state.lastMessage = `${state.name} has gone into hibernation. reset to start again.`;
+  if (state.sickness) {
+    state.health = clamp(state.health - elapsedMinutes * 0.018);
+  }
+
+  if (emptyNeeds >= 2 && elapsedMinutes > 720) {
+    state.health = clamp(state.health - elapsedMinutes * 0.012);
   }
 
   state.lastUpdated = now;
+  checkDeath("neglect");
+}
+
+function checkDeath(reason = "unknown") {
+  if (state.dead || state.health > 0) {
+    return;
+  }
+
+  state.health = 0;
+  state.dead = true;
+  state.sickness = false;
+  state.deathReason = reason;
+  state.lastMessage = `${state.name} died from ${reason}. reset to raise a new creature.`;
 }
 
 function getAgeMinutes() {
@@ -224,19 +327,19 @@ function getStage() {
 }
 
 function getMood() {
-  if (state.hibernating) {
-    return "hibernating";
+  if (state.dead) {
+    return "dead";
   }
 
   if (state.sickness || state.health < 35) {
     return "sick";
   }
 
-  if (state.food < 30 || state.fun < 30 || state.energy < 25 || state.cleanliness < 30) {
+  if (state.food < 30 || state.fun < 30 || state.energy < 25 || state.cleanliness < 30 || state.affection < 25) {
     return "sad";
   }
 
-  if (state.food > 70 && state.fun > 70 && state.energy > 60 && state.cleanliness > 70) {
+  if (state.food > 70 && state.fun > 70 && state.energy > 60 && state.cleanliness > 70 && state.affection > 60) {
     return "happy";
   }
 
@@ -272,6 +375,12 @@ function applySpeciesStyles(species) {
   elements.pet.style.setProperty("--pet-extra", species.extraColor);
 }
 
+function getEquipmentClasses() {
+  return Object.values(state.equipment)
+    .filter(Boolean)
+    .map((itemId) => `gear-${itemId}`);
+}
+
 function render() {
   const stage = getStage();
   const mood = getMood();
@@ -280,11 +389,13 @@ function render() {
   applySpeciesStyles(species);
 
   elements.nameInput.value = state.name;
-  elements.stageLabel.textContent = stage;
+  elements.stageLabel.textContent = state.dead ? "dead" : stage;
   elements.ageLabel.textContent = getAgeLabel();
   elements.coinLabel.textContent = state.coins;
   elements.moodLabel.textContent = mood;
   elements.speciesLabel.textContent = species.label;
+  elements.affectionLabel.textContent = Math.round(state.affection);
+  elements.disciplineLabel.textContent = Math.round(state.discipline);
   elements.petMessage.textContent = state.lastMessage;
 
   elements.foodValue.textContent = Math.round(state.food);
@@ -308,71 +419,333 @@ function render() {
     `tail-${species.tail}`,
     `wings-${species.wings}`,
     `extra-${species.extra}`,
-    `face-${species.face}`
+    `face-${species.face}`,
+    ...getEquipmentClasses()
   ].join(" ");
 
+  elements.screen.classList.toggle("dead-screen", state.dead);
+
   document.querySelectorAll("[data-action], #mini-game-button, #species-button").forEach((button) => {
-    button.disabled = state.hibernating || miniGame.active;
+    button.disabled = state.dead || miniGame.active;
   });
 
   elements.resetButton.disabled = miniGame.active;
+  renderInventory();
+  renderShop();
+}
+
+function renderInventory() {
+  const ownedItemIds = SHOP_ORDER.filter((itemId) => state.inventory[itemId] > 0);
+  const totalItems = ownedItemIds.reduce((total, itemId) => total + state.inventory[itemId], 0);
+
+  elements.inventorySummary.textContent = `${totalItems} items`;
+
+  if (ownedItemIds.length === 0) {
+    elements.inventoryGrid.innerHTML = `<div class="empty-state">inventory is empty. buy supplies from the shop.</div>`;
+    return;
+  }
+
+  elements.inventoryGrid.innerHTML = ownedItemIds.map((itemId) => {
+    const item = ITEMS[itemId];
+    const count = state.inventory[itemId];
+    const equipped = item.slot && state.equipment[item.slot] === itemId;
+    const action = item.kind === "accessory" ? (equipped ? "unequip" : "equip") : "use";
+    const buttonClass = equipped ? "secondary" : "";
+
+    return `
+      <article class="item-card">
+        <div class="item-topline">
+          <div>
+            <h3 class="item-name">${item.label}</h3>
+            <span class="item-kind">${item.kind}</span>
+          </div>
+          <strong>x${count}</strong>
+        </div>
+        <p>${item.description}</p>
+        <button class="${buttonClass}" type="button" data-inventory-item="${item.id}" ${state.dead || miniGame.active ? "disabled" : ""}>${action}</button>
+      </article>`;
+  }).join("");
+}
+
+function renderShop() {
+  elements.shopGrid.innerHTML = SHOP_ORDER.map((itemId) => {
+    const item = ITEMS[itemId];
+    const owned = state.inventory[itemId] || 0;
+    const alreadyOwned = item.permanent && owned > 0;
+    const disabled = state.dead || miniGame.active || state.coins < item.price || alreadyOwned;
+    const label = alreadyOwned ? "owned" : `buy_${item.price}`;
+
+    return `
+      <article class="item-card">
+        <div class="item-topline">
+          <div>
+            <h3 class="item-name">${item.label}</h3>
+            <span class="item-kind">${item.kind}</span>
+          </div>
+          <strong>${item.price}c</strong>
+        </div>
+        <p>${item.description}</p>
+        <button type="button" data-shop-item="${item.id}" ${disabled ? "disabled" : ""}>${label}</button>
+      </article>`;
+  }).join("");
+}
+
+function addEffect(effect) {
+  state.food = clamp(state.food + (effect.food || 0));
+  state.fun = clamp(state.fun + (effect.fun || 0));
+  state.energy = clamp(state.energy + (effect.energy || 0));
+  state.cleanliness = clamp(state.cleanliness + (effect.cleanliness || 0));
+  state.health = clamp(state.health + (effect.health || 0));
+  state.affection = clamp(state.affection + (effect.affection || 0));
+  state.discipline = clamp(state.discipline + (effect.discipline || 0));
+}
+
+function consumeItem(itemId) {
+  if (!state.inventory[itemId]) {
+    return false;
+  }
+
+  state.inventory[itemId] -= 1;
+  return true;
+}
+
+function useItem(itemId) {
+  if (state.dead || miniGame.active) {
+    return;
+  }
+
+  const item = ITEMS[itemId];
+
+  if (!item || state.inventory[itemId] <= 0) {
+    return;
+  }
+
+  if (item.kind === "accessory") {
+    toggleEquipment(item);
+    return;
+  }
+
+  if (item.kind === "food") {
+    useFood(item);
+    return;
+  }
+
+  if (item.kind === "medicine") {
+    useMedicine(item);
+    return;
+  }
+
+  if (item.kind === "care") {
+    consumeItem(itemId);
+    addEffect(item.effect);
+    state.lastMessage = `${state.name} smells clean and fresh.`;
+    finishAction();
+    return;
+  }
+
+  if (item.kind === "class") {
+    useClass(item);
+  }
+}
+
+function useFood(item) {
+  if (state.food > 92) {
+    consumeItem(item.id);
+    state.health = clamp(state.health - 4);
+    state.fun = clamp(state.fun - 2);
+    state.lastMessage = `${state.name} is too full. overfeeding hurts health.`;
+    finishAction("overfeeding");
+    return;
+  }
+
+  consumeItem(item.id);
+  addEffect(item.effect);
+  state.affection = clamp(state.affection + 2);
+  state.lastMessage = `${state.name} ate ${item.label}.`;
+  finishAction();
+}
+
+function useMedicine(item) {
+  if (!state.sickness && state.health > 88) {
+    state.lastMessage = `${state.name} does not need medicine right now.`;
+    render();
+    return;
+  }
+
+  consumeItem(item.id);
+  addEffect(item.effect);
+
+  if (item.cures || Math.random() < (item.cureChance || 0)) {
+    state.sickness = false;
+    state.lastMessage = `${state.name} took ${item.label} and recovered.`;
+  } else {
+    state.lastMessage = `${state.name} took ${item.label}, but still seems sick.`;
+  }
+
+  finishAction();
+}
+
+function useClass(item) {
+  if (state.energy < 18 || state.food < 15) {
+    state.lastMessage = `${state.name} is too hungry or tired for class.`;
+    render();
+    return;
+  }
+
+  consumeItem(item.id);
+  addEffect(item.effect);
+  const reward = Math.max(1, Math.floor(state.discipline / 30));
+  state.coins += reward;
+  state.lastMessage = `${state.name} completed ${item.label} and earned ${reward} coins.`;
+  finishAction();
+}
+
+function toggleEquipment(item) {
+  if (state.equipment[item.slot] === item.id) {
+    state.equipment[item.slot] = "";
+    state.lastMessage = `${state.name} took off ${item.label}.`;
+  } else {
+    state.equipment[item.slot] = item.id;
+    state.affection = clamp(state.affection + 1);
+    state.lastMessage = `${state.name} equipped ${item.label}.`;
+  }
+
+  saveState();
+  render();
+}
+
+function buyItem(itemId) {
+  if (state.dead || miniGame.active) {
+    return;
+  }
+
+  const item = ITEMS[itemId];
+
+  if (!item) {
+    return;
+  }
+
+  if (item.permanent && state.inventory[itemId] > 0) {
+    state.lastMessage = `${item.label} is already owned.`;
+    render();
+    return;
+  }
+
+  if (state.coins < item.price) {
+    state.lastMessage = `not enough coins for ${item.label}.`;
+    render();
+    return;
+  }
+
+  state.coins -= item.price;
+  state.inventory[itemId] = (state.inventory[itemId] || 0) + 1;
+  state.lastMessage = `bought ${item.label}.`;
+  saveState();
+  render();
+}
+
+function finishAction(deathReason = "poor care") {
+  state.careScore += 1;
+  state.lastUpdated = Date.now();
+  checkDeath(deathReason);
+  saveState();
+  render();
 }
 
 function care(action) {
-  if (state.hibernating || miniGame.active) {
+  if (state.dead || miniGame.active) {
     return;
   }
 
   const actions = {
     feed: () => {
-      state.food = clamp(state.food + 24);
-      state.energy = clamp(state.energy - 4);
-      state.cleanliness = clamp(state.cleanliness - 3);
-      state.lastMessage = `${state.name} munches happily.`;
-    },
-    play: () => {
-      state.fun = clamp(state.fun + 25);
-      state.energy = clamp(state.energy - 12);
-      state.food = clamp(state.food - 7);
-      state.cleanliness = clamp(state.cleanliness - 4);
-      state.coins += 1;
-      state.lastMessage = `${state.name} bounces around the screen.`;
-    },
-    clean: () => {
-      state.cleanliness = clamp(state.cleanliness + 30);
-      state.fun = clamp(state.fun - 2);
-      state.lastMessage = `${state.name} is squeaky clean.`;
-    },
-    nap: () => {
-      state.energy = clamp(state.energy + 30);
-      state.food = clamp(state.food - 5);
-      state.fun = clamp(state.fun - 3);
-      state.lastMessage = `${state.name} takes a tiny nap.`;
-    },
-    medicine: () => {
-      const cost = state.sickness ? 6 : 3;
+      const foodId = QUICK_FOOD_ORDER.find((itemId) => state.inventory[itemId] > 0);
 
-      if (state.coins < cost) {
-        state.lastMessage = "not enough coins for medicine.";
+      if (!foodId) {
+        state.lastMessage = "no food left. buy food from the shop.";
+        render();
         return;
       }
 
-      state.coins -= cost;
-      state.health = clamp(state.health + (state.sickness ? 28 : 8));
-      state.sickness = false;
-      state.lastMessage = `${state.name} feels steadier.`;
+      useFood(ITEMS[foodId]);
+    },
+    play: () => {
+      if (state.energy < 12 || state.food < 10) {
+        state.health = clamp(state.health - 3);
+        state.affection = clamp(state.affection - 1);
+        state.lastMessage = `${state.name} tried to play, but was too tired or hungry.`;
+        finishAction("exhaustion");
+        return;
+      }
+
+      const hasToy = state.inventory.toy_ball > 0;
+      const coinReward = hasToy ? 2 : 1;
+
+      state.fun = clamp(state.fun + (hasToy ? 28 : 18));
+      state.energy = clamp(state.energy - 11);
+      state.food = clamp(state.food - 6);
+      state.cleanliness = clamp(state.cleanliness - 5);
+      state.affection = clamp(state.affection + 5);
+      state.coins += coinReward;
+      state.lastMessage = hasToy ? `${state.name} played with the toy_ball and earned ${coinReward} coins.` : `${state.name} played and earned ${coinReward} coin.`;
+      finishAction();
+    },
+    clean: () => {
+      if (state.inventory.bubble_soap > 0) {
+        useItem("bubble_soap");
+        return;
+      }
+
+      state.cleanliness = clamp(state.cleanliness + 18);
+      state.energy = clamp(state.energy - 3);
+      state.fun = clamp(state.fun - 1);
+      state.lastMessage = `${state.name} had a basic wash. bubble_soap cleans better.`;
+      finishAction();
+    },
+    nap: () => {
+      state.energy = clamp(state.energy + 28);
+      state.food = clamp(state.food - 6);
+      state.fun = clamp(state.fun - 2);
+
+      if (state.cleanliness < 20) {
+        state.health = clamp(state.health - 2);
+        state.lastMessage = `${state.name} slept, but being dirty made them feel worse.`;
+      } else {
+        state.health = clamp(state.health + 3);
+        state.lastMessage = `${state.name} took a proper nap.`;
+      }
+
+      finishAction();
+    },
+    medicine: () => {
+      const medicineId = QUICK_MEDICINE_ORDER.find((itemId) => state.inventory[itemId] > 0);
+
+      if (!medicineId) {
+        state.lastMessage = "no medicine left. buy medicine from the shop.";
+        render();
+        return;
+      }
+
+      useMedicine(ITEMS[medicineId]);
+    },
+    class: () => {
+      const classId = ["puzzle_class", "dance_class"].find((itemId) => state.inventory[itemId] > 0);
+
+      if (!classId) {
+        state.lastMessage = "no class passes left. buy a class from the shop.";
+        render();
+        return;
+      }
+
+      useClass(ITEMS[classId]);
     }
   };
 
   actions[action]?.();
-  state.careScore += 1;
-  state.lastUpdated = Date.now();
-  saveState();
-  render();
 }
 
 function discoverSpecies() {
-  if (state.hibernating || miniGame.active) {
+  if (state.dead || miniGame.active) {
     return;
   }
 
@@ -401,7 +774,7 @@ function discoverSpecies() {
 }
 
 function startMiniGame() {
-  if (state.hibernating || miniGame.active) {
+  if (state.dead || miniGame.active) {
     return;
   }
 
@@ -459,12 +832,14 @@ function finishMiniGame() {
   const reward = Math.max(1, miniGame.hits);
   state.coins += reward;
   state.fun = clamp(state.fun + reward * 5);
+  state.affection = clamp(state.affection + Math.min(8, reward));
   state.energy = clamp(state.energy - 10);
   state.food = clamp(state.food - 6);
   state.cleanliness = clamp(state.cleanliness - 3);
   state.lastUpdated = Date.now();
   state.lastMessage = `${state.name} caught ${miniGame.hits} stars and earned ${reward} coins.`;
 
+  checkDeath("exhaustion");
   saveState();
   render();
 }
@@ -483,6 +858,26 @@ function resetPet() {
 
 document.querySelectorAll("[data-action]").forEach((button) => {
   button.addEventListener("click", () => care(button.dataset.action));
+});
+
+elements.inventoryGrid.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-inventory-item]");
+
+  if (!button) {
+    return;
+  }
+
+  useItem(button.dataset.inventoryItem);
+});
+
+elements.shopGrid.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-shop-item]");
+
+  if (!button) {
+    return;
+  }
+
+  buyItem(button.dataset.shopItem);
 });
 
 elements.nameInput.addEventListener("change", () => {

@@ -14,7 +14,7 @@
         <div>
           <p class="eyebrow">browser virtual pet</p>
           <h1 id="game-title">pocket_sprout</h1>
-          <p class="lede">raise a tiny digital creature with food, sleep, play, cleaning, creature discovery, and a short star-catching mini-game.</p>
+          <p class="lede">raise a fragile digital creature with food, rest, hygiene, medicine, classes, cosmetics, and a short star-catching mini-game.</p>
         </div>
         <button class="utility-button" id="reset-button" type="button">reset_pet</button>
       </header>
@@ -53,6 +53,9 @@
                 <span class="pet-mouth"></span>
               </span>
               <span class="pet-extra"></span>
+              <span class="wearable wearable-hat"></span>
+              <span class="wearable wearable-glasses"></span>
+              <span class="wearable wearable-bow"></span>
             </div>
             <button class="star-target hidden" id="star-target" type="button" aria-label="catch star">✦</button>
           </div>
@@ -77,6 +80,14 @@
             <div>
               <span class="meta-label">creature</span>
               <strong id="species-label">sproutling</strong>
+            </div>
+            <div>
+              <span class="meta-label">bond</span>
+              <strong id="affection-label">0</strong>
+            </div>
+            <div>
+              <span class="meta-label">skill</span>
+              <strong id="discipline-label">0</strong>
             </div>
           </div>
         </section>
@@ -129,14 +140,39 @@
           <button type="button" data-action="clean">clean</button>
           <button type="button" data-action="nap">nap</button>
           <button type="button" data-action="medicine">medicine</button>
+          <button type="button" data-action="class">class</button>
           <button type="button" id="species-button">discover</button>
           <button type="button" id="mini-game-button">catch_stars</button>
         </section>
       </section>
 
+      <section class="management-grid">
+        <section class="management-panel" aria-labelledby="inventory-title">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow compact">owned items</p>
+              <h2 id="inventory-title">inventory</h2>
+            </div>
+            <p id="inventory-summary">0 items</p>
+          </div>
+          <div class="item-grid" id="inventory-grid"></div>
+        </section>
+
+        <section class="management-panel" aria-labelledby="shop-title">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow compact">spend coins</p>
+              <h2 id="shop-title">shop</h2>
+            </div>
+            <p>food, medicine, classes, and wearable accessories.</p>
+          </div>
+          <div class="item-grid" id="shop-grid"></div>
+        </section>
+      </section>
+
       <section class="how-to-play">
         <h2>how_it_works</h2>
-        <p>The pet changes over time, even after the browser tab is closed. There are 36 generated creature forms. A new save starts with a random form, and the discover button lets players spend coins to find another one. The save is stored in the player’s own browser using localStorage.</p>
+        <p>The creature now has real risk: if hunger, boredom, exhaustion, dirt, or sickness are neglected for too long, health can reach zero and the creature dies. Food, medicine, soaps, class passes, and cosmetics are bought with coins. Everything still saves locally in the player’s browser using localStorage.</p>
       </section>
     </section>
   </main>
