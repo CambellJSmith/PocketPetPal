@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>pocket_sprout</title>
+  <meta name="description" content="A tiny browser-based virtual pet game for GitHub Pages.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="page-shell">
+    <section class="game-card" aria-labelledby="game-title">
+      <header class="hero">
+        <div>
+          <p class="eyebrow">browser virtual pet</p>
+          <h1 id="game-title">pocket_sprout</h1>
+          <p class="lede">raise a tiny digital creature with food, sleep, play, cleaning, and a short star-catching mini-game.</p>
+        </div>
+        <button class="utility-button" id="reset-button" type="button">reset_pet</button>
+      </header>
+
+      <section class="device" aria-label="virtual pet console">
+        <div class="device-top">
+          <span class="speaker-dot"></span>
+          <span class="speaker-dot"></span>
+          <span class="speaker-dot"></span>
+          <span class="status-pill" id="save-status">saved</span>
+        </div>
+
+        <section class="screen" aria-live="polite">
+          <div class="screen-bar">
+            <div>
+              <label class="name-label" for="name-input">pet_name</label>
+              <input id="name-input" class="name-input" maxlength="14" autocomplete="off">
+            </div>
+            <div class="stage-tag" id="stage-label">egg</div>
+          </div>
+
+          <div class="pet-area" id="pet-area">
+            <div class="pet-shadow" aria-hidden="true"></div>
+            <div class="pet" id="pet" aria-label="your pet">
+              <span class="pet-ear pet-ear-left"></span>
+              <span class="pet-ear pet-ear-right"></span>
+              <span class="pet-body"></span>
+              <span class="pet-face">
+                <span class="pet-eye pet-eye-left"></span>
+                <span class="pet-eye pet-eye-right"></span>
+                <span class="pet-mouth"></span>
+              </span>
+              <span class="pet-sprout"></span>
+            </div>
+            <button class="star-target hidden" id="star-target" type="button" aria-label="catch star">✦</button>
+          </div>
+
+          <div class="message-panel">
+            <p id="pet-message">loading_pet...</p>
+          </div>
+
+          <div class="meta-grid">
+            <div>
+              <span class="meta-label">age</span>
+              <strong id="age-label">0m</strong>
+            </div>
+            <div>
+              <span class="meta-label">coins</span>
+              <strong id="coin-label">0</strong>
+            </div>
+            <div>
+              <span class="meta-label">mood</span>
+              <strong id="mood-label">calm</strong>
+            </div>
+          </div>
+        </section>
+
+        <section class="bars" aria-label="pet needs">
+          <article class="stat">
+            <div class="stat-header">
+              <span>food</span>
+              <span id="food-value">0</span>
+            </div>
+            <div class="meter"><span id="food-bar"></span></div>
+          </article>
+
+          <article class="stat">
+            <div class="stat-header">
+              <span>fun</span>
+              <span id="fun-value">0</span>
+            </div>
+            <div class="meter"><span id="fun-bar"></span></div>
+          </article>
+
+          <article class="stat">
+            <div class="stat-header">
+              <span>energy</span>
+              <span id="energy-value">0</span>
+            </div>
+            <div class="meter"><span id="energy-bar"></span></div>
+          </article>
+
+          <article class="stat">
+            <div class="stat-header">
+              <span>clean</span>
+              <span id="cleanliness-value">0</span>
+            </div>
+            <div class="meter"><span id="cleanliness-bar"></span></div>
+          </article>
+
+          <article class="stat">
+            <div class="stat-header">
+              <span>health</span>
+              <span id="health-value">0</span>
+            </div>
+            <div class="meter"><span id="health-bar"></span></div>
+          </article>
+        </section>
+
+        <section class="controls" aria-label="care actions">
+          <button type="button" data-action="feed">feed</button>
+          <button type="button" data-action="play">play</button>
+          <button type="button" data-action="clean">clean</button>
+          <button type="button" data-action="nap">nap</button>
+          <button type="button" data-action="medicine">medicine</button>
+          <button type="button" id="mini-game-button">catch_stars</button>
+        </section>
+      </section>
+
+      <section class="how-to-play">
+        <h2>how_it_works</h2>
+        <p>The pet changes over time, even after the browser tab is closed. Care for it to earn coins, evolve it, and keep its health above zero. The save is stored in the player’s own browser using localStorage.</p>
+      </section>
+    </section>
+  </main>
+
+  <script src="game.js"></script>
+</body>
+</html>
