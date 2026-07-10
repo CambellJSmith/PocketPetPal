@@ -1757,3 +1757,16 @@ h1 {
   opacity: 1;
   transform: none;
 }
+
+/* v6 egg waiting phase */
+.egg-wait-screen .pet-area {
+  cursor: default;
+}
+
+.egg-wait-screen .pet-shadow {
+  opacity: 0.65;
+}
+
+.controls button:disabled[title] {
+  opacity: 0.38;
+}

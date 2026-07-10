@@ -75,3 +75,12 @@ This version fixes the missing `setCareMessage` function that was stopping care 
 - Dirt now appears from the clean stat instead of being forced back after every wash.
 - Dirt thresholds: no dirt at high cleanliness, then 1 to 5 dirt spots as cleanliness drops.
 - Cleaning now only asks the player to scrub the dirt spots currently justified by the clean value.
+
+
+## v6 changes
+
+- Egg stage is now passive.
+- Feed, clean, play, nap, medicine, class, catch_stars, and inventory item use are disabled while the pet is an egg.
+- The shop remains visible and usable while waiting.
+- Stat decay is paused while the pet is an egg, so players are not punished before care unlocks.
+- Food can no longer be dragged onto the egg shell.
