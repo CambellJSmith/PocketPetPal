@@ -1485,3 +1485,326 @@ h1 {
 .pet.stage-egg .wearable {
   display: none !important;
 }
+
+.care-scene {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 0.7rem;
+  background: rgba(51, 65, 38, 0.16);
+  backdrop-filter: blur(0.12rem);
+  z-index: 8;
+}
+
+.care-scene.hidden {
+  display: none;
+}
+
+.care-scene-card {
+  width: min(100%, 23rem);
+  padding: 0.75rem;
+  border: 0.14rem solid rgba(51, 65, 38, 0.36);
+  border-radius: 1rem;
+  background: rgba(247, 255, 224, 0.92);
+  box-shadow: 0 0.8rem 1.8rem rgba(51, 65, 38, 0.18);
+}
+
+.care-scene-header {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 0.7rem;
+}
+
+.care-kicker {
+  display: block;
+  margin-bottom: 0.12rem;
+  font-size: 0.6rem;
+  font-weight: 950;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+#care-title {
+  display: block;
+  font-size: 0.98rem;
+  font-weight: 950;
+}
+
+.care-cancel {
+  border: 0;
+  border-radius: 999rem;
+  padding: 0.34rem 0.68rem;
+  background: rgba(51, 65, 38, 0.12);
+  color: var(--screen-dark);
+  font-size: 0.72rem;
+  font-weight: 950;
+}
+
+#care-instruction {
+  margin: 0.5rem 0 0.65rem;
+  min-height: 2.4rem;
+  font-size: 0.78rem;
+  font-weight: 850;
+  line-height: 1.35;
+}
+
+.care-playfield {
+  position: relative;
+  height: 8.2rem;
+  overflow: hidden;
+  border: 0.12rem dashed rgba(51, 65, 38, 0.26);
+  border-radius: 0.8rem;
+  background:
+    radial-gradient(circle at 50% 48%, rgba(143, 125, 255, 0.12), transparent 4.2rem),
+    rgba(255, 255, 255, 0.36);
+  touch-action: none;
+}
+
+.care-progress {
+  height: 0.56rem;
+  margin-top: 0.65rem;
+  overflow: hidden;
+  border-radius: 999rem;
+  background: rgba(51, 65, 38, 0.18);
+}
+
+.care-progress span {
+  display: block;
+  width: 0%;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--screen-dark);
+  transition: width 0.14s ease;
+}
+
+.care-tool {
+  position: absolute;
+  left: 1rem;
+  bottom: 0.9rem;
+  width: 3.6rem;
+  height: 3.2rem;
+  border: 0.16rem solid var(--screen-dark);
+  background: var(--button);
+  color: var(--screen-dark);
+  box-shadow: 0 0.28rem 0 rgba(51, 65, 38, 0.24);
+  z-index: 3;
+  touch-action: none;
+  user-select: none;
+}
+
+.care-tool.dragging {
+  transform: scale(1.06);
+  box-shadow: 0 0.5rem 0 rgba(51, 65, 38, 0.18);
+}
+
+.care-tool.hidden {
+  display: none;
+}
+
+.food-tool {
+  border-radius: 52% 48% 45% 55%;
+  background: #ffcf6f;
+}
+
+.food-tool span {
+  position: absolute;
+  inset: 0.62rem 0.78rem 0.72rem;
+  border-radius: 50%;
+  background: #ff8a5b;
+  box-shadow:
+    0.55rem -0.24rem 0 #fff2bd,
+    -0.42rem 0.48rem 0 #72df8e;
+}
+
+.sponge-tool {
+  width: 4.2rem;
+  height: 2.65rem;
+  border-radius: 0.62rem;
+  background: #fff2bd;
+}
+
+.sponge-tool::before,
+.sponge-tool::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(51, 65, 38, 0.18);
+}
+
+.sponge-tool::before {
+  left: 0.58rem;
+  top: 0.48rem;
+  width: 0.48rem;
+  height: 0.48rem;
+  box-shadow:
+    1rem 0.8rem 0 rgba(51, 65, 38, 0.18),
+    2.1rem 0.34rem 0 rgba(51, 65, 38, 0.18);
+}
+
+.sponge-tool::after {
+  left: 0.82rem;
+  bottom: -0.52rem;
+  width: 0.54rem;
+  height: 0.54rem;
+  background: #e9fbff;
+  box-shadow:
+    0.9rem 0.28rem 0 #e9fbff,
+    1.95rem -0.04rem 0 #e9fbff;
+}
+
+.syringe-tool {
+  width: 5rem;
+  height: 1.65rem;
+  border-radius: 0.28rem;
+  background: #f0f4ff;
+}
+
+.syringe-tool::before {
+  content: "";
+  position: absolute;
+  right: -1.14rem;
+  top: 50%;
+  width: 1.25rem;
+  height: 0.14rem;
+  border-radius: 999rem;
+  background: var(--screen-dark);
+  transform: translateY(-50%);
+}
+
+.syringe-tool::after {
+  content: "";
+  position: absolute;
+  left: -0.7rem;
+  top: 50%;
+  width: 0.72rem;
+  height: 1.95rem;
+  border: 0.15rem solid var(--screen-dark);
+  border-radius: 0.25rem;
+  background: #d9f0ff;
+  transform: translateY(-50%);
+}
+
+.syringe-tool span {
+  position: absolute;
+  left: 0.5rem;
+  top: 0.46rem;
+  width: 2.4rem;
+  height: 0.48rem;
+  border-radius: 999rem;
+  background: #72df8e;
+}
+
+.mouth-target,
+.inject-target {
+  position: absolute;
+  right: 1.05rem;
+  top: 2.15rem;
+  display: grid;
+  place-items: center;
+  width: 4.7rem;
+  height: 2.65rem;
+  border: 0.15rem dashed var(--screen-dark);
+  border-radius: 999rem;
+  background: rgba(255, 255, 255, 0.46);
+  font-size: 0.62rem;
+  font-weight: 950;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.inject-target {
+  right: 1.25rem;
+  top: 3.3rem;
+  width: 4.8rem;
+  height: 2.9rem;
+  border-radius: 1rem;
+  background: rgba(114, 223, 142, 0.22);
+}
+
+.mouth-target.active-target,
+.inject-target.active-target {
+  background: rgba(255, 207, 111, 0.56);
+  transform: scale(1.04);
+}
+
+.mouth-target.hidden,
+.inject-target.hidden {
+  display: none;
+}
+
+.dirt-spot {
+  position: absolute;
+  width: 1.05rem;
+  height: 1.05rem;
+  border: 0.14rem solid rgba(51, 65, 38, 0.35);
+  border-radius: 50%;
+  background: #8a5f35;
+  opacity: 0.94;
+  z-index: 2;
+}
+
+.dirt-spot.hidden {
+  display: none;
+}
+
+.dirt-spot.cleaned {
+  opacity: 0;
+  transform: scale(0.35);
+  transition: opacity 0.16s ease, transform 0.16s ease;
+}
+
+.dirt-spot-one {
+  left: 46%;
+  top: 18%;
+}
+
+.dirt-spot-two {
+  left: 61%;
+  top: 33%;
+}
+
+.dirt-spot-three {
+  left: 41%;
+  top: 55%;
+}
+
+.dirt-spot-four {
+  left: 70%;
+  top: 58%;
+}
+
+.dirt-spot-five {
+  left: 53%;
+  top: 72%;
+}
+
+.pet-area.care-active .pet {
+  animation-duration: 1.2s;
+}
+
+.pet-area.care-feed .pet-mouth {
+  width: 1.25rem;
+  height: 0.8rem;
+  border-bottom-width: 0.22rem;
+}
+
+.pet-area.care-clean .pet {
+  filter: saturate(0.86);
+}
+
+.pet-area.care-medicine .pet {
+  animation: sick-wobble 0.95s ease-in-out infinite;
+}
+
+@media (max-width: 42rem) {
+  .care-scene-card {
+    width: 100%;
+  }
+
+  .care-playfield {
+    height: 9rem;
+  }
+}

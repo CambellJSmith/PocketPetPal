@@ -1,7 +1,7 @@
 "use strict";
 
-const SAVE_KEY = "pocket_sprout_save_v3";
-const LEGACY_SAVE_KEYS = ["pocket_sprout_save_v2", "pocket_sprout_save_v1"];
+const SAVE_KEY = "pocket_sprout_save_v4";
+const LEGACY_SAVE_KEYS = ["pocket_sprout_save_v3", "pocket_sprout_save_v2", "pocket_sprout_save_v1"];
 
 const SPECIES = [
   { id: "sproutling", label: "sproutling", pet: "#8f7dff", light: "#c9c1ff", dark: "#4e3aa8", accent: "#72df8e", extraColor: "#fff2bd", body: "round", ears: "cat", tail: "curled", wings: "none", extra: "sprout", face: "wide" },
@@ -100,7 +100,19 @@ const elements = {
   inventoryGrid: document.querySelector("#inventory-grid"),
   shopGrid: document.querySelector("#shop-grid"),
   inventorySummary: document.querySelector("#inventory-summary"),
-  screen: document.querySelector(".screen")
+  screen: document.querySelector(".screen"),
+  careScene: document.querySelector("#care-scene"),
+  careTitle: document.querySelector("#care-title"),
+  careInstruction: document.querySelector("#care-instruction"),
+  careCancel: document.querySelector("#care-cancel"),
+  carePlayfield: document.querySelector("#care-playfield"),
+  careProgressBar: document.querySelector("#care-progress-bar"),
+  foodTool: document.querySelector("#food-tool"),
+  spongeTool: document.querySelector("#sponge-tool"),
+  syringeTool: document.querySelector("#syringe-tool"),
+  mouthTarget: document.querySelector("#mouth-target"),
+  injectTarget: document.querySelector("#inject-target"),
+  dirtSpots: [...document.querySelectorAll("[data-dirt-spot]")]
 };
 
 const defaultInventory = () => ({
@@ -132,7 +144,7 @@ const defaultState = () => {
   const species = getRandomSpeciesId();
 
   return {
-    version: 3,
+    version: 4,
     name: "sprout",
     birthday: now,
     lastUpdated: now,
@@ -161,6 +173,16 @@ let miniGame = {
   timer: null,
   endsAt: 0,
   hits: 0
+};
+
+let careInteraction = {
+  active: false,
+  kind: "",
+  itemId: "",
+  pointerId: null,
+  tool: null,
+  cleaned: 0,
+  injecting: false
 };
 
 function clamp(value, min = 0, max = 100) {
@@ -219,7 +241,7 @@ function normalizeState(save) {
   return {
     ...base,
     ...save,
-    version: 3,
+    version: 4,
     name: typeof save.name === "string" && save.name.trim() ? save.name.slice(0, 14) : base.name,
     birthday: Number.isFinite(save.birthday) ? save.birthday : base.birthday,
     lastUpdated: Number.isFinite(save.lastUpdated) ? save.lastUpdated : base.lastUpdated,
@@ -426,10 +448,10 @@ function render() {
   elements.screen.classList.toggle("dead-screen", state.dead);
 
   document.querySelectorAll("[data-action], #mini-game-button, #species-button").forEach((button) => {
-    button.disabled = state.dead || miniGame.active;
+    button.disabled = state.dead || miniGame.active || careInteraction.active;
   });
 
-  elements.resetButton.disabled = miniGame.active;
+  elements.resetButton.disabled = miniGame.active || careInteraction.active;
   renderInventory();
   renderShop();
 }
@@ -462,7 +484,7 @@ function renderInventory() {
           <strong>x${count}</strong>
         </div>
         <p>${item.description}</p>
-        <button class="${buttonClass}" type="button" data-inventory-item="${item.id}" ${state.dead || miniGame.active ? "disabled" : ""}>${action}</button>
+        <button class="${buttonClass}" type="button" data-inventory-item="${item.id}" ${state.dead || miniGame.active || careInteraction.active ? "disabled" : ""}>${action}</button>
       </article>`;
   }).join("");
 }
@@ -472,7 +494,7 @@ function renderShop() {
     const item = ITEMS[itemId];
     const owned = state.inventory[itemId] || 0;
     const alreadyOwned = item.permanent && owned > 0;
-    const disabled = state.dead || miniGame.active || state.coins < item.price || alreadyOwned;
+    const disabled = state.dead || miniGame.active || careInteraction.active || state.coins < item.price || alreadyOwned;
     const label = alreadyOwned ? "owned" : `buy_${item.price}`;
 
     return `
@@ -510,7 +532,7 @@ function consumeItem(itemId) {
 }
 
 function useItem(itemId) {
-  if (state.dead || miniGame.active) {
+  if (state.dead || miniGame.active || careInteraction.active) {
     return;
   }
 
@@ -526,20 +548,17 @@ function useItem(itemId) {
   }
 
   if (item.kind === "food") {
-    useFood(item);
+    startFeedInteraction(item.id);
     return;
   }
 
   if (item.kind === "medicine") {
-    useMedicine(item);
+    startMedicineInteraction(item.id);
     return;
   }
 
   if (item.kind === "care") {
-    consumeItem(itemId);
-    addEffect(item.effect);
-    state.lastMessage = `${state.name} smells clean and fresh.`;
-    finishAction();
+    startCleanInteraction(item.id);
     return;
   }
 
@@ -615,7 +634,7 @@ function toggleEquipment(item) {
 }
 
 function buyItem(itemId) {
-  if (state.dead || miniGame.active) {
+  if (state.dead || miniGame.active || careInteraction.active) {
     return;
   }
 
@@ -644,6 +663,304 @@ function buyItem(itemId) {
   render();
 }
 
+function resetCareTool(tool) {
+  tool.classList.remove("dragging");
+  tool.style.left = "1rem";
+  tool.style.top = "";
+  tool.style.bottom = "0.9rem";
+}
+
+function resetCareScene() {
+  [elements.foodTool, elements.spongeTool, elements.syringeTool, elements.mouthTarget, elements.injectTarget].forEach((element) => {
+    element.classList.add("hidden");
+    element.classList.remove("active-target");
+  });
+
+  [elements.foodTool, elements.spongeTool, elements.syringeTool].forEach((tool) => resetCareTool(tool));
+  elements.dirtSpots.forEach((spot) => {
+    spot.classList.add("hidden");
+    spot.classList.remove("cleaned");
+  });
+
+  elements.careProgressBar.style.width = "0%";
+  elements.petArea.classList.remove("care-active", "care-feed", "care-clean", "care-medicine");
+}
+
+function openCareScene(kind, title, instruction, itemId = "") {
+  if (state.dead || miniGame.active || careInteraction.active) {
+    return false;
+  }
+
+  careInteraction = {
+    active: true,
+    kind,
+    itemId,
+    pointerId: null,
+    tool: null,
+    cleaned: 0,
+    injecting: false
+  };
+
+  resetCareScene();
+  elements.careScene.classList.remove("hidden");
+  elements.careScene.setAttribute("aria-hidden", "false");
+  elements.petArea.classList.add("care-active", `care-${kind}`);
+  elements.careTitle.textContent = title;
+  elements.careInstruction.textContent = instruction;
+  render();
+  return true;
+}
+
+function closeCareScene() {
+  careInteraction = {
+    active: false,
+    kind: "",
+    itemId: "",
+    pointerId: null,
+    tool: null,
+    cleaned: 0,
+    injecting: false
+  };
+
+  elements.careScene.classList.add("hidden");
+  elements.careScene.setAttribute("aria-hidden", "true");
+  resetCareScene();
+}
+
+function cancelCareScene() {
+  if (!careInteraction.active) {
+    return;
+  }
+
+  state.lastMessage = "care cancelled. no item was used.";
+  closeCareScene();
+  render();
+}
+
+function startFeedInteraction(itemId) {
+  const item = ITEMS[itemId];
+
+  if (!item || item.kind !== "food" || state.inventory[itemId] <= 0) {
+    state.lastMessage = "no usable food selected.";
+    render();
+    return;
+  }
+
+  if (!openCareScene("feed", `feeding ${item.label}`, `drag the food into ${state.name}'s mouth. release it on feed_here to actually feed them.`, itemId)) {
+    return;
+  }
+
+  elements.foodTool.classList.remove("hidden");
+  elements.mouthTarget.classList.remove("hidden");
+}
+
+function startCleanInteraction(itemId = "") {
+  const usingSoap = itemId && ITEMS[itemId] && state.inventory[itemId] > 0;
+  const title = usingSoap ? `washing with ${ITEMS[itemId].label}` : "basic sponge wash";
+  const instruction = usingSoap ? `rub the sponge over every dirt spot. ${ITEMS[itemId].label} will be used when the wash is complete.` : "rub the sponge over every dirt spot. this basic wash is weaker than bubble_soap.";
+
+  if (!openCareScene("clean", title, instruction, usingSoap ? itemId : "")) {
+    return;
+  }
+
+  elements.spongeTool.classList.remove("hidden");
+  elements.dirtSpots.forEach((spot) => spot.classList.remove("hidden"));
+}
+
+function startMedicineInteraction(itemId) {
+  const item = ITEMS[itemId];
+
+  if (!item || item.kind !== "medicine" || state.inventory[itemId] <= 0) {
+    state.lastMessage = "no usable medicine selected.";
+    render();
+    return;
+  }
+
+  if (!state.sickness && state.health > 88) {
+    state.lastMessage = `${state.name} does not need medicine right now.`;
+    render();
+    return;
+  }
+
+  if (!openCareScene("medicine", `medicine: ${item.label}`, `drag the syringe to safe_spot and release it there to apply the medicine.`, itemId)) {
+    return;
+  }
+
+  elements.syringeTool.classList.remove("hidden");
+  elements.injectTarget.classList.remove("hidden");
+}
+
+function getOverlap(first, second) {
+  const firstBox = first.getBoundingClientRect();
+  const secondBox = second.getBoundingClientRect();
+
+  return !(firstBox.right < secondBox.left || firstBox.left > secondBox.right || firstBox.bottom < secondBox.top || firstBox.top > secondBox.bottom);
+}
+
+function moveCareTool(tool, event) {
+  const field = elements.carePlayfield.getBoundingClientRect();
+  const toolBox = tool.getBoundingClientRect();
+  const x = clamp(event.clientX - field.left - toolBox.width / 2, 4, field.width - toolBox.width - 4);
+  const y = clamp(event.clientY - field.top - toolBox.height / 2, 4, field.height - toolBox.height - 4);
+
+  tool.style.left = `${x}px`;
+  tool.style.top = `${y}px`;
+  tool.style.bottom = "auto";
+}
+
+function updateCareTargetHighlights() {
+  elements.mouthTarget.classList.toggle("active-target", careInteraction.kind === "feed" && getOverlap(elements.foodTool, elements.mouthTarget));
+  elements.injectTarget.classList.toggle("active-target", careInteraction.kind === "medicine" && getOverlap(elements.syringeTool, elements.injectTarget));
+}
+
+function cleanTouchedDirt() {
+  if (careInteraction.kind !== "clean") {
+    return;
+  }
+
+  elements.dirtSpots.forEach((spot) => {
+    if (spot.classList.contains("cleaned") || !getOverlap(elements.spongeTool, spot)) {
+      return;
+    }
+
+    spot.classList.add("cleaned");
+    window.setTimeout(() => spot.classList.add("hidden"), 150);
+    careInteraction.cleaned += 1;
+    const progress = Math.round((careInteraction.cleaned / elements.dirtSpots.length) * 100);
+    elements.careProgressBar.style.width = `${progress}%`;
+    elements.careInstruction.textContent = progress >= 100 ? "all clean. finishing wash..." : `keep rubbing. ${elements.dirtSpots.length - careInteraction.cleaned} dirt spots left.`;
+
+    if (careInteraction.cleaned >= elements.dirtSpots.length) {
+      window.setTimeout(completeCleanInteraction, 260);
+    }
+  });
+}
+
+function completeFeedInteraction() {
+  if (!careInteraction.active || careInteraction.kind !== "feed") {
+    return;
+  }
+
+  const item = ITEMS[careInteraction.itemId];
+
+  closeCareScene();
+  useFood(item);
+}
+
+function completeCleanInteraction() {
+  if (!careInteraction.active || careInteraction.kind !== "clean") {
+    return;
+  }
+
+  const itemId = careInteraction.itemId;
+  const item = ITEMS[itemId];
+
+  closeCareScene();
+
+  if (item && state.inventory[itemId] > 0) {
+    consumeItem(itemId);
+    addEffect(item.effect);
+    state.affection = clamp(state.affection + 3);
+    state.lastMessage = `${state.name} was scrubbed clean with ${item.label}.`;
+    finishAction();
+    return;
+  }
+
+  state.cleanliness = clamp(state.cleanliness + 18);
+  state.energy = clamp(state.energy - 3);
+  state.fun = clamp(state.fun - 1);
+  state.affection = clamp(state.affection + 1);
+  state.lastMessage = `${state.name} had a hands-on sponge wash.`;
+  finishAction();
+}
+
+function completeMedicineInteraction() {
+  if (!careInteraction.active || careInteraction.kind !== "medicine") {
+    return;
+  }
+
+  const item = ITEMS[careInteraction.itemId];
+
+  closeCareScene();
+  useMedicine(item);
+}
+
+function startInjectionAnimation() {
+  if (careInteraction.injecting) {
+    return;
+  }
+
+  careInteraction.injecting = true;
+  elements.careInstruction.textContent = "medicine applied. hold still...";
+  elements.careProgressBar.style.width = "100%";
+  elements.syringeTool.classList.add("dragging");
+  window.setTimeout(completeMedicineInteraction, 650);
+}
+
+function handleCarePointerDown(event) {
+  if (!careInteraction.active || careInteraction.injecting) {
+    return;
+  }
+
+  const tool = event.currentTarget;
+
+  if (tool.classList.contains("hidden")) {
+    return;
+  }
+
+  event.preventDefault();
+  careInteraction.pointerId = event.pointerId;
+  careInteraction.tool = tool;
+  tool.classList.add("dragging");
+  tool.setPointerCapture(event.pointerId);
+  moveCareTool(tool, event);
+  updateCareTargetHighlights();
+  cleanTouchedDirt();
+}
+
+function handleCarePointerMove(event) {
+  if (!careInteraction.active || careInteraction.pointerId !== event.pointerId || !careInteraction.tool || careInteraction.injecting) {
+    return;
+  }
+
+  event.preventDefault();
+  moveCareTool(careInteraction.tool, event);
+  updateCareTargetHighlights();
+  cleanTouchedDirt();
+}
+
+function handleCarePointerUp(event) {
+  if (!careInteraction.active || careInteraction.pointerId !== event.pointerId || !careInteraction.tool || careInteraction.injecting) {
+    return;
+  }
+
+  event.preventDefault();
+  const tool = careInteraction.tool;
+  tool.classList.remove("dragging");
+
+  if (careInteraction.kind === "feed") {
+    if (getOverlap(elements.foodTool, elements.mouthTarget)) {
+      elements.careProgressBar.style.width = "100%";
+      elements.careInstruction.textContent = `${state.name} is eating...`;
+      window.setTimeout(completeFeedInteraction, 300);
+    } else {
+      elements.careInstruction.textContent = "missed. drag the food onto feed_here and release it there.";
+    }
+  }
+
+  if (careInteraction.kind === "medicine") {
+    if (getOverlap(elements.syringeTool, elements.injectTarget)) {
+      startInjectionAnimation();
+    } else {
+      elements.careInstruction.textContent = "missed. drag the syringe onto safe_spot and release it there.";
+    }
+  }
+
+  careInteraction.pointerId = null;
+  careInteraction.tool = null;
+  updateCareTargetHighlights();
+}
+
 function finishAction(deathReason = "poor care") {
   state.careScore += 1;
   state.lastUpdated = Date.now();
@@ -653,7 +970,7 @@ function finishAction(deathReason = "poor care") {
 }
 
 function care(action) {
-  if (state.dead || miniGame.active) {
+  if (state.dead || miniGame.active || careInteraction.active) {
     return;
   }
 
@@ -667,7 +984,7 @@ function care(action) {
         return;
       }
 
-      useFood(ITEMS[foodId]);
+      startFeedInteraction(foodId);
     },
     play: () => {
       if (state.energy < 12 || state.food < 10) {
@@ -691,16 +1008,8 @@ function care(action) {
       finishAction();
     },
     clean: () => {
-      if (state.inventory.bubble_soap > 0) {
-        useItem("bubble_soap");
-        return;
-      }
-
-      state.cleanliness = clamp(state.cleanliness + 18);
-      state.energy = clamp(state.energy - 3);
-      state.fun = clamp(state.fun - 1);
-      state.lastMessage = `${state.name} had a basic wash. bubble_soap cleans better.`;
-      finishAction();
+      const careItemId = state.inventory.bubble_soap > 0 ? "bubble_soap" : "";
+      startCleanInteraction(careItemId);
     },
     nap: () => {
       state.energy = clamp(state.energy + 28);
@@ -726,7 +1035,7 @@ function care(action) {
         return;
       }
 
-      useMedicine(ITEMS[medicineId]);
+      startMedicineInteraction(medicineId);
     },
     class: () => {
       const classId = ["puzzle_class", "dance_class"].find((itemId) => state.inventory[itemId] > 0);
@@ -745,7 +1054,7 @@ function care(action) {
 }
 
 function discoverSpecies() {
-  if (state.dead || miniGame.active) {
+  if (state.dead || miniGame.active || careInteraction.active) {
     return;
   }
 
@@ -774,7 +1083,7 @@ function discoverSpecies() {
 }
 
 function startMiniGame() {
-  if (state.dead || miniGame.active) {
+  if (state.dead || miniGame.active || careInteraction.active) {
     return;
   }
 
@@ -878,6 +1187,14 @@ elements.shopGrid.addEventListener("click", (event) => {
   }
 
   buyItem(button.dataset.shopItem);
+});
+
+elements.careCancel.addEventListener("click", cancelCareScene);
+[elements.foodTool, elements.spongeTool, elements.syringeTool].forEach((tool) => {
+  tool.addEventListener("pointerdown", handleCarePointerDown);
+  tool.addEventListener("pointermove", handleCarePointerMove);
+  tool.addEventListener("pointerup", handleCarePointerUp);
+  tool.addEventListener("pointercancel", handleCarePointerUp);
 });
 
 elements.nameInput.addEventListener("change", () => {

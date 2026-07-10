@@ -14,7 +14,7 @@
         <div>
           <p class="eyebrow">browser virtual pet</p>
           <h1 id="game-title">pocket_sprout</h1>
-          <p class="lede">raise a fragile digital creature with food, rest, hygiene, medicine, classes, cosmetics, and a short star-catching mini-game.</p>
+          <p class="lede">raise a fragile digital creature with hands-on feeding, sponge cleaning, medicine treatment, classes, cosmetics, and a short star-catching mini-game.</p>
         </div>
         <button class="utility-button" id="reset-button" type="button">reset_pet</button>
       </header>
@@ -56,6 +56,32 @@
               <span class="wearable wearable-hat"></span>
               <span class="wearable wearable-glasses"></span>
               <span class="wearable wearable-bow"></span>
+            </div>
+
+            <div class="care-scene hidden" id="care-scene" aria-hidden="true">
+              <div class="care-scene-card">
+                <div class="care-scene-header">
+                  <div>
+                    <span class="care-kicker">hands_on_care</span>
+                    <strong id="care-title">care</strong>
+                  </div>
+                  <button class="care-cancel" id="care-cancel" type="button">cancel</button>
+                </div>
+                <p id="care-instruction">interact with your creature.</p>
+                <div class="care-playfield" id="care-playfield">
+                  <div class="mouth-target hidden" id="mouth-target">feed_here</div>
+                  <div class="inject-target hidden" id="inject-target">safe_spot</div>
+                  <button class="care-tool food-tool hidden" id="food-tool" type="button" aria-label="drag food to mouth"><span></span></button>
+                  <button class="care-tool sponge-tool hidden" id="sponge-tool" type="button" aria-label="rub sponge over dirt"><span></span></button>
+                  <button class="care-tool syringe-tool hidden" id="syringe-tool" type="button" aria-label="drag syringe to medicine spot"><span></span></button>
+                  <span class="dirt-spot dirt-spot-one hidden" data-dirt-spot></span>
+                  <span class="dirt-spot dirt-spot-two hidden" data-dirt-spot></span>
+                  <span class="dirt-spot dirt-spot-three hidden" data-dirt-spot></span>
+                  <span class="dirt-spot dirt-spot-four hidden" data-dirt-spot></span>
+                  <span class="dirt-spot dirt-spot-five hidden" data-dirt-spot></span>
+                </div>
+                <div class="care-progress" aria-hidden="true"><span id="care-progress-bar"></span></div>
+              </div>
             </div>
             <button class="star-target hidden" id="star-target" type="button" aria-label="catch star">✦</button>
           </div>
@@ -172,7 +198,7 @@
 
       <section class="how-to-play">
         <h2>how_it_works</h2>
-        <p>The creature now has real risk: if hunger, boredom, exhaustion, dirt, or sickness are neglected for too long, health can reach zero and the creature dies. Food, medicine, soaps, class passes, and cosmetics are bought with coins. Everything still saves locally in the player’s browser using localStorage.</p>
+        <p>Care is now hands-on. Drag food to the creature’s mouth, rub dirt away with the sponge, and apply medicine directly to the safe spot. If hunger, boredom, exhaustion, dirt, or sickness are neglected for too long, health can reach zero and the creature dies. Everything still saves locally in the player’s browser using localStorage.</p>
       </section>
     </section>
   </main>

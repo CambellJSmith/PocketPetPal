@@ -45,3 +45,14 @@ Open `index.html` in a browser.
 This is a generic virtual pet game. Do not use Tamagotchi names, logos, characters, or branding unless you have the right to do so.
 
 The creatures and accessories are not sprites. They are generated from CSS shapes and JavaScript definitions, so the project does not depend on external image files.
+
+
+## hands-on care
+
+The main care buttons now open small interaction scenes instead of instantly applying effects.
+
+- `feed`: drag the selected food to `feed_here` and release it.
+- `clean`: drag the sponge over every visible dirt spot. `bubble_soap` is consumed only after the cleaning is completed.
+- `medicine`: drag the syringe to `safe_spot` and release it to apply the selected medicine.
+
+These interactions use pointer events, so they work with mouse, touch, and stylus input in modern browsers.
