@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>pocket_sprout</title>
   <meta name="description" content="A tiny browser-based virtual pet game for GitHub Pages.">
-  <link rel="stylesheet" href="style.css?v=6">
+  <link rel="stylesheet" href="style.css?v=20">
 </head>
 <body>
   <main class="page-shell">
@@ -14,7 +14,7 @@
         <div>
           <p class="eyebrow">browser virtual pet</p>
           <h1 id="game-title">pocket_sprout</h1>
-          <p class="lede">raise a fragile digital creature with hands-on feeding, sponge cleaning, medicine treatment, classes, cosmetics, and a short star-catching mini-game.</p>
+          <p class="lede">raise a fragile digital creature with real-time daily care, hands-on feeding, timed sleeping, sponge cleaning, rare medicine treatment, classes, cosmetics, and a short star-catching mini-game.</p>
         </div>
         <button class="utility-button" id="reset-button" type="button">reset_pet</button>
       </header>
@@ -53,9 +53,9 @@
                 <span class="pet-mouth" id="pet-mouth"></span>
               </span>
               <span class="pet-extra"></span>
-              <span class="wearable wearable-hat"></span>
-              <span class="wearable wearable-glasses"></span>
-              <span class="wearable wearable-bow"></span>
+              <span class="wearable wearable-hat" data-accessory-slot="hat" aria-label="draggable hat accessory"></span>
+              <span class="wearable wearable-glasses" data-accessory-slot="face" aria-label="draggable face accessory"></span>
+              <span class="wearable wearable-bow" data-accessory-slot="neck" aria-label="draggable neck accessory"></span>
             </div>
 
             <button class="care-cancel-direct hidden" id="care-cancel" type="button">cancel_care</button>
@@ -68,6 +68,21 @@
             <span class="dirt-spot dirt-spot-four hidden" data-dirt-spot></span>
             <span class="dirt-spot dirt-spot-five hidden" data-dirt-spot></span>
             <button class="star-target hidden" id="star-target" type="button" aria-label="catch star">✦</button>
+            <section class="rps-panel hidden" id="rps-panel" aria-label="rock paper scissors">
+              <div class="rps-topline">
+                <strong>rock_paper_scissors</strong>
+                <span id="rps-status">choose_rock_paper_or_scissors</span>
+              </div>
+              <div class="rps-stats">
+                <span>streak_<strong id="rps-streak">0</strong></span>
+                <span>coins_<strong id="rps-total">0</strong></span>
+              </div>
+              <div class="rps-buttons">
+                <button type="button" data-rps-choice="rock">rock</button>
+                <button type="button" data-rps-choice="paper">paper</button>
+                <button type="button" data-rps-choice="scissors">scissors</button>
+              </div>
+            </section>
           </div>
 
           <div class="message-panel">
@@ -100,6 +115,31 @@
               <strong id="discipline-label">0</strong>
             </div>
           </div>
+
+          <section class="real-time-panel" aria-label="real-time care rhythm">
+            <div class="real-time-heading">
+              <span class="meta-label">care_clock</span>
+              <strong id="real-time-summary">real_time_active</strong>
+            </div>
+            <div class="real-time-grid">
+              <div>
+                <span class="meta-label">feed_around</span>
+                <strong id="next-feed-label">--</strong>
+              </div>
+              <div>
+                <span class="meta-label">clean_around</span>
+                <strong id="next-clean-label">--</strong>
+              </div>
+              <div>
+                <span class="meta-label">medicine</span>
+                <strong id="next-medicine-label">rare</strong>
+              </div>
+              <div>
+                <span class="meta-label">last_tick</span>
+                <strong id="last-tick-label">0s</strong>
+              </div>
+            </div>
+          </section>
         </section>
 
         <section class="bars" aria-label="pet needs">
@@ -152,40 +192,91 @@
           <button type="button" data-action="medicine">medicine</button>
           <button type="button" data-action="class">class</button>
           <button type="button" id="mini-game-button">catch_stars</button>
+          <button type="button" id="rps-game-button">rps</button>
         </section>
       </section>
 
-      <section class="management-grid">
-        <section class="management-panel" aria-labelledby="inventory-title">
+      <section class="management-tabs" aria-label="management tabs">
+        <div class="tab-bar" role="tablist" aria-label="pet management">
+          <button class="tab-button active" id="tab-supplies" type="button" role="tab" aria-selected="true" aria-controls="panel-supplies" data-tab-target="supplies">supplies</button>
+          <button class="tab-button" id="tab-equipment" type="button" role="tab" aria-selected="false" aria-controls="panel-equipment" data-tab-target="equipment">equipment</button>
+          <button class="tab-button" id="tab-shop" type="button" role="tab" aria-selected="false" aria-controls="panel-shop" data-tab-target="shop">shop</button>
+          <button class="tab-button" id="tab-nfc" type="button" role="tab" aria-selected="false" aria-controls="panel-nfc" data-tab-target="nfc">nfc</button>
+        </div>
+
+        <section class="management-panel tab-panel active" id="panel-supplies" role="tabpanel" aria-labelledby="tab-supplies" data-tab-panel="supplies">
           <div class="panel-heading">
             <div>
-              <p class="eyebrow compact">owned items</p>
-              <h2 id="inventory-title">inventory</h2>
+              <p class="eyebrow compact">owned supplies</p>
+              <h2 id="inventory-title">supplies</h2>
             </div>
             <p id="inventory-summary">0 items</p>
           </div>
           <div class="item-grid" id="inventory-grid"></div>
         </section>
 
-        <section class="management-panel" aria-labelledby="shop-title">
+        <section class="management-panel tab-panel" id="panel-equipment" role="tabpanel" aria-labelledby="tab-equipment" data-tab-panel="equipment" hidden>
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow compact">wearables</p>
+              <h2 id="equipment-title">equipment</h2>
+            </div>
+            <p id="equipment-summary">0/0 enabled</p>
+          </div>
+          <div class="item-grid" id="equipment-grid"></div>
+          <button class="utility-button accessory-reset-button" id="accessory-reset-button" type="button">reset_gear_positions</button>
+        </section>
+
+        <section class="management-panel tab-panel" id="panel-shop" role="tabpanel" aria-labelledby="tab-shop" data-tab-panel="shop" hidden>
           <div class="panel-heading">
             <div>
               <p class="eyebrow compact">spend coins</p>
               <h2 id="shop-title">shop</h2>
             </div>
-            <p>food, medicine, classes, and wearable accessories.</p>
+            <p>food, medicine, soap, and classes only.</p>
           </div>
           <div class="item-grid" id="shop-grid"></div>
+        </section>
+
+        <section class="management-panel tab-panel" id="panel-nfc" role="tabpanel" aria-labelledby="tab-nfc" data-tab-panel="nfc" hidden>
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow compact">physical tag</p>
+              <h2 id="nfc-title">nfc</h2>
+            </div>
+            <p id="nfc-status">checking_nfc</p>
+          </div>
+
+          <div class="nfc-tools">
+            <button class="utility-button" id="nfc-write-button" type="button">write_pet_tag</button>
+            <button class="utility-button secondary" id="nfc-read-button" type="button">read_pet_tag</button>
+          </div>
+
+          <pre class="nfc-summary" id="nfc-summary">loading_nfc_summary...</pre>
+          <p class="nfc-note">writes a url record first, then a tiny text pet summary. works mainly on android chrome with a physical nfc tag.</p>
         </section>
       </section>
 
       <section class="how-to-play">
         <h2>how_it_works</h2>
-        <p>Egg stage is passive: players can watch the egg and browse the shop, but care actions unlock only after hatching. Care is hands-on directly on the creature after that. Food, sponge, dirt, and syringe all appear inside the normal pet screen with no separate feeding or washing space. If hunger, boredom, exhaustion, dirt, or sickness are neglected for too long, health can reach zero and the creature dies. Everything still saves locally in the player’s browser using localStorage.</p>
+        <p>Egg stage is passive: players can watch the egg and browse or buy from the shop. As soon as it hatches, the player must name the pet before care actions unlock. Care is hands-on directly on the creature after that. Food, sponge, dirt, and syringe all appear inside the normal pet screen with no separate feeding or washing space. If hunger, boredom, exhaustion, dirt, or sickness are neglected for too long, health can reach zero and the creature dies. Dialogue is loaded from the editable dialogue.csv file. Rock_paper_scissors can be played against the pet for streak-based coin rewards. Supplies, equipment, and shop are split into tabs. Equipment is bought and enabled from the equipment tab; the shop only sells consumables. The NFC tab can write the game URL plus a compact pet summary to an NFC tag. Equipped accessories can be dragged directly on the pet and their positions save. The creature now grows through egg, baby, child, teen, adult, and elder stages with visible body changes. Everything still saves locally in the player’s browser using localStorage.</p>
       </section>
     </section>
   </main>
 
-  <script src="game.js?v=6"></script>
+
+  <section class="hatch-naming-modal hidden" id="hatch-naming-modal" aria-hidden="true" aria-labelledby="hatch-naming-title">
+    <div class="hatch-naming-card">
+      <p class="eyebrow compact">hatched</p>
+      <h2 id="hatch-naming-title">name_your_pet</h2>
+      <p>The egg has hatched. Give the new creature a name before care begins.</p>
+      <label for="hatch-name-input">pet_name</label>
+      <input id="hatch-name-input" class="name-input hatch-name-input" maxlength="14" autocomplete="off" placeholder="sprout">
+      <p class="hatch-name-error" id="hatch-name-error" aria-live="polite"></p>
+      <button class="utility-button" id="hatch-name-button" type="button">start_care</button>
+    </div>
+  </section>
+
+  <script src="game.js?v=20"></script>
 </body>
 </html>

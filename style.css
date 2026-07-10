@@ -976,6 +976,165 @@ h1 {
   border-radius: 999rem 999rem 0 0;
 }
 
+
+
+/* v13 life stages */
+.pet.stage-baby {
+  transform: scale(0.7);
+}
+
+.pet.stage-baby .pet-body {
+  inset: 1.9rem 1.35rem 0.85rem;
+  border-radius: 46% 46% 42% 42%;
+}
+
+.pet.stage-baby .pet-face {
+  inset: 2.5rem 1.8rem 2.15rem;
+}
+
+.pet.stage-baby .pet-eye {
+  width: 0.96rem;
+  height: 1.18rem;
+}
+
+.pet.stage-baby .pet-mouth {
+  width: 0.84rem;
+  bottom: -0.18rem;
+}
+
+.pet.stage-baby .pet-ear {
+  top: 1.35rem;
+  width: 1.45rem;
+  height: 1.75rem;
+}
+
+.pet.stage-baby .pet-tail {
+  width: 1.55rem;
+  height: 1.05rem;
+  bottom: 1.25rem;
+}
+
+.pet.stage-child {
+  transform: scale(0.82);
+}
+
+.pet.stage-child .pet-body {
+  inset: 1.62rem 1.08rem 0.68rem;
+  border-radius: 44% 44% 40% 40%;
+}
+
+.pet.stage-child .pet-face {
+  inset: 2.78rem 1.9rem 2.18rem;
+}
+
+.pet.stage-child .pet-eye {
+  width: 0.86rem;
+  height: 1.04rem;
+}
+
+.pet.stage-child .pet-mouth {
+  width: 0.92rem;
+}
+
+.pet.stage-child .pet-ear {
+  top: 1.18rem;
+  width: 1.58rem;
+  height: 1.9rem;
+}
+
+.pet.stage-child .pet-tail {
+  width: 1.75rem;
+  height: 1.12rem;
+  bottom: 1.38rem;
+}
+
+.pet.stage-teen {
+  transform: scale(0.92);
+}
+
+.pet.stage-teen .pet-body {
+  inset: 1.45rem 0.98rem 0.56rem;
+}
+
+.pet.stage-teen .pet-face {
+  inset: 2.95rem 1.98rem 2.25rem;
+}
+
+.pet.stage-teen .pet-eye {
+  width: 0.78rem;
+  height: 0.98rem;
+}
+
+.pet.stage-teen .pet-ear-left,
+.pet.stage-teen .pet-ear-right {
+  filter: brightness(1.04);
+}
+
+.pet.stage-adult {
+  transform: scale(1);
+  filter: saturate(1.04);
+}
+
+.pet.stage-adult .pet-body {
+  inset: 1.35rem 0.9rem 0.45rem;
+}
+
+.pet.stage-adult .pet-face {
+  inset: 3.05rem 2.05rem 2.3rem;
+}
+
+.pet.stage-adult .pet-eye {
+  width: 0.72rem;
+  height: 0.92rem;
+}
+
+.pet.stage-elder {
+  transform: scale(1.03);
+  filter: saturate(0.92);
+  animation-duration: 3.4s;
+}
+
+.pet.stage-elder .pet-body {
+  inset: 1.24rem 0.8rem 0.4rem;
+  border-radius: 40% 40% 36% 36%;
+}
+
+.pet.stage-elder .pet-face {
+  inset: 3.18rem 2.08rem 2.38rem;
+}
+
+.pet.stage-elder .pet-eye {
+  width: 0.7rem;
+  height: 0.76rem;
+  top: 0.04rem;
+}
+
+.pet.stage-elder .pet-mouth {
+  width: 1.08rem;
+  bottom: -0.2rem;
+}
+
+.pet.stage-elder .pet-ear {
+  top: 1.08rem;
+}
+
+.pet.stage-elder .pet-tail {
+  bottom: 1.48rem;
+}
+
+.pet.stage-elder::before {
+  content: "";
+  position: absolute;
+  left: 1.35rem;
+  top: 3.25rem;
+  width: 1.15rem;
+  height: 0.35rem;
+  border-top: 0.14rem solid rgba(51, 65, 38, 0.28);
+  border-radius: 999rem;
+  transform: rotate(-8deg);
+  pointer-events: none;
+}
+
 .pet.mood-sick {
   filter: saturate(0.55);
   animation: sick-wobble 0.7s ease-in-out infinite;
@@ -996,7 +1155,7 @@ h1 {
 }
 
 .meta-grid {
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
 }
 
 .meta-grid div {
@@ -1056,7 +1215,7 @@ h1 {
 
 .controls {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 0.65rem;
   padding-top: 1rem;
 }
@@ -1758,15 +1917,392 @@ h1 {
   transform: none;
 }
 
-/* v6 egg waiting phase */
+/* v7 egg lock */
 .egg-wait-screen .pet-area {
   cursor: default;
 }
 
-.egg-wait-screen .pet-shadow {
-  opacity: 0.65;
+.egg-wait-screen .care-tool,
+.egg-wait-screen .star-target {
+  display: none !important;
 }
 
-.controls button:disabled[title] {
-  opacity: 0.38;
+.controls button:disabled {
+  opacity: 0.42;
+}
+
+/* v9 secret egg identity */
+.pet.stage-egg .pet-body {
+  background:
+    radial-gradient(circle at 38% 35%, var(--pet-light) 0 0.7rem, transparent 0.74rem),
+    radial-gradient(circle at 64% 58%, var(--pet-accent) 0 0.58rem, transparent 0.62rem),
+    radial-gradient(circle at 46% 72%, var(--pet) 0 0.44rem, transparent 0.48rem),
+    #fff2bd;
+}
+
+.egg-wait-screen #species-label {
+  font-style: italic;
+}
+
+/* v10 visible real-time rhythm */
+.real-time-panel {
+  display: grid;
+  gap: 0.55rem;
+  padding: 0.65rem;
+  border: 0.12rem solid rgba(51, 65, 38, 0.22);
+  border-radius: 0.85rem;
+  background: rgba(255, 255, 255, 0.24);
+}
+
+.real-time-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.real-time-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.45rem;
+}
+
+.real-time-grid div {
+  min-width: 0;
+  padding: 0.45rem;
+  border-radius: 0.65rem;
+  background: rgba(255, 255, 255, 0.23);
+}
+
+.real-time-grid strong,
+.real-time-heading strong {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 42rem) {
+  .real-time-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* v11 timed sleep */
+.pet.mood-sleeping {
+  animation: sleep-breathe 3.8s ease-in-out infinite;
+}
+
+.pet.mood-sleeping .pet-eye {
+  height: 0.18rem;
+  top: 0.36rem;
+  border-radius: 999rem;
+}
+
+.pet.mood-sleeping .pet-mouth {
+  width: 0.55rem;
+  height: 0.55rem;
+  border: 0.16rem solid var(--pet-eye);
+  border-radius: 50%;
+  background: transparent;
+}
+
+.pet.mood-sleeping::after {
+  content: "z";
+  position: absolute;
+  right: 0.35rem;
+  top: 0.25rem;
+  color: var(--screen-dark);
+  font-size: 1.1rem;
+  font-weight: 950;
+  opacity: 0.75;
+  animation: sleep-z 1.8s ease-in-out infinite;
+}
+
+.sleep-screen .pet-area {
+  background:
+    radial-gradient(circle at 70% 25%, rgba(255, 255, 255, 0.32), transparent 4rem),
+    rgba(255, 255, 255, 0.18);
+}
+
+@keyframes sleep-breathe {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+
+  50% {
+    transform: translateY(0.15rem) scale(0.98);
+  }
+}
+
+@keyframes sleep-z {
+  0% {
+    transform: translateY(0);
+    opacity: 0.25;
+  }
+
+  50% {
+    transform: translateY(-0.45rem);
+    opacity: 0.85;
+  }
+
+  100% {
+    transform: translateY(-0.8rem);
+    opacity: 0;
+  }
+}
+
+/* v14 hatch naming */
+.hatch-naming-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgba(28, 38, 24, 0.62);
+  backdrop-filter: blur(0.25rem);
+}
+
+.hatch-naming-modal.hidden {
+  display: none;
+}
+
+.hatch-naming-card {
+  width: min(26rem, 100%);
+  padding: 1.2rem;
+  border: 0.18rem solid rgba(51, 65, 38, 0.35);
+  border-radius: 1.1rem;
+  background: var(--screen);
+  box-shadow: 0 1.2rem 2.5rem rgba(0, 0, 0, 0.28);
+}
+
+.hatch-naming-card h2 {
+  margin: 0.2rem 0 0.55rem;
+  font-size: 1.55rem;
+}
+
+.hatch-naming-card label {
+  display: block;
+  margin-top: 0.8rem;
+  margin-bottom: 0.35rem;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 950;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.hatch-name-input {
+  width: 100%;
+}
+
+.hatch-name-error {
+  min-height: 1.2rem;
+  margin: 0.45rem 0 0.8rem;
+  color: var(--bad);
+  font-size: 0.82rem;
+  font-weight: 900;
+}
+
+.hatch-naming-screen .pet {
+  animation-duration: 1.6s;
+}
+
+.name-input:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* v15 rock paper scissors */
+.rps-panel {
+  position: absolute;
+  left: 50%;
+  bottom: 0.65rem;
+  z-index: 90;
+  width: min(20rem, calc(100% - 1.4rem));
+  padding: 0.7rem;
+  border: 0.16rem solid rgba(51, 65, 38, 0.35);
+  border-radius: 0.95rem;
+  background: rgba(255, 242, 189, 0.96);
+  box-shadow: 0 0.6rem 1.2rem rgba(0, 0, 0, 0.2);
+  transform: translateX(-50%);
+}
+
+.rps-panel.hidden {
+  display: none;
+}
+
+.rps-topline,
+.rps-stats {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  font-size: 0.78rem;
+  font-weight: 950;
+}
+
+.rps-topline span,
+.rps-stats span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rps-buttons {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.45rem;
+  margin-top: 0.55rem;
+}
+
+.rps-buttons button {
+  min-height: 2.25rem;
+  border: 0;
+  border-radius: 999rem;
+  background: var(--button);
+  color: var(--button-ink);
+  font-weight: 950;
+  box-shadow: 0 0.24rem 0 #a86335;
+}
+
+.rps-buttons button:active {
+  transform: translateY(0.12rem);
+  box-shadow: 0 0.08rem 0 #a86335;
+}
+
+/* v16 draggable accessories */
+.pet .wearable[data-equipped="true"] {
+  pointer-events: auto;
+  cursor: grab;
+  touch-action: none;
+}
+
+.pet .wearable[data-equipped="true"]::before,
+.pet .wearable[data-equipped="true"]::after {
+  pointer-events: none;
+}
+
+.pet .wearable.accessory-custom-position {
+  right: auto !important;
+  bottom: auto !important;
+}
+
+.pet .wearable.dragging-accessory {
+  cursor: grabbing;
+  z-index: 30;
+  outline: 0.14rem dashed rgba(255, 207, 111, 0.85);
+  outline-offset: 0.18rem;
+}
+
+.accessory-reset-button {
+  width: 100%;
+  min-height: 2.35rem;
+  margin-top: 0.7rem;
+  font-size: 0.72rem;
+}
+
+.accessory-reset-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* v17 management tabs */
+.management-tabs {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.tab-bar {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.45rem;
+  padding: 0.35rem;
+  border: 0.12rem solid rgba(51, 65, 38, 0.22);
+  border-radius: 999rem;
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.tab-button {
+  min-height: 2.55rem;
+  border: 0;
+  border-radius: 999rem;
+  background: rgba(255, 255, 255, 0.35);
+  color: var(--screen-dark);
+  font-weight: 950;
+  cursor: pointer;
+}
+
+.tab-button.active {
+  background: var(--button);
+  color: var(--button-ink);
+  box-shadow: 0 0.24rem 0 #a86335;
+}
+
+.tab-panel {
+  display: grid;
+}
+
+.tab-panel[hidden] {
+  display: none;
+}
+
+@media (max-width: 32rem) {
+  .tab-bar {
+    grid-template-columns: 1fr;
+    border-radius: 1rem;
+  }
+}
+
+/* v18 equipment store */
+.item-card.unowned-equipment {
+  border-style: dashed;
+  opacity: 0.92;
+}
+
+.item-card.owned-equipment {
+  border-style: solid;
+}
+
+.item-card.unowned-equipment .item-kind::after {
+  content: "_locked";
+}
+
+/* v19 nfc tag tools */
+.nfc-tools {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.65rem;
+}
+
+.nfc-summary {
+  min-height: 10rem;
+  margin: 0.8rem 0 0;
+  padding: 0.8rem;
+  overflow: auto;
+  border: 0.12rem solid rgba(51, 65, 38, 0.2);
+  border-radius: 0.8rem;
+  background: rgba(255, 255, 255, 0.26);
+  color: var(--screen-dark);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.78rem;
+  font-weight: 800;
+  line-height: 1.45;
+  white-space: pre-wrap;
+}
+
+.nfc-note {
+  margin: 0.65rem 0 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+@media (max-width: 38rem) {
+  .nfc-tools {
+    grid-template-columns: 1fr;
+  }
 }

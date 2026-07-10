@@ -1,0 +1,824 @@
+id,event,mood,text
+idle_happy_0001,idle,happy,today feels bright
+idle_happy_0002,idle,happy,i feel bouncy
+idle_happy_0003,idle,happy,this place is nice
+idle_happy_0004,idle,happy,i like being here
+idle_happy_0005,idle,happy,look at me go
+idle_happy_0006,idle,happy,tiny joy time
+idle_happy_0007,idle,happy,i feel shiny
+idle_happy_0008,idle,happy,everything feels warm
+idle_happy_0009,idle,happy,i made a happy noise
+idle_happy_0010,idle,happy,can we do something fun
+idle_happy_0011,idle,happy,i like your face
+idle_happy_0012,idle,happy,i feel cared for
+idle_happy_0013,idle,happy,my little heart is full
+idle_happy_0014,idle,happy,good day good day
+idle_happy_0015,idle,happy,i am doing a wiggle
+idle_happy_0016,idle,happy,nice vibes in here
+idle_happy_0017,idle,happy,i feel sparkly
+idle_happy_0018,idle,happy,this is my good mood
+idle_happy_0019,idle,happy,i could hop forever
+idle_happy_0020,idle,happy,thank you for checking in
+idle_happy_0021,idle,happy,i am feeling brave
+idle_happy_0022,idle,happy,i feel very alive
+idle_happy_0023,idle,happy,the room feels friendly
+idle_happy_0024,idle,happy,i like this corner
+idle_happy_0025,idle,happy,my paws feel lucky
+idle_happy_0026,idle,happy,i have tiny plans
+idle_happy_0027,idle,happy,i am full of zooms
+idle_happy_0028,idle,happy,soft happy thoughts
+idle_happy_0029,idle,happy,i like the light today
+idle_happy_0030,idle,happy,i feel extra cute
+idle_happy_0031,idle,happy,good care tastes nice
+idle_happy_0032,idle,happy,i am a good little thing
+idle_happy_0033,idle,happy,this is a cozy life
+idle_happy_0034,idle,happy,happy hum happy hum
+idle_happy_0035,idle,happy,i want to show off
+idle_happy_0036,idle,happy,i feel like dancing
+idle_happy_0037,idle,happy,everything smells friendly
+idle_happy_0038,idle,happy,i am proud of myself
+idle_happy_0039,idle,happy,good mood unlocked
+idle_happy_0040,idle,happy,i feel like a star
+idle_happy_0041,idle,happy,tiny victory noises
+idle_happy_0042,idle,happy,i am glowing inside
+idle_happy_0043,idle,happy,more good things please
+idle_happy_0044,idle,happy,this feels safe
+idle_happy_0045,idle,happy,i made a cheerful squeak
+idle_happy_0046,idle,happy,i like being noticed
+idle_happy_0047,idle,happy,my mood is round
+idle_happy_0048,idle,happy,i feel nicely cared for
+idle_happy_0049,idle,happy,i could do a flip maybe
+idle_happy_0050,idle,happy,big little happiness
+idle_happy_0051,idle,happy,the world is snack shaped
+idle_happy_0052,idle,happy,i have a sunny thought
+idle_happy_0053,idle,happy,i feel very looked after
+idle_happy_0054,idle,happy,this is a good habitat
+idle_happy_0055,idle,happy,i am practically sparkling
+idle_happy_0056,idle,happy,hello favourite person
+idle_happy_0057,idle,happy,my little soul is warm
+idle_happy_0058,idle,happy,i feel like a champion
+idle_happy_0059,idle,happy,i am humming softly
+idle_happy_0060,idle,happy,this is the good part
+idle_happy_0061,idle,happy,care makes me brave
+idle_happy_0062,idle,happy,i am a tiny miracle
+idle_happy_0063,idle,happy,i feel properly alive
+idle_happy_0064,idle,happy,a perfect little moment
+idle_happy_0065,idle,happy,i like our routine
+idle_happy_0066,idle,happy,i feel almost fancy
+idle_happy_0067,idle,happy,tiny feet big feelings
+idle_happy_0068,idle,happy,this is excellent actually
+idle_happy_0069,idle,happy,i feel loved today
+idle_happy_0070,idle,happy,my mood is glowing
+idle_happy_0071,idle,happy,i am full of beans
+idle_happy_0072,idle,happy,small creature big joy
+idle_happy_0073,idle,happy,i feel like a festival
+idle_happy_0074,idle,happy,i am doing well
+idle_happy_0075,idle,happy,nice to be me today
+idle_happy_0076,idle,happy,i feel wonderfully odd
+idle_happy_0077,idle,happy,i am pleased with existence
+idle_happy_0078,idle,happy,a little cheer for me
+idle_happy_0079,idle,happy,i approve of this day
+idle_happy_0080,idle,happy,my heart did a hop
+idle_happy_0081,idle,happy,everything is softly good
+idle_happy_0082,idle,happy,i feel calm and bright
+idle_happy_0083,idle,happy,i am enjoying my body
+idle_happy_0084,idle,happy,thank you for the attention
+idle_happy_0085,idle,happy,i feel pleasantly weird
+idle_calm_0086,idle,calm,just sitting here
+idle_calm_0087,idle,calm,small thoughts today
+idle_calm_0088,idle,calm,i am watching quietly
+idle_calm_0089,idle,calm,the room is peaceful
+idle_calm_0090,idle,calm,i feel okay
+idle_calm_0091,idle,calm,nothing urgent
+idle_calm_0092,idle,calm,i am thinking tiny thoughts
+idle_calm_0093,idle,calm,soft breathing time
+idle_calm_0094,idle,calm,i like the quiet
+idle_calm_0095,idle,calm,still here still me
+idle_calm_0096,idle,calm,a gentle moment
+idle_calm_0097,idle,calm,i am comfortable
+idle_calm_0098,idle,calm,this is fine
+idle_calm_0099,idle,calm,i can wait
+idle_calm_0100,idle,calm,little pause
+idle_calm_0101,idle,calm,quiet creature noises
+idle_calm_0102,idle,calm,i am just being
+idle_calm_0103,idle,calm,nice and steady
+idle_calm_0104,idle,calm,i am not worried
+idle_calm_0105,idle,calm,slow blink
+idle_calm_0106,idle,calm,a normal little day
+idle_calm_0107,idle,calm,i am listening
+idle_calm_0108,idle,calm,soft paws quiet mind
+idle_calm_0109,idle,calm,everything is steady
+idle_calm_0110,idle,calm,calm is good
+idle_calm_0111,idle,calm,i feel balanced
+idle_calm_0112,idle,calm,not much to report
+idle_calm_0113,idle,calm,tiny rest moment
+idle_calm_0114,idle,calm,i am present
+idle_calm_0115,idle,calm,steady little heartbeat
+idle_calm_0116,idle,calm,looking around
+idle_calm_0117,idle,calm,thinking about snacks
+idle_calm_0118,idle,calm,my thoughts are small
+idle_calm_0119,idle,calm,a quiet hum
+idle_calm_0120,idle,calm,i am okay here
+idle_calm_0121,idle,calm,nothing scary nearby
+idle_calm_0122,idle,calm,gentle little creature
+idle_calm_0123,idle,calm,i like routines
+idle_calm_0124,idle,calm,i am taking it slow
+idle_calm_0125,idle,calm,slow day is fine
+idle_calm_0126,idle,calm,just breathing
+idle_calm_0127,idle,calm,a little stretch
+idle_calm_0128,idle,calm,i am tucked into now
+idle_calm_0129,idle,calm,the screen feels quiet
+idle_calm_0130,idle,calm,i feel mild
+idle_calm_0131,idle,calm,ordinary is nice
+idle_calm_0132,idle,calm,i am softly awake
+idle_calm_0133,idle,calm,small calm noises
+idle_calm_0134,idle,calm,waiting is okay
+idle_calm_0135,idle,calm,my mood is level
+idle_calm_0136,idle,calm,a peaceful blink
+idle_calm_0137,idle,calm,tiny patience
+idle_calm_0138,idle,calm,i am observing
+idle_calm_0139,idle,calm,i like this pace
+idle_calm_0140,idle,calm,not too much today
+idle_calm_0141,idle,calm,calm paws
+idle_calm_0142,idle,calm,i am simply here
+idle_calm_0143,idle,calm,small creature at rest
+idle_calm_0144,idle,calm,quiet but not sad
+idle_calm_0145,idle,calm,i feel neutral
+idle_calm_0146,idle,calm,nice simple moment
+idle_calm_0147,idle,calm,this is manageable
+idle_calm_0148,idle,calm,a soft little day
+idle_calm_0149,idle,calm,my mind is slow
+idle_calm_0150,idle,calm,all quiet inside
+idle_calm_0151,idle,calm,i am gently curious
+idle_calm_0152,idle,calm,stillness is fine
+idle_calm_0153,idle,calm,i am a small thought
+idle_calm_0154,idle,calm,the air feels calm
+idle_calm_0155,idle,calm,i am quietly okay
+idle_calm_0156,idle,calm,tiny comfort
+idle_calm_0157,idle,calm,i can hear myself think
+idle_calm_0158,idle,calm,no rush
+idle_calm_0159,idle,calm,just a little creature
+idle_calm_0160,idle,calm,i am settled
+idle_calm_0161,idle,calm,i like being safe
+idle_calm_0162,idle,calm,plain day good day
+idle_calm_0163,idle,calm,softly existing
+idle_calm_0164,idle,calm,hello from here
+idle_calm_0165,idle,calm,i am doing alright
+idle_sad_0166,idle,sad,i feel a bit low
+idle_sad_0167,idle,sad,could use some care
+idle_sad_0168,idle,sad,a little lonely
+idle_sad_0169,idle,sad,not feeling great
+idle_sad_0170,idle,sad,i need something
+idle_sad_0171,idle,sad,my mood is small
+idle_sad_0172,idle,sad,i feel forgotten
+idle_sad_0173,idle,sad,please check on me
+idle_sad_0174,idle,sad,i am droopy
+idle_sad_0175,idle,sad,not my best day
+idle_sad_0176,idle,sad,i miss the fun
+idle_sad_0177,idle,sad,everything feels heavy
+idle_sad_0178,idle,sad,i could use a kind moment
+idle_sad_0179,idle,sad,small sad sound
+idle_sad_0180,idle,sad,i am not shiny
+idle_sad_0181,idle,sad,maybe later will be better
+idle_sad_0182,idle,sad,i feel dim
+idle_sad_0183,idle,sad,a little attention would help
+idle_sad_0184,idle,sad,i am trying
+idle_sad_0185,idle,sad,my heart is tired
+idle_sad_0186,idle,sad,today is hard
+idle_sad_0187,idle,sad,i feel crumpled
+idle_sad_0188,idle,sad,small sigh
+idle_sad_0189,idle,sad,i could use cheering up
+idle_sad_0190,idle,sad,i feel undercared
+idle_sad_0191,idle,sad,my sparkle is missing
+idle_sad_0192,idle,sad,i want a better mood
+idle_sad_0193,idle,sad,i am a bit wilted
+idle_sad_0194,idle,sad,please be gentle
+idle_sad_0195,idle,sad,i feel quiet in a bad way
+idle_sad_0196,idle,sad,not much bounce left
+idle_sad_0197,idle,sad,i feel a little hollow
+idle_sad_0198,idle,sad,i am doing my best
+idle_sad_0199,idle,sad,could use play soon
+idle_sad_0200,idle,sad,could use food soon
+idle_sad_0201,idle,sad,could use cleaning soon
+idle_sad_0202,idle,sad,i feel messy inside
+idle_sad_0203,idle,sad,i am not angry just sad
+idle_sad_0204,idle,sad,a tiny gloomy cloud
+idle_sad_0205,idle,sad,i want comfort
+idle_sad_0206,idle,sad,my little mood sank
+idle_sad_0207,idle,sad,i am waiting for help
+idle_sad_0208,idle,sad,this feels lonely
+idle_sad_0209,idle,sad,i do not feel brave
+idle_sad_0210,idle,sad,small unhappy noise
+idle_sad_0211,idle,sad,i feel off today
+idle_sad_0212,idle,sad,i am trying to stay hopeful
+idle_sad_0213,idle,sad,care would help
+idle_sad_0214,idle,sad,i feel a bit fragile
+idle_sad_0215,idle,sad,i need a nicer moment
+idle_sad_0216,idle,sad,i am drooping softly
+idle_sad_0217,idle,sad,everything feels slow
+idle_sad_0218,idle,sad,i want to feel better
+idle_sad_0219,idle,sad,tiny sad blink
+idle_sad_0220,idle,sad,i feel neglected
+idle_sad_0221,idle,sad,maybe a snack would help
+idle_sad_0222,idle,sad,maybe play would help
+idle_sad_0223,idle,sad,maybe a wash would help
+idle_sad_0224,idle,sad,i am not okay yet
+idle_sad_0225,idle,sad,please notice me
+idle_sick_0226,idle,sick,i feel poorly
+idle_sick_0227,idle,sick,something feels wrong
+idle_sick_0228,idle,sick,i need medicine maybe
+idle_sick_0229,idle,sick,my tummy feels odd
+idle_sick_0230,idle,sick,i feel weak
+idle_sick_0231,idle,sick,please be careful
+idle_sick_0232,idle,sick,i am shivery
+idle_sick_0233,idle,sick,not well today
+idle_sick_0234,idle,sick,my body feels strange
+idle_sick_0235,idle,sick,i need rest
+idle_sick_0236,idle,sick,medicine might help
+idle_sick_0237,idle,sick,i feel wobbly
+idle_sick_0238,idle,sick,tiny sick noise
+idle_sick_0239,idle,sick,i am queasy
+idle_sick_0240,idle,sick,my head feels fuzzy
+idle_sick_0241,idle,sick,i do not feel sturdy
+idle_sick_0242,idle,sick,careful please
+idle_sick_0243,idle,sick,i feel delicate
+idle_sick_0244,idle,sick,i want to recover
+idle_sick_0245,idle,sick,everything aches a little
+idle_sick_0246,idle,sick,i feel slow and sore
+idle_sick_0247,idle,sick,not much energy
+idle_sick_0248,idle,sick,i need gentle care
+idle_sick_0249,idle,sick,i feel very small
+idle_sick_0250,idle,sick,my health feels low
+idle_sick_0251,idle,sick,please keep watch
+idle_sick_0252,idle,sick,i am trying to heal
+idle_sick_0253,idle,sick,i feel cloudy
+idle_sick_0254,idle,sick,i need quiet
+idle_sick_0255,idle,sick,i feel unwell
+idle_sick_0256,idle,sick,something is not right
+idle_sick_0257,idle,sick,my body is complaining
+idle_sick_0258,idle,sick,i feel drained
+idle_sick_0259,idle,sick,a soft bed please
+idle_sick_0260,idle,sick,i need help soon
+idle_sick_0261,idle,sick,i feel heavy
+idle_sick_0262,idle,sick,my little bones are tired
+idle_sick_0263,idle,sick,i am under the weather
+idle_sick_0264,idle,sick,i feel faint
+idle_sick_0265,idle,sick,medicine thoughts only
+play_any_0266,play,any,again again
+play_any_0267,play,any,that was fun
+play_any_0268,play,any,i can do more
+play_any_0269,play,any,look how fast
+play_any_0270,play,any,play makes me bright
+play_any_0271,play,any,i did a jump
+play_any_0272,play,any,tiny victory
+play_any_0273,play,any,more stars please
+play_any_0274,play,any,i liked that
+play_any_0275,play,any,my feet are happy
+play_any_0276,play,any,that was excellent
+play_any_0277,play,any,i am speedy
+play_any_0278,play,any,catch me if you can
+play_any_0279,play,any,i nearly flew
+play_any_0280,play,any,big zoom
+play_any_0281,play,any,small champion
+play_any_0282,play,any,i feel bouncy now
+play_any_0283,play,any,do you see my moves
+play_any_0284,play,any,i made a spin
+play_any_0285,play,any,play unlocked joy
+play_any_0286,play,any,my mood jumped
+play_any_0287,play,any,that made me laugh
+play_any_0288,play,any,i did my best
+play_any_0289,play,any,i am a star catcher
+play_any_0290,play,any,i want another round
+play_any_0291,play,any,good game good game
+play_any_0292,play,any,i feel alive
+play_any_0293,play,any,that was a proper play
+play_any_0294,play,any,my little legs worked
+play_any_0295,play,any,i am proud
+play_any_0296,play,any,fun landed on me
+play_any_0297,play,any,i did a tiny trick
+play_any_0298,play,any,that was silly
+play_any_0299,play,any,i like playing with you
+play_any_0300,play,any,i feel charged
+play_any_0301,play,any,tiny applause please
+play_any_0302,play,any,i am hard to beat
+play_any_0303,play,any,zoom mode engaged
+play_any_0304,play,any,i made a happy squeak
+play_any_0305,play,any,i am getting better
+play_any_0306,play,any,play is good care
+play_any_0307,play,any,that woke my heart up
+play_any_0308,play,any,i moved so much
+play_any_0309,play,any,i want to brag
+play_any_0310,play,any,look at me
+play_any_0311,play,any,i am practically athletic
+play_any_0312,play,any,my paws are buzzing
+play_any_0313,play,any,more fun later please
+play_any_0314,play,any,that was worth the mess
+play_any_0315,play,any,excellent nonsense
+play_any_0316,play,any,i caught the fun
+play_any_0317,play,any,fast little creature
+play_any_0318,play,any,i almost became a blur
+play_any_0319,play,any,that was a treat
+play_any_0320,play,any,i feel less bored
+play_any_0321,play,any,my mood got bigger
+play_any_0322,play,any,i did not fall over
+play_any_0323,play,any,tiny sports moment
+play_any_0324,play,any,fun happened
+play_any_0325,play,any,i like this game
+play_any_0326,play,any,i am grinning inside
+play_any_0327,play,any,good play session
+play_any_0328,play,any,i did a bounce combo
+play_any_0329,play,any,my tail is proud
+play_any_0330,play,any,that was my best maybe
+play_any_0331,play,any,i am a playful thing
+play_any_0332,play,any,play again later
+play_any_0333,play,any,i need a victory snack
+play_any_0334,play,any,i made the screen happier
+play_any_0335,play,any,that was lively
+play_any_0336,play,any,i feel properly awake
+play_any_0337,play,any,i enjoyed that
+play_any_0338,play,any,small game big joy
+play_any_0339,play,any,i am fizzing
+play_any_0340,play,any,nice catch
+play_any_0341,play,any,my brain did a sparkle
+play_any_0342,play,any,the fun was real
+play_any_0343,play,any,i won in my heart
+play_any_0344,play,any,excellent clicking
+play_any_0345,play,any,that was a little adventure
+play_any_0346,play,any,i feel accomplished
+play_any_0347,play,any,i want to tell everyone
+play_any_0348,play,any,i was very brave
+play_any_0349,play,any,that was energetic
+play_any_0350,play,any,tiny celebration
+play_any_0351,play,any,i feel like myself
+feed_any_0352,feed,any,yum
+feed_any_0353,feed,any,good snack
+feed_any_0354,feed,any,that helped
+feed_any_0355,feed,any,i needed that
+feed_any_0356,feed,any,warm belly
+feed_any_0357,feed,any,tasty little thing
+feed_any_0358,feed,any,i feel fed
+feed_any_0359,feed,any,crunch crunch
+feed_any_0360,feed,any,that was nice
+feed_any_0361,feed,any,food makes sense
+feed_any_0362,feed,any,my tummy says thanks
+feed_any_0363,feed,any,delicious
+feed_any_0364,feed,any,a good bite
+feed_any_0365,feed,any,i accept this meal
+feed_any_0366,feed,any,more later not now
+feed_any_0367,feed,any,that was enough
+feed_any_0368,feed,any,happy belly
+feed_any_0369,feed,any,i feel steadier
+feed_any_0370,feed,any,snack received
+feed_any_0371,feed,any,food is good care
+feed_any_0372,feed,any,that tasted kind
+feed_any_0373,feed,any,i like that one
+feed_any_0374,feed,any,small chew noises
+feed_any_0375,feed,any,my belly is calmer
+feed_any_0376,feed,any,thank you for the food
+feed_any_0377,feed,any,that was properly nice
+feed_any_0378,feed,any,i feel less hollow
+feed_any_0379,feed,any,good choice
+feed_any_0380,feed,any,i enjoyed the texture
+feed_any_0381,feed,any,tiny feast
+feed_any_0382,feed,any,i am nourished
+feed_any_0383,feed,any,that hit the spot
+feed_any_0384,feed,any,a respectable meal
+feed_any_0385,feed,any,i can think again
+feed_any_0386,feed,any,food restored me
+feed_any_0387,feed,any,my tummy approves
+feed_any_0388,feed,any,care tastes good
+feed_any_0389,feed,any,i am no longer empty
+feed_any_0390,feed,any,snack successful
+feed_any_0391,feed,any,that was gentle
+feed_any_0392,feed,any,i feel topped up
+feed_any_0393,feed,any,a small meal for a small me
+feed_any_0394,feed,any,i will digest this proudly
+feed_any_0395,feed,any,very snackable
+feed_any_0396,feed,any,yes that one
+feed_any_0397,feed,any,i feel looked after
+feed_any_0398,feed,any,belly status improved
+feed_any_0399,feed,any,feeding complete
+feed_any_0400,feed,any,i liked the flavour
+feed_any_0401,feed,any,a nice little bite
+feed_any_0402,feed,any,good food good mood
+feed_any_0403,feed,any,i am chewing thoughtfully
+feed_any_0404,feed,any,properly fed
+feed_any_0405,feed,any,that was sensible
+feed_any_0406,feed,any,i appreciate the meal
+feed_any_0407,feed,any,less hungry now
+feed_any_0408,feed,any,i feel a bit brighter
+clean_any_0409,clean,any,sparkly now
+clean_any_0410,clean,any,that feels better
+clean_any_0411,clean,any,clean paws
+clean_any_0412,clean,any,thank you for the scrub
+clean_any_0413,clean,any,less grimy
+clean_any_0414,clean,any,i smell nicer
+clean_any_0415,clean,any,fresh again
+clean_any_0416,clean,any,good sponge work
+clean_any_0417,clean,any,that tickled
+clean_any_0418,clean,any,dirt defeated
+clean_any_0419,clean,any,i feel polished
+clean_any_0420,clean,any,nice and clean
+clean_any_0421,clean,any,much better
+clean_any_0422,clean,any,scrub success
+clean_any_0423,clean,any,i am shiny
+clean_any_0424,clean,any,that was refreshing
+clean_any_0425,clean,any,clean creature mode
+clean_any_0426,clean,any,i can breathe better
+clean_any_0427,clean,any,my fur thanks you
+clean_any_0428,clean,any,all fresh
+clean_any_0429,clean,any,the grime is gone
+clean_any_0430,clean,any,i feel lighter
+clean_any_0431,clean,any,squeaky little me
+clean_any_0432,clean,any,that was needed
+clean_any_0433,clean,any,clean is comfy
+clean_any_0434,clean,any,i look respectable
+clean_any_0435,clean,any,good wash
+clean_any_0436,clean,any,bubble victory
+clean_any_0437,clean,any,the sponge knows its job
+clean_any_0438,clean,any,i feel renewed
+clean_any_0439,clean,any,fresh little creature
+clean_any_0440,clean,any,tidy again
+clean_any_0441,clean,any,clean enough to show off
+clean_any_0442,clean,any,no more muck
+clean_any_0443,clean,any,that helped my mood
+clean_any_0444,clean,any,i am less sticky
+clean_any_0445,clean,any,sparkle restored
+clean_any_0446,clean,any,soft and clean
+clean_any_0447,clean,any,the dirt lost
+clean_any_0448,clean,any,i like being fresh
+clean_any_0449,clean,any,clean feels safe
+clean_any_0450,clean,any,i feel cared for
+clean_any_0451,clean,any,that was a nice scrub
+clean_any_0452,clean,any,tidy paws tidy heart
+clean_any_0453,clean,any,much less gross
+clean_any_0454,clean,any,i can sparkle again
+clean_any_0455,clean,any,thank you for cleaning me
+clean_any_0456,clean,any,freshness achieved
+clean_any_0457,clean,any,clean little life
+clean_any_0458,clean,any,i feel presentable
+medicine_any_0459,medicine,any,that helped
+medicine_any_0460,medicine,any,medicine tastes weird
+medicine_any_0461,medicine,any,i feel steadier
+medicine_any_0462,medicine,any,thank you
+medicine_any_0463,medicine,any,less wobbly now
+medicine_any_0464,medicine,any,i hope that works
+medicine_any_0465,medicine,any,that was brave of me
+medicine_any_0466,medicine,any,medicine done
+medicine_any_0467,medicine,any,i feel a bit safer
+medicine_any_0468,medicine,any,not tasty but useful
+medicine_any_0469,medicine,any,i am trying to heal
+medicine_any_0470,medicine,any,that felt serious
+medicine_any_0471,medicine,any,please stay nearby
+medicine_any_0472,medicine,any,my body says thanks
+medicine_any_0473,medicine,any,i can recover
+medicine_any_0474,medicine,any,a bitter little help
+medicine_any_0475,medicine,any,i feel watched over
+medicine_any_0476,medicine,any,health thoughts
+medicine_any_0477,medicine,any,i might be okay
+medicine_any_0478,medicine,any,that was not fun but needed
+medicine_any_0479,medicine,any,healing time
+medicine_any_0480,medicine,any,i feel less cloudy
+medicine_any_0481,medicine,any,thank you for helping
+medicine_any_0482,medicine,any,i am being brave
+medicine_any_0483,medicine,any,the medicine is working maybe
+medicine_any_0484,medicine,any,i did not like it but okay
+medicine_any_0485,medicine,any,tiny patient mode
+medicine_any_0486,medicine,any,careful medicine moment
+medicine_any_0487,medicine,any,i feel supported
+medicine_any_0488,medicine,any,recovery begins
+class_any_0489,class,any,i learned a thing
+class_any_0490,class,any,my brain stretched
+class_any_0491,class,any,class was hard
+class_any_0492,class,any,i feel smarter
+class_any_0493,class,any,new skill maybe
+class_any_0494,class,any,i concentrated
+class_any_0495,class,any,tiny study time
+class_any_0496,class,any,i did my lesson
+class_any_0497,class,any,that made my head busy
+class_any_0498,class,any,i am improving
+class_any_0499,class,any,knowledge snack
+class_any_0500,class,any,i tried very hard
+class_any_0501,class,any,my skill grew
+class_any_0502,class,any,i feel trained
+class_any_0503,class,any,class complete
+class_any_0504,class,any,i understood some of it
+class_any_0505,class,any,i made a clever noise
+class_any_0506,class,any,learning is strange
+class_any_0507,class,any,i can do better now
+class_any_0508,class,any,my brain has crumbs
+class_any_0509,class,any,that was useful
+class_any_0510,class,any,i feel disciplined
+class_any_0511,class,any,practice works
+class_any_0512,class,any,i am a student
+class_any_0513,class,any,lesson absorbed
+class_any_0514,class,any,good thinking time
+class_any_0515,class,any,i solved a tiny problem
+class_any_0516,class,any,i danced in my brain
+class_any_0517,class,any,new idea unlocked
+class_any_0518,class,any,i feel focused
+class_any_0519,class,any,i was very serious
+class_any_0520,class,any,that took effort
+class_any_0521,class,any,skill acquired maybe
+class_any_0522,class,any,i deserve a rest
+class_any_0523,class,any,i am learning slowly
+sleep_any_0524,sleep,any,getting sleepy
+sleep_any_0525,sleep,any,soft dreams please
+sleep_any_0526,sleep,any,nap time
+sleep_any_0527,sleep,any,i am curling up
+sleep_any_0528,sleep,any,see you after sleep
+sleep_any_0529,sleep,any,do not wake me soon
+sleep_any_0530,sleep,any,sleep sounds nice
+sleep_any_0531,sleep,any,i feel heavy eyed
+sleep_any_0532,sleep,any,rest mode
+sleep_any_0533,sleep,any,tiny snooze incoming
+sleep_any_0534,sleep,any,i need quiet
+sleep_any_0535,sleep,any,soft blanket thoughts
+sleep_any_0536,sleep,any,sleep will help
+sleep_any_0537,sleep,any,i am fading out
+sleep_any_0538,sleep,any,goodnight for now
+sleep_any_0539,sleep,any,dreaming soon
+sleep_any_0540,sleep,any,my eyes are closing
+sleep_any_0541,sleep,any,a few hours please
+sleep_any_0542,sleep,any,i will restore energy
+sleep_any_0543,sleep,any,sleepy creature
+wake_any_0544,wake,any,why wake me
+wake_any_0545,wake,any,i was sleeping
+wake_any_0546,wake,any,that felt rude
+wake_any_0547,wake,any,my dream broke
+wake_any_0548,wake,any,i am upset now
+wake_any_0549,wake,any,too early
+wake_any_0550,wake,any,i needed that nap
+wake_any_0551,wake,any,bad wake up
+wake_any_0552,wake,any,my mood dropped
+wake_any_0553,wake,any,please let me sleep next time
+wake_any_0554,wake,any,that startled me
+wake_any_0555,wake,any,i feel grumpy
+wake_any_0556,wake,any,not ready
+wake_any_0557,wake,any,sleep was helping
+wake_any_0558,wake,any,i am cross and tired
+wake_any_0559,wake,any,my little heart jumped
+wake_any_0560,wake,any,rude awakening
+wake_any_0561,wake,any,i need a moment
+wake_any_0562,wake,any,waking early hurts
+wake_any_0563,wake,any,i am not pleased
+any_any_0564,any,any,hmm
+any_any_0565,any,any,tiny thought
+any_any_0566,any,any,hello
+any_any_0567,any,any,i noticed that
+any_any_0568,any,any,interesting
+any_any_0569,any,any,maybe
+any_any_0570,any,any,oh
+any_any_0571,any,any,small noise
+any_any_0572,any,any,there you are
+any_any_0573,any,any,i am here
+any_any_0574,any,any,blink
+any_any_0575,any,any,soft squeak
+any_any_0576,any,any,little moment
+any_any_0577,any,any,okay
+any_any_0578,any,any,yes maybe
+any_any_0579,any,any,i wonder
+any_any_0580,any,any,that happened
+any_any_0581,any,any,noted
+any_any_0582,any,any,huh
+any_any_0583,any,any,i exist
+idle_happy_0584,idle,happy,i feel sunny
+idle_happy_0585,idle,happy,today is sunny
+idle_happy_0586,idle,happy,my mood is sunny
+idle_happy_0587,idle,happy,small sunny feeling
+idle_happy_0588,idle,happy,i am sunny
+idle_happy_0589,idle,happy,i feel bouncy
+idle_happy_0590,idle,happy,today is bouncy
+idle_happy_0591,idle,happy,my mood is bouncy
+idle_happy_0592,idle,happy,small bouncy feeling
+idle_happy_0593,idle,happy,i am bouncy
+idle_happy_0594,idle,happy,i feel bright
+idle_happy_0595,idle,happy,today is bright
+idle_happy_0596,idle,happy,my mood is bright
+idle_happy_0597,idle,happy,small bright feeling
+idle_happy_0598,idle,happy,i am bright
+idle_happy_0599,idle,happy,i feel safe
+idle_happy_0600,idle,happy,today is safe
+idle_happy_0601,idle,happy,my mood is safe
+idle_happy_0602,idle,happy,small safe feeling
+idle_happy_0603,idle,happy,i am safe
+idle_happy_0604,idle,happy,i feel warm
+idle_happy_0605,idle,happy,today is warm
+idle_happy_0606,idle,happy,my mood is warm
+idle_happy_0607,idle,happy,small warm feeling
+idle_happy_0608,idle,happy,i am warm
+idle_happy_0609,idle,happy,i feel lucky
+idle_happy_0610,idle,happy,today is lucky
+idle_happy_0611,idle,happy,my mood is lucky
+idle_happy_0612,idle,happy,small lucky feeling
+idle_happy_0613,idle,happy,i am lucky
+idle_happy_0614,idle,happy,i feel chirpy
+idle_happy_0615,idle,happy,today is chirpy
+idle_happy_0616,idle,happy,my mood is chirpy
+idle_happy_0617,idle,happy,small chirpy feeling
+idle_happy_0618,idle,happy,i am chirpy
+idle_happy_0619,idle,happy,i feel glowy
+idle_happy_0620,idle,happy,today is glowy
+idle_happy_0621,idle,happy,my mood is glowy
+idle_happy_0622,idle,happy,small glowy feeling
+idle_happy_0623,idle,happy,i am glowy
+idle_happy_0624,idle,happy,i feel merry
+idle_happy_0625,idle,happy,today is merry
+idle_happy_0626,idle,happy,my mood is merry
+idle_happy_0627,idle,happy,small merry feeling
+idle_happy_0628,idle,happy,i am merry
+idle_happy_0629,idle,happy,i feel sparkly
+idle_happy_0630,idle,happy,today is sparkly
+idle_happy_0631,idle,happy,my mood is sparkly
+idle_happy_0632,idle,happy,small sparkly feeling
+idle_happy_0633,idle,happy,i am sparkly
+idle_happy_0634,idle,happy,i feel pleased
+idle_happy_0635,idle,happy,today is pleased
+idle_happy_0636,idle,happy,my mood is pleased
+idle_happy_0637,idle,happy,small pleased feeling
+idle_happy_0638,idle,happy,i am pleased
+idle_happy_0639,idle,happy,i feel lively
+idle_happy_0640,idle,happy,today is lively
+idle_happy_0641,idle,happy,my mood is lively
+idle_happy_0642,idle,happy,small lively feeling
+idle_happy_0643,idle,happy,i am lively
+idle_calm_0644,idle,calm,quiet steady
+idle_calm_0645,idle,calm,soft steady
+idle_calm_0646,idle,calm,just steady
+idle_calm_0647,idle,calm,a steady pause
+idle_calm_0648,idle,calm,still steady
+idle_calm_0649,idle,calm,quiet gentle
+idle_calm_0650,idle,calm,soft gentle
+idle_calm_0651,idle,calm,just gentle
+idle_calm_0652,idle,calm,a gentle pause
+idle_calm_0653,idle,calm,still gentle
+idle_calm_0654,idle,calm,quiet quiet
+idle_calm_0655,idle,calm,soft quiet
+idle_calm_0656,idle,calm,just quiet
+idle_calm_0657,idle,calm,a quiet pause
+idle_calm_0658,idle,calm,still quiet
+idle_calm_0659,idle,calm,quiet mild
+idle_calm_0660,idle,calm,soft mild
+idle_calm_0661,idle,calm,just mild
+idle_calm_0662,idle,calm,a mild pause
+idle_calm_0663,idle,calm,still mild
+idle_calm_0664,idle,calm,quiet slow
+idle_calm_0665,idle,calm,soft slow
+idle_calm_0666,idle,calm,just slow
+idle_calm_0667,idle,calm,a slow pause
+idle_calm_0668,idle,calm,still slow
+idle_calm_0669,idle,calm,quiet restful
+idle_calm_0670,idle,calm,soft restful
+idle_calm_0671,idle,calm,just restful
+idle_calm_0672,idle,calm,a restful pause
+idle_calm_0673,idle,calm,still restful
+idle_calm_0674,idle,calm,quiet patient
+idle_calm_0675,idle,calm,soft patient
+idle_calm_0676,idle,calm,just patient
+idle_calm_0677,idle,calm,a patient pause
+idle_calm_0678,idle,calm,still patient
+idle_calm_0679,idle,calm,quiet settled
+idle_calm_0680,idle,calm,soft settled
+idle_calm_0681,idle,calm,just settled
+idle_calm_0682,idle,calm,a settled pause
+idle_calm_0683,idle,calm,still settled
+idle_calm_0684,idle,calm,quiet balanced
+idle_calm_0685,idle,calm,soft balanced
+idle_calm_0686,idle,calm,just balanced
+idle_calm_0687,idle,calm,a balanced pause
+idle_calm_0688,idle,calm,still balanced
+idle_calm_0689,idle,calm,quiet soft
+idle_calm_0690,idle,calm,soft soft
+idle_calm_0691,idle,calm,just soft
+idle_calm_0692,idle,calm,a soft pause
+idle_calm_0693,idle,calm,still soft
+idle_calm_0694,idle,calm,quiet plain
+idle_calm_0695,idle,calm,soft plain
+idle_calm_0696,idle,calm,just plain
+idle_calm_0697,idle,calm,a plain pause
+idle_calm_0698,idle,calm,still plain
+idle_calm_0699,idle,calm,quiet peaceful
+idle_calm_0700,idle,calm,soft peaceful
+idle_calm_0701,idle,calm,just peaceful
+idle_calm_0702,idle,calm,a peaceful pause
+idle_calm_0703,idle,calm,still peaceful
+idle_sad_0704,idle,sad,i feel droopy
+idle_sad_0705,idle,sad,a bit droopy
+idle_sad_0706,idle,sad,small droopy feeling
+idle_sad_0707,idle,sad,please help with droopy
+idle_sad_0708,idle,sad,my mood is droopy
+idle_sad_0709,idle,sad,i feel dim
+idle_sad_0710,idle,sad,a bit dim
+idle_sad_0711,idle,sad,small dim feeling
+idle_sad_0712,idle,sad,please help with dim
+idle_sad_0713,idle,sad,my mood is dim
+idle_sad_0714,idle,sad,i feel lonely
+idle_sad_0715,idle,sad,a bit lonely
+idle_sad_0716,idle,sad,small lonely feeling
+idle_sad_0717,idle,sad,please help with lonely
+idle_sad_0718,idle,sad,my mood is lonely
+idle_sad_0719,idle,sad,i feel flat
+idle_sad_0720,idle,sad,a bit flat
+idle_sad_0721,idle,sad,small flat feeling
+idle_sad_0722,idle,sad,please help with flat
+idle_sad_0723,idle,sad,my mood is flat
+idle_sad_0724,idle,sad,i feel fragile
+idle_sad_0725,idle,sad,a bit fragile
+idle_sad_0726,idle,sad,small fragile feeling
+idle_sad_0727,idle,sad,please help with fragile
+idle_sad_0728,idle,sad,my mood is fragile
+idle_sad_0729,idle,sad,i feel heavy
+idle_sad_0730,idle,sad,a bit heavy
+idle_sad_0731,idle,sad,small heavy feeling
+idle_sad_0732,idle,sad,please help with heavy
+idle_sad_0733,idle,sad,my mood is heavy
+idle_sad_0734,idle,sad,i feel wilted
+idle_sad_0735,idle,sad,a bit wilted
+idle_sad_0736,idle,sad,small wilted feeling
+idle_sad_0737,idle,sad,please help with wilted
+idle_sad_0738,idle,sad,my mood is wilted
+idle_sad_0739,idle,sad,i feel small
+idle_sad_0740,idle,sad,a bit small
+idle_sad_0741,idle,sad,small small feeling
+idle_sad_0742,idle,sad,please help with small
+idle_sad_0743,idle,sad,my mood is small
+idle_sad_0744,idle,sad,i feel gloomy
+idle_sad_0745,idle,sad,a bit gloomy
+idle_sad_0746,idle,sad,small gloomy feeling
+idle_sad_0747,idle,sad,please help with gloomy
+idle_sad_0748,idle,sad,my mood is gloomy
+idle_sad_0749,idle,sad,i feel tired
+idle_sad_0750,idle,sad,a bit tired
+idle_sad_0751,idle,sad,small tired feeling
+idle_sad_0752,idle,sad,please help with tired
+idle_sad_0753,idle,sad,my mood is tired
+idle_sad_0754,idle,sad,i feel low
+idle_sad_0755,idle,sad,a bit low
+idle_sad_0756,idle,sad,small low feeling
+idle_sad_0757,idle,sad,please help with low
+idle_sad_0758,idle,sad,my mood is low
+idle_sad_0759,idle,sad,i feel grey
+idle_sad_0760,idle,sad,a bit grey
+idle_sad_0761,idle,sad,small grey feeling
+idle_sad_0762,idle,sad,please help with grey
+idle_sad_0763,idle,sad,my mood is grey
+idle_sick_0764,idle,sick,i feel wobbly
+idle_sick_0765,idle,sick,wobbly body
+idle_sick_0766,idle,sick,a little wobbly
+idle_sick_0767,idle,sick,please be wobbly
+idle_sick_0768,idle,sick,health feels wobbly
+idle_sick_0769,idle,sick,i feel queasy
+idle_sick_0770,idle,sick,queasy body
+idle_sick_0771,idle,sick,a little queasy
+idle_sick_0772,idle,sick,please be queasy
+idle_sick_0773,idle,sick,health feels queasy
+idle_sick_0774,idle,sick,i feel weak
+idle_sick_0775,idle,sick,weak body
+idle_sick_0776,idle,sick,a little weak
+idle_sick_0777,idle,sick,please be weak
+idle_sick_0778,idle,sick,health feels weak
+idle_sick_0779,idle,sick,i feel cloudy
+idle_sick_0780,idle,sick,cloudy body
+idle_sick_0781,idle,sick,a little cloudy
+idle_sick_0782,idle,sick,please be cloudy
+idle_sick_0783,idle,sick,health feels cloudy
+idle_sick_0784,idle,sick,i feel shaky
+idle_sick_0785,idle,sick,shaky body
+idle_sick_0786,idle,sick,a little shaky
+idle_sick_0787,idle,sick,please be shaky
+idle_sick_0788,idle,sick,health feels shaky
+idle_sick_0789,idle,sick,i feel sore
+idle_sick_0790,idle,sick,sore body
+idle_sick_0791,idle,sick,a little sore
+idle_sick_0792,idle,sick,please be sore
+idle_sick_0793,idle,sick,health feels sore
+idle_sick_0794,idle,sick,i feel dizzy
+idle_sick_0795,idle,sick,dizzy body
+idle_sick_0796,idle,sick,a little dizzy
+idle_sick_0797,idle,sick,please be dizzy
+idle_sick_0798,idle,sick,health feels dizzy
+idle_sick_0799,idle,sick,i feel fuzzy
+idle_sick_0800,idle,sick,fuzzy body
+idle_sick_0801,idle,sick,a little fuzzy
+idle_sick_0802,idle,sick,please be fuzzy
+idle_sick_0803,idle,sick,health feels fuzzy
+idle_sick_0804,idle,sick,i feel fragile
+idle_sick_0805,idle,sick,fragile body
+idle_sick_0806,idle,sick,a little fragile
+idle_sick_0807,idle,sick,please be fragile
+idle_sick_0808,idle,sick,health feels fragile
+idle_sick_0809,idle,sick,i feel drained
+idle_sick_0810,idle,sick,drained body
+idle_sick_0811,idle,sick,a little drained
+idle_sick_0812,idle,sick,please be drained
+idle_sick_0813,idle,sick,health feels drained
+idle_sick_0814,idle,sick,i feel poorly
+idle_sick_0815,idle,sick,poorly body
+idle_sick_0816,idle,sick,a little poorly
+idle_sick_0817,idle,sick,please be poorly
+idle_sick_0818,idle,sick,health feels poorly
+idle_sick_0819,idle,sick,i feel unwell
+idle_sick_0820,idle,sick,unwell body
+idle_sick_0821,idle,sick,a little unwell
+idle_sick_0822,idle,sick,please be unwell
+idle_sick_0823,idle,sick,health feels unwell

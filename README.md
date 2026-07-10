@@ -24,6 +24,7 @@ Players can open the page directly in their browser. There is no build step, bac
 index.html
 style.css
 game.js
+dialogue.csv
 .nojekyll
 README.md
 ```
@@ -77,10 +78,165 @@ This version fixes the missing `setCareMessage` function that was stopping care 
 - Cleaning now only asks the player to scrub the dirt spots currently justified by the clean value.
 
 
-## v6 changes
+## v7 changes
 
-- Egg stage is now passive.
-- Feed, clean, play, nap, medicine, class, catch_stars, and inventory item use are disabled while the pet is an egg.
-- The shop remains visible and usable while waiting.
-- Stat decay is paused while the pet is an egg, so players are not punished before care unlocks.
-- Food can no longer be dragged onto the egg shell.
+- Egg stage has a hard action lock, not just disabled buttons.
+- Feed, clean, play, nap, medicine, class, catch_stars, inventory use, and active drag tools are blocked while the pet is an egg.
+- The shop remains open and purchases still work while waiting.
+- Stat decay remains paused while the pet is an egg.
+- The old behavior that allowed food to be dragged onto the egg shell has been removed.
+
+
+## v8 real-time care rebalance
+
+- Hunger now drains slowly across a real day. Rough target: around three sensible feedings per day.
+- Cleanliness now drains slowly across a real day. Rough target: around two washes per day.
+- Playing adds extra mess, so frequent play means more cleaning.
+- Sickness is rare. It mainly comes from serious neglect, very low health, or repeated overfeeding.
+- Medicine is no longer a routine care button. It is blocked unless the pet is sick or health is seriously low.
+- Stat decay remains paused while the creature is an egg.
+- Dirt spots are now tied to cleanliness thresholds and do not appear immediately after a successful wash.
+
+
+## v9 secret egg changes
+
+- The egg stage no longer reveals the creature species in text.
+- The creature label shows `unknown` while the pet is still an egg.
+- New save text says only that a mysterious egg is waiting.
+- Legacy revealing egg messages are scrubbed while the pet is still an egg.
+- The egg still uses physical design hints through colour and markings, so the species is hinted visually rather than named.
+
+
+## v10 visible real-time fix
+
+- Added a `care_clock` panel so players can see whether real-time care is active.
+- Added `feed_around`, `clean_around`, `medicine`, and `last_tick` readouts.
+- Stat values now show one decimal place so slow daily decay is visible sooner.
+- Food decay is now calibrated closer to three sensible feedings per real day.
+- Cleanliness decay is now calibrated closer to two washes per real day, with extra mess from play.
+- The egg stage still pauses real-time care and says `real_time_paused_until_hatch`.
+
+
+## v11 timed sleep
+
+- `nap` no longer instantly restores energy.
+- Pressing `nap` now puts the creature to sleep for about 3 real hours.
+- While sleeping, the same button becomes `wake_up`.
+- Waking early applies a large fun and bond penalty.
+- Sleeping slowly restores energy over real time.
+- Hunger, cleanliness, fun, and bond decay much more slowly while sleeping.
+- Feeding, cleaning, play, medicine, classes, inventory item use, and catch_stars are blocked during sleep.
+- The shop stays usable while the creature sleeps.
+
+
+## v12 dialogue database
+
+- Added `dialogue.csv` as a human-readable and spreadsheet-editable phrase database.
+- The game loads `dialogue.csv` using `fetch()`.
+- Columns are `id,event,mood,text`.
+- `event` examples: `idle`, `play`, `feed`, `clean`, `medicine`, `class`, `sleep`, `wake`, `any`.
+- `mood` examples: `happy`, `calm`, `sad`, `sick`, `any`.
+- Higher mood gives more frequent idle speech.
+- Every successful play action forces a phrase from the `play` event.
+- `catch_stars` also forces a `play` phrase when it finishes.
+- If the CSV cannot be loaded, the game uses a small built-in fallback list so it does not break.
+
+When editing the CSV, keep the header row exactly:
+
+```csv
+id,event,mood,text
+```
+
+On GitHub Pages, upload `dialogue.csv` beside `index.html`, `style.css`, and `game.js`.
+
+
+## v13 life stages and aging visuals
+
+- Added full age stages: `egg`, `baby`, `child`, `teen`, `adult`, `elder`.
+- The stage label now progresses through all six life stages.
+- The pet visibly changes shape as it ages.
+- Early stages have smaller bodies and larger eyes.
+- As the creature matures, the body grows and the eyes become more proportionate.
+- Elders have a slightly more mature silhouette and gentler animation timing.
+
+Current age thresholds:
+- `egg`: under 2 minutes
+- `baby`: under 60 minutes
+- `child`: under 6 hours
+- `teen`: under 24 hours
+- `adult`: under 3 days
+- `elder`: 3 days and beyond
+
+
+## v14 hatch naming
+
+- The pet cannot be named while it is still an egg.
+- As soon as the egg hatches, a naming modal appears.
+- Care actions, inventory use, and mini-games stay locked until the player names the new pet.
+- The main name field is locked during the egg stage and during the hatch naming step.
+- After naming, normal care begins.
+
+
+## v15 rock paper scissors
+
+- Added a `rps` button.
+- The player can play rock_paper_scissors against the pet.
+- The game keeps going automatically after every win or draw.
+- The mini-game only ends when the player loses.
+- Each win increases the streak.
+- Coin rewards scale with the streak: win 1 gives 1 coin, win 2 gives 2 coins, and so on, capped at 20 coins per round.
+- Normal care, inventory use, shop purchases, reset, and other mini-games are locked while RPS is active.
+- RPS is blocked during egg stage, hatch naming, and sleep.
+
+
+## v16 draggable accessories
+
+- Equipped accessories can now be dragged directly on the pet.
+- Accessory positions are saved in localStorage.
+- Positions are saved by accessory item id, so `tiny_hat` and `wizard_hat` keep separate placements.
+- Hats, glasses, and bows can all be moved.
+- Added `reset_gear_positions` in the inventory panel.
+- Dragging is disabled during egg stage, hatch naming, active care interactions, catch_stars, and RPS.
+
+
+## v17 management tabs
+
+- Replaced the long stacked inventory/shop area with tabs.
+- Added `supplies`, `equipment`, and `shop` tabs.
+- Supplies now only shows consumables and usable items like food, medicine, soap, and classes.
+- Equipment now only shows owned accessories.
+- The accessory position reset button now lives in the equipment tab.
+- Shop stays in its own tab.
+
+
+## v18 equipment store split
+
+- The shop now lists only consumable/use-up items: food, medicine, soap, and class passes.
+- Permanent equipment has moved out of the shop.
+- The equipment tab now shows unowned and owned equipment.
+- Unowned equipment can be bought directly from the equipment tab.
+- Owned wearable accessories can then be equipped or unequipped from that same equipment tab.
+- `toy_ball` is treated as permanent equipment; once bought, it is automatically enabled.
+
+
+## v19 NFC tag tools
+
+- Added an `nfc` tab.
+- Added `write_pet_tag`.
+- Added `read_pet_tag`.
+- `write_pet_tag` writes two NDEF records:
+  - a URL record for the current game page
+  - a compact text record with a simple pet breakdown
+- The pet summary format is:
+  `ps:v1|id=...|n=...|st=...|sp=...|m=...|c=...|t=...`
+- The full game still saves in `localStorage`; the NFC tag only stores the URL and a small pet summary.
+- Web NFC is checked at runtime. Unsupported browsers show a clear status instead of breaking.
+- This is expected to work mainly on Android Chrome/Chromium over HTTPS with a compatible writable NDEF tag.
+
+
+## v20 softer sleep display
+
+- Removed the visible live sleep countdown.
+- The game still tracks sleep time internally.
+- Players now see natural wording such as `sleeping_deeply` instead of exact remaining time.
+- Starting a nap says the sleep will last about three hours, without exposing a countdown.
