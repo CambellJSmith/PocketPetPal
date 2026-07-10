@@ -15,6 +15,9 @@
   --pet: #8f7dff;
   --pet-dark: #4e3aa8;
   --pet-light: #c9c1ff;
+  --pet-accent: #72df8e;
+  --pet-extra: #fff2bd;
+  --pet-eye: #151322;
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
@@ -39,6 +42,11 @@ input {
 
 button {
   cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
 }
 
 .page-shell {
@@ -210,6 +218,33 @@ h1 {
     inset -0.5rem -0.65rem 0 rgba(0, 0, 0, 0.12);
 }
 
+.pet-body::before,
+.pet-body::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+}
+
+.pet-body::before {
+  top: 1.4rem;
+  left: 1rem;
+  width: 0.8rem;
+  height: 0.8rem;
+  border-radius: 50%;
+  background: var(--pet-accent);
+  opacity: 0.75;
+}
+
+.pet-body::after {
+  right: 0.9rem;
+  bottom: 1rem;
+  width: 1.15rem;
+  height: 0.55rem;
+  border-radius: 999rem;
+  background: var(--pet-light);
+  opacity: 0.72;
+}
+
 .pet-face {
   position: absolute;
   inset: 3.05rem 2.05rem 2.3rem;
@@ -220,7 +255,7 @@ h1 {
   width: 0.72rem;
   height: 0.92rem;
   border-radius: 50%;
-  background: #151322;
+  background: var(--pet-eye);
 }
 
 .pet-eye-left {
@@ -231,13 +266,31 @@ h1 {
   right: 0;
 }
 
+.pet-cheek {
+  position: absolute;
+  top: 1.05rem;
+  width: 0.44rem;
+  height: 0.24rem;
+  border-radius: 50%;
+  background: var(--pet-accent);
+  opacity: 0.55;
+}
+
+.pet-cheek-left {
+  left: -0.4rem;
+}
+
+.pet-cheek-right {
+  right: -0.4rem;
+}
+
 .pet-mouth {
   position: absolute;
   left: 50%;
   bottom: -0.25rem;
   width: 1rem;
   height: 0.5rem;
-  border-bottom: 0.18rem solid #151322;
+  border-bottom: 0.18rem solid var(--pet-eye);
   border-radius: 0 0 999rem 999rem;
   transform: translateX(-50%);
 }
@@ -264,41 +317,611 @@ h1 {
   transform: rotate(25deg);
 }
 
-.pet-sprout {
+.pet-tail {
+  position: absolute;
+  right: 0.1rem;
+  bottom: 1.6rem;
+  width: 2rem;
+  height: 1.3rem;
+  border: 0.2rem solid var(--pet-dark);
+  border-radius: 999rem;
+  background: var(--pet-accent);
+  transform: rotate(28deg);
+  z-index: -1;
+}
+
+.pet-wing {
+  position: absolute;
+  top: 2.5rem;
+  width: 1.7rem;
+  height: 2.4rem;
+  border: 0.2rem solid var(--pet-dark);
+  background: var(--pet-light);
+  z-index: -1;
+}
+
+.pet-wing-left {
+  left: 0.1rem;
+  border-radius: 80% 20% 80% 20%;
+  transform: rotate(-28deg);
+}
+
+.pet-wing-right {
+  right: 0.1rem;
+  border-radius: 20% 80% 20% 80%;
+  transform: rotate(28deg);
+}
+
+.pet-extra {
   position: absolute;
   top: 0.35rem;
   left: 50%;
   width: 0.3rem;
   height: 1.2rem;
   border-radius: 999rem;
-  background: #379b5c;
+  background: var(--pet-dark);
   transform: translateX(-50%);
 }
 
-.pet-sprout::before,
-.pet-sprout::after {
+.pet-extra::before,
+.pet-extra::after {
   content: "";
   position: absolute;
+  pointer-events: none;
+}
+
+/* body shapes */
+.pet.body-round .pet-body {
+  inset: 1.35rem 0.9rem 0.45rem;
+  border-radius: 42% 42% 38% 38%;
+}
+
+.pet.body-tall .pet-body {
+  inset: 0.7rem 1.35rem 0.35rem;
+  border-radius: 48% 48% 34% 34%;
+}
+
+.pet.body-wide .pet-body {
+  inset: 2rem 0.2rem 0.5rem;
+  border-radius: 44% 44% 32% 32%;
+}
+
+.pet.body-drop .pet-body {
+  inset: 0.7rem 1rem 0.45rem;
+  border-radius: 60% 60% 42% 42% / 72% 72% 32% 32%;
+}
+
+.pet.body-square .pet-body {
+  inset: 1.55rem 0.8rem 0.45rem;
+  border-radius: 24% 24% 30% 30%;
+}
+
+.pet.body-squat .pet-body {
+  inset: 2.45rem 0.55rem 0.45rem;
+  border-radius: 52% 52% 35% 35%;
+}
+
+.pet.body-diamond .pet-body {
+  inset: 1.55rem 1.25rem 0.8rem;
+  border-radius: 24%;
+  transform: rotate(45deg);
+}
+
+.pet.body-diamond .pet-face {
+  transform: rotate(0deg);
+}
+
+.pet.body-shell .pet-body {
+  inset: 1.55rem 0.6rem 0.45rem;
+  border-radius: 55% 55% 32% 32%;
+}
+
+.pet.body-shell .pet-body::after {
+  inset: 1.1rem auto auto 50%;
+  width: 0.18rem;
+  height: 3.5rem;
+  border-radius: 999rem;
+  background: var(--pet-dark);
+  box-shadow:
+    -1rem 0 0 var(--pet-dark),
+    1rem 0 0 var(--pet-dark);
+  transform: translateX(-50%);
+  opacity: 0.36;
+}
+
+/* ear shapes */
+.pet.ears-none .pet-ear {
+  display: none;
+}
+
+.pet.ears-cat .pet-ear {
+  top: 1.1rem;
+  width: 1.55rem;
+  height: 1.55rem;
+  border-radius: 35% 65% 35% 65%;
+}
+
+.pet.ears-cat .pet-ear-left {
+  transform: rotate(-18deg);
+}
+
+.pet.ears-cat .pet-ear-right {
+  transform: rotate(18deg);
+}
+
+.pet.ears-bunny .pet-ear {
+  top: -0.15rem;
+  width: 1.25rem;
+  height: 3.1rem;
+  border-radius: 999rem 999rem 45% 45%;
+}
+
+.pet.ears-bunny .pet-ear-left {
+  left: 1.55rem;
+  transform: rotate(-12deg);
+}
+
+.pet.ears-bunny .pet-ear-right {
+  right: 1.55rem;
+  transform: rotate(12deg);
+}
+
+.pet.ears-floppy .pet-ear {
+  top: 1.2rem;
+  width: 1.25rem;
+  height: 3rem;
+  border-radius: 999rem;
+}
+
+.pet.ears-floppy .pet-ear-left {
+  left: 0.7rem;
+  transform: rotate(28deg);
+}
+
+.pet.ears-floppy .pet-ear-right {
+  right: 0.7rem;
+  transform: rotate(-28deg);
+}
+
+.pet.ears-round .pet-ear {
+  top: 1.6rem;
+  width: 1.55rem;
+  height: 1.55rem;
+  border-radius: 50%;
+}
+
+.pet.ears-round .pet-ear-left {
+  left: 0.55rem;
+}
+
+.pet.ears-round .pet-ear-right {
+  right: 0.55rem;
+}
+
+.pet.ears-horns .pet-ear {
+  top: 0.85rem;
+  width: 1.15rem;
+  height: 1.8rem;
+  border-radius: 50% 50% 10% 10%;
+  background: var(--pet-extra);
+}
+
+.pet.ears-horns .pet-ear-left {
+  left: 1.3rem;
+  transform: rotate(-32deg);
+}
+
+.pet.ears-horns .pet-ear-right {
+  right: 1.3rem;
+  transform: rotate(32deg);
+}
+
+.pet.ears-fins .pet-ear {
+  top: 2.1rem;
+  width: 1.5rem;
+  height: 2rem;
+  border-radius: 85% 15% 85% 15%;
+  background: var(--pet-accent);
+}
+
+.pet.ears-fins .pet-ear-left {
+  left: 0.35rem;
+  transform: rotate(-45deg);
+}
+
+.pet.ears-fins .pet-ear-right {
+  right: 0.35rem;
+  transform: rotate(45deg);
+}
+
+.pet.ears-antenna .pet-ear {
+  top: 0.7rem;
+  width: 0.35rem;
+  height: 2.1rem;
+  border-width: 0.16rem;
+  border-radius: 999rem;
+  background: var(--pet-dark);
+}
+
+.pet.ears-antenna .pet-ear::before {
+  content: "";
+  position: absolute;
+  top: -0.62rem;
+  left: 50%;
+  width: 0.88rem;
+  height: 0.88rem;
+  border: 0.16rem solid var(--pet-dark);
+  border-radius: 50%;
+  background: var(--pet-extra);
+  transform: translateX(-50%);
+}
+
+.pet.ears-antenna .pet-ear-left {
+  left: 2.1rem;
+  transform: rotate(-15deg);
+}
+
+.pet.ears-antenna .pet-ear-right {
+  right: 2.1rem;
+  transform: rotate(15deg);
+}
+
+/* tails */
+.pet.tail-none .pet-tail {
+  display: none;
+}
+
+.pet.tail-ball .pet-tail {
+  right: 0.1rem;
+  bottom: 1.6rem;
+  width: 1.45rem;
+  height: 1.45rem;
+  border-radius: 50%;
+}
+
+.pet.tail-point .pet-tail {
+  right: 0.1rem;
+  bottom: 1.65rem;
+  width: 2.2rem;
+  height: 1.05rem;
+  border-radius: 80% 20% 80% 20%;
+}
+
+.pet.tail-curled .pet-tail {
+  right: -0.15rem;
+  bottom: 1.4rem;
+  width: 2.1rem;
+  height: 2.1rem;
+  border: 0.28rem solid var(--pet-dark);
+  border-left-color: transparent;
+  border-radius: 50%;
+  background: transparent;
+}
+
+.pet.tail-fin .pet-tail {
+  right: -0.1rem;
+  bottom: 1.4rem;
+  width: 2.25rem;
+  height: 1.75rem;
+  border-radius: 85% 15% 85% 15%;
+}
+
+.pet.tail-spike .pet-tail {
+  right: 0.05rem;
+  bottom: 1.8rem;
+  width: 2.25rem;
+  height: 1rem;
+  border-radius: 80% 20% 80% 20%;
+  background: var(--pet-extra);
+}
+
+/* wings */
+.pet.wings-none .pet-wing {
+  display: none;
+}
+
+.pet.wings-small .pet-wing {
+  display: block;
+}
+
+.pet.wings-bat .pet-wing {
+  top: 2.65rem;
+  width: 2rem;
+  height: 2.1rem;
+  border-radius: 15% 85% 15% 85%;
+  background: var(--pet-extra);
+}
+
+.pet.wings-feather .pet-wing {
+  top: 2.35rem;
+  width: 1.9rem;
+  height: 2.7rem;
+  border-radius: 85% 15% 85% 35%;
+  background: var(--pet-light);
+}
+
+.pet.wings-fin .pet-wing {
+  top: 3rem;
+  width: 1.8rem;
+  height: 1.7rem;
+  border-radius: 90% 10% 90% 10%;
+  background: var(--pet-accent);
+}
+
+/* head extras */
+.pet.extra-none .pet-extra {
+  display: none;
+}
+
+.pet.extra-sprout .pet-extra {
+  display: block;
+  background: var(--pet-dark);
+}
+
+.pet.extra-sprout .pet-extra::before,
+.pet.extra-sprout .pet-extra::after {
   top: 0;
   width: 1rem;
   height: 0.62rem;
   border-radius: 50% 50% 50% 0;
-  background: #72df8e;
+  background: var(--pet-accent);
 }
 
-.pet-sprout::before {
+.pet.extra-sprout .pet-extra::before {
   right: 0.1rem;
   transform: rotate(-35deg);
 }
 
-.pet-sprout::after {
+.pet.extra-sprout .pet-extra::after {
   left: 0.1rem;
   transform: scaleX(-1) rotate(-35deg);
 }
 
+.pet.extra-flower {
+  display: block;
+}
+
+.pet.extra-flower .pet-extra {
+  width: 0.44rem;
+  height: 1.25rem;
+  background: var(--pet-dark);
+}
+
+.pet.extra-flower .pet-extra::before {
+  top: -0.68rem;
+  left: 50%;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  background: var(--pet-extra);
+  box-shadow:
+    -0.62rem 0.12rem 0 var(--pet-accent),
+    0.62rem 0.12rem 0 var(--pet-accent),
+    0 -0.58rem 0 var(--pet-accent),
+    0 0.64rem 0 var(--pet-accent);
+  transform: translateX(-50%);
+}
+
+.pet.extra-crown .pet-extra {
+  top: 0.45rem;
+  width: 2.1rem;
+  height: 1.1rem;
+  border: 0.18rem solid var(--pet-dark);
+  border-radius: 0.2rem 0.2rem 0.45rem 0.45rem;
+  background: var(--pet-extra);
+}
+
+.pet.extra-crown .pet-extra::before {
+  left: 0.15rem;
+  top: -0.45rem;
+  width: 0.42rem;
+  height: 0.72rem;
+  border-radius: 50% 50% 0 0;
+  background: var(--pet-extra);
+  box-shadow:
+    0.65rem -0.18rem 0 var(--pet-extra),
+    1.3rem 0 0 var(--pet-extra);
+}
+
+.pet.extra-star .pet-extra {
+  top: 0.15rem;
+  width: 1.45rem;
+  height: 1.45rem;
+  border: 0.18rem solid var(--pet-dark);
+  border-radius: 50%;
+  background: var(--pet-extra);
+}
+
+.pet.extra-star .pet-extra::before {
+  content: "★";
+  top: -0.15rem;
+  left: 0.12rem;
+  color: var(--pet-dark);
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.pet.extra-gem .pet-extra {
+  top: 0.2rem;
+  width: 1.2rem;
+  height: 1.2rem;
+  border: 0.18rem solid var(--pet-dark);
+  border-radius: 22%;
+  background: var(--pet-extra);
+  transform: translateX(-50%) rotate(45deg);
+}
+
+.pet.extra-crest .pet-extra {
+  top: 0.2rem;
+  width: 0.8rem;
+  height: 1.7rem;
+  border: 0.18rem solid var(--pet-dark);
+  border-radius: 999rem 999rem 25% 25%;
+  background: var(--pet-extra);
+}
+
+.pet.extra-crest .pet-extra::before,
+.pet.extra-crest .pet-extra::after {
+  top: 0.35rem;
+  width: 0.62rem;
+  height: 1.15rem;
+  border: 0.14rem solid var(--pet-dark);
+  border-radius: 999rem;
+  background: var(--pet-accent);
+}
+
+.pet.extra-crest .pet-extra::before {
+  left: -0.7rem;
+  transform: rotate(-25deg);
+}
+
+.pet.extra-crest .pet-extra::after {
+  right: -0.7rem;
+  transform: rotate(25deg);
+}
+
+.pet.extra-mushroom .pet-extra {
+  top: 0.3rem;
+  width: 0.64rem;
+  height: 1.3rem;
+  border: 0.14rem solid var(--pet-dark);
+  border-radius: 0.3rem;
+  background: var(--pet-light);
+}
+
+.pet.extra-mushroom .pet-extra::before {
+  top: -0.72rem;
+  left: 50%;
+  width: 2rem;
+  height: 1rem;
+  border: 0.18rem solid var(--pet-dark);
+  border-radius: 999rem 999rem 0.2rem 0.2rem;
+  background: var(--pet-extra);
+  transform: translateX(-50%);
+}
+
+.pet.extra-halo .pet-extra {
+  top: -0.05rem;
+  width: 2.1rem;
+  height: 0.72rem;
+  border: 0.2rem solid var(--pet-extra);
+  border-radius: 50%;
+  background: transparent;
+}
+
+.pet.extra-moon .pet-extra {
+  top: 0.15rem;
+  width: 1.35rem;
+  height: 1.35rem;
+  border-radius: 50%;
+  background: var(--pet-extra);
+}
+
+.pet.extra-moon .pet-extra::before {
+  top: -0.08rem;
+  left: 0.42rem;
+  width: 1.35rem;
+  height: 1.35rem;
+  border-radius: 50%;
+  background: var(--screen);
+}
+
+.pet.extra-bolt .pet-extra {
+  top: 0.1rem;
+  width: 1rem;
+  height: 1.9rem;
+  border: 0.15rem solid var(--pet-dark);
+  border-radius: 0.15rem;
+  background: var(--pet-extra);
+  transform: translateX(-50%) skewX(-15deg);
+}
+
+.pet.extra-bolt .pet-extra::before {
+  left: 0.28rem;
+  top: 0.25rem;
+  width: 0.45rem;
+  height: 1.4rem;
+  border-radius: 999rem;
+  background: var(--pet-accent);
+  transform: rotate(28deg);
+}
+
+.pet.extra-bubbles .pet-extra {
+  top: 0.1rem;
+  width: 0.88rem;
+  height: 0.88rem;
+  border: 0.16rem solid var(--pet-dark);
+  border-radius: 50%;
+  background: var(--pet-extra);
+}
+
+.pet.extra-bubbles .pet-extra::before,
+.pet.extra-bubbles .pet-extra::after {
+  border: 0.14rem solid var(--pet-dark);
+  border-radius: 50%;
+  background: var(--pet-light);
+}
+
+.pet.extra-bubbles .pet-extra::before {
+  left: -0.9rem;
+  top: 0.52rem;
+  width: 0.62rem;
+  height: 0.62rem;
+}
+
+.pet.extra-bubbles .pet-extra::after {
+  right: -0.9rem;
+  top: 0.28rem;
+  width: 0.72rem;
+  height: 0.72rem;
+}
+
+/* faces */
+.pet.face-sleepy .pet-eye {
+  height: 0.18rem;
+  top: 0.35rem;
+  border-radius: 999rem;
+}
+
+.pet.face-wide .pet-eye {
+  width: 0.88rem;
+  height: 0.88rem;
+}
+
+.pet.face-tiny .pet-eye {
+  width: 0.48rem;
+  height: 0.62rem;
+}
+
+.pet.face-stern .pet-eye {
+  height: 0.48rem;
+  border-radius: 40%;
+}
+
+.pet.face-stern .pet-eye-left {
+  transform: rotate(12deg);
+}
+
+.pet.face-stern .pet-eye-right {
+  transform: rotate(-12deg);
+}
+
+.pet.face-dot .pet-eye {
+  width: 0.42rem;
+  height: 0.42rem;
+}
+
+.pet.face-dot .pet-mouth {
+  width: 0.34rem;
+  border-radius: 50%;
+}
+
+/* stages */
 .pet.stage-egg .pet-ear,
 .pet.stage-egg .pet-face,
-.pet.stage-egg .pet-sprout {
+.pet.stage-egg .pet-tail,
+.pet.stage-egg .pet-wing,
+.pet.stage-egg .pet-extra {
   display: none;
 }
 
@@ -306,9 +929,29 @@ h1 {
   inset: 1rem 1.55rem 0.4rem;
   border-radius: 52% 52% 45% 45%;
   background: #fff2bd;
+  transform: none;
   box-shadow:
     inset 0.5rem 0.5rem 0 rgba(255, 255, 255, 0.75),
     inset -0.45rem -0.55rem 0 rgba(112, 82, 28, 0.16);
+}
+
+.pet.stage-egg .pet-body::before {
+  top: 1.2rem;
+  left: 1.1rem;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  background: var(--pet-accent);
+}
+
+.pet.stage-egg .pet-body::after {
+  right: 1.05rem;
+  bottom: 1.05rem;
+  width: 1.3rem;
+  height: 0.75rem;
+  border-radius: 999rem;
+  background: var(--pet);
+  opacity: 0.72;
 }
 
 .pet.stage-baby {
@@ -316,11 +959,11 @@ h1 {
 }
 
 .pet.stage-teen .pet-ear-left {
-  transform: rotate(-35deg) scaleY(1.22);
+  filter: brightness(1.04);
 }
 
 .pet.stage-teen .pet-ear-right {
-  transform: rotate(35deg) scaleY(1.22);
+  filter: brightness(1.04);
 }
 
 .pet.stage-adult {
@@ -328,7 +971,7 @@ h1 {
 }
 
 .pet.mood-sad .pet-mouth {
-  border-top: 0.18rem solid #151322;
+  border-top: 0.18rem solid var(--pet-eye);
   border-bottom: 0;
   border-radius: 999rem 999rem 0 0;
 }
@@ -353,13 +996,21 @@ h1 {
 }
 
 .meta-grid {
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
 }
 
 .meta-grid div {
+  min-width: 0;
   padding: 0.55rem;
   border-radius: 0.75rem;
   background: rgba(255, 255, 255, 0.24);
+}
+
+.meta-grid strong {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .bars {
@@ -508,6 +1159,10 @@ h1 {
   }
 
   .controls {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .meta-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 }

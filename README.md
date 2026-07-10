@@ -10,6 +10,9 @@ Players can open the page directly in their browser. There is no build step, bac
 - simple stat decay over real elapsed time
 - browser save using `localStorage`
 - evolution stages: egg, baby, teen, adult
+- 36 CSS-generated creature forms
+- random starting creature on new saves
+- `discover` button that lets players spend coins to find another creature form
 - short click-based `catch_stars` mini-game
 - responsive layout for desktop and mobile
 - no external assets or libraries
@@ -36,3 +39,5 @@ README.md
 ## notes
 
 This is a generic virtual pet game. Do not use Tamagotchi names, logos, characters, or branding unless you have the right to do so.
+
+The creatures are not sprites. They are generated from CSS shapes and JavaScript creature definitions, so the project does not depend on any external image files.
