@@ -77,7 +77,6 @@ const elements = {
   pet: document.querySelector("#pet"),
   petArea: document.querySelector("#pet-area"),
   starTarget: document.querySelector("#star-target"),
-  speciesButton: document.querySelector("#species-button"),
   miniGameButton: document.querySelector("#mini-game-button"),
   stageLabel: document.querySelector("#stage-label"),
   petMessage: document.querySelector("#pet-message"),
@@ -376,6 +375,68 @@ function getAgeLabel() {
   return `${hours}h_${minutes}m`;
 }
 
+function getDirtSpotCount() {
+  if (state.dead) {
+    return 0;
+  }
+
+  if (state.cleanliness >= 90) {
+    return 0;
+  }
+
+  if (state.cleanliness >= 75) {
+    return 1;
+  }
+
+  if (state.cleanliness >= 60) {
+    return 2;
+  }
+
+  if (state.cleanliness >= 45) {
+    return 3;
+  }
+
+  if (state.cleanliness >= 30) {
+    return 4;
+  }
+
+  return 5;
+}
+
+function clearDirtSpotInlineStyles(spot) {
+  spot.style.display = "";
+  spot.style.visibility = "";
+  spot.style.opacity = "";
+  spot.style.zIndex = "";
+}
+
+function setDirtSpotsForCleanliness() {
+  if (careInteraction.active) {
+    return;
+  }
+
+  const dirtCount = getDirtSpotCount();
+
+  elements.dirtSpots.forEach((spot, index) => {
+    spot.classList.remove("cleaned");
+    clearDirtSpotInlineStyles(spot);
+    spot.classList.toggle("hidden", index >= dirtCount);
+  });
+}
+
+function setDirtSpotsForCleaning(dirtCount) {
+  elements.dirtSpots.forEach((spot, index) => {
+    spot.classList.remove("cleaned");
+    clearDirtSpotInlineStyles(spot);
+
+    if (index < dirtCount) {
+      forceShowDirtSpot(spot);
+    } else {
+      spot.classList.add("hidden");
+    }
+  });
+}
+
 function setBar(bar, value) {
   const rounded = Math.round(value);
 
@@ -441,8 +502,9 @@ function render() {
   ].join(" ");
 
   elements.screen.classList.toggle("dead-screen", state.dead);
+  setDirtSpotsForCleanliness();
 
-  document.querySelectorAll("[data-action], #mini-game-button, #species-button").forEach((button) => {
+  document.querySelectorAll("[data-action], #mini-game-button").forEach((button) => {
     button.disabled = state.dead || miniGame.active || careInteraction.active;
   });
 
@@ -722,7 +784,8 @@ function openCareScene(kind, title, instruction, itemId = "") {
     pointerId: null,
     tool: null,
     cleaned: 0,
-    injecting: false
+    injecting: false,
+    targetDirtCount: 0
   };
 
   resetCareScene();
@@ -742,7 +805,8 @@ function closeCareScene() {
     pointerId: null,
     tool: null,
     cleaned: 0,
-    injecting: false
+    injecting: false,
+    targetDirtCount: 0
   };
 
   resetCareScene();
@@ -777,16 +841,26 @@ function startFeedInteraction(itemId) {
 }
 
 function startCleanInteraction(itemId = "") {
+  const dirtCount = getDirtSpotCount();
+
+  if (dirtCount <= 0) {
+    state.lastMessage = `${state.name} is already clean. dirt will come back as the clean value drops.`;
+    render();
+    return;
+  }
+
   const usingSoap = itemId && ITEMS[itemId] && state.inventory[itemId] > 0;
   const title = usingSoap ? `washing with ${ITEMS[itemId].label}` : "basic sponge wash";
-  const instruction = usingSoap ? `rub the sponge directly across ${state.name} until every dirt spot is gone. ${ITEMS[itemId].label} will be used when the wash is complete.` : `rub the sponge directly across ${state.name} until every dirt spot is gone. this basic wash is weaker than bubble_soap.`;
+  const dirtText = dirtCount === 1 ? "the dirt spot" : `all ${dirtCount} dirt spots`;
+  const instruction = usingSoap ? `rub the sponge directly across ${dirtText} on ${state.name}. ${ITEMS[itemId].label} will be used when the wash is complete.` : `rub the sponge directly across ${dirtText} on ${state.name}. this basic wash is weaker than bubble_soap.`;
 
   if (!openCareScene("clean", title, instruction, usingSoap ? itemId : "")) {
     return;
   }
 
+  careInteraction.targetDirtCount = dirtCount;
   forceShowCareTool(elements.spongeTool);
-  elements.dirtSpots.forEach((spot) => forceShowDirtSpot(spot));
+  setDirtSpotsForCleaning(dirtCount);
 }
 
 function startMedicineInteraction(itemId) {
@@ -853,18 +927,21 @@ function cleanTouchedDirt() {
     return;
   }
 
+  const requiredDirt = careInteraction.targetDirtCount || getDirtSpotCount();
+
   elements.dirtSpots.forEach((spot) => {
-    if (spot.classList.contains("cleaned") || !getOverlap(elements.spongeTool, spot)) {
+    if (spot.classList.contains("hidden") || spot.classList.contains("cleaned") || !getOverlap(elements.spongeTool, spot)) {
       return;
     }
 
     spot.classList.add("cleaned");
     window.setTimeout(() => spot.classList.add("hidden"), 150);
     careInteraction.cleaned += 1;
-    const progress = Math.round((careInteraction.cleaned / elements.dirtSpots.length) * 100);
-    setCareMessage(progress >= 100 ? "all clean. finishing wash..." : `keep rubbing the sponge on the creature. ${elements.dirtSpots.length - careInteraction.cleaned} dirt spots left.`);
 
-    if (careInteraction.cleaned >= elements.dirtSpots.length) {
+    const dirtLeft = Math.max(0, requiredDirt - careInteraction.cleaned);
+    setCareMessage(dirtLeft <= 0 ? "all clean. finishing wash..." : `keep rubbing the sponge on the creature. ${dirtLeft} dirt spots left.`);
+
+    if (careInteraction.cleaned >= requiredDirt) {
       window.setTimeout(completeCleanInteraction, 260);
     }
   });
@@ -1085,35 +1162,6 @@ function care(action) {
   actions[action]?.();
 }
 
-function discoverSpecies() {
-  if (state.dead || miniGame.active || careInteraction.active) {
-    return;
-  }
-
-  const cost = 5;
-
-  if (state.coins < cost) {
-    state.lastMessage = "discovering a new creature costs 5 coins.";
-    saveState();
-    render();
-    return;
-  }
-
-  const oldSpecies = getSpecies(state.speciesId);
-  const newSpeciesId = getRandomSpeciesId(state.speciesId);
-  const newSpecies = getSpecies(newSpeciesId);
-
-  state.coins -= cost;
-  state.speciesId = newSpeciesId;
-  state.fun = clamp(state.fun + 8);
-  state.energy = clamp(state.energy - 4);
-  state.lastMessage = `${oldSpecies.label} changed into ${newSpecies.label}.`;
-  state.lastUpdated = Date.now();
-
-  saveState();
-  render();
-}
-
 function startMiniGame() {
   if (state.dead || miniGame.active || careInteraction.active) {
     return;
@@ -1239,7 +1287,6 @@ elements.nameInput.addEventListener("change", () => {
 });
 
 elements.resetButton.addEventListener("click", resetPet);
-elements.speciesButton.addEventListener("click", discoverSpecies);
 elements.miniGameButton.addEventListener("click", startMiniGame);
 elements.starTarget.addEventListener("click", hitStar);
 

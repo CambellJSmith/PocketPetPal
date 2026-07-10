@@ -6,7 +6,7 @@ Players can open the page directly in their browser. There is no build step, bac
 
 ## features
 
-- feed, play, clean, nap, medicine, class, discover, and catch_stars actions
+- feed, play, clean, nap, medicine, class, and catch_stars actions
 - direct on-creature care: drag food onto the mouth, rub the sponge across dirt on the creature, and apply medicine to the creature body
 - health can reach zero and the creature can die from neglect, sickness, exhaustion, or overfeeding
 - stat decay over real elapsed time, including time while the browser is closed
@@ -67,3 +67,11 @@ This version restores the missing CSS for the direct-care tools. Food, sponge, s
 ## v4 fix
 
 This version fixes the missing `setCareMessage` function that was stopping care interactions before the tool could appear. It also adds defensive inline visibility for food, sponge, syringe, and dirt spots.
+
+
+## v5 changes
+
+- Removed the `discover` button/function.
+- Dirt now appears from the clean stat instead of being forced back after every wash.
+- Dirt thresholds: no dirt at high cleanliness, then 1 to 5 dirt spots as cleanliness drops.
+- Cleaning now only asks the player to scrub the dirt spots currently justified by the clean value.

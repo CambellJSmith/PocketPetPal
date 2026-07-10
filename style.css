@@ -1739,9 +1739,21 @@ h1 {
 .pet-area.care-active #food-tool:not(.hidden),
 .pet-area.care-active #sponge-tool:not(.hidden),
 .pet-area.care-active #syringe-tool:not(.hidden),
-.pet-area.care-active [data-dirt-spot]:not(.hidden) {
+.pet-area.care-active [data-dirt-spot]:not(.hidden):not(.cleaned) {
   display: block !important;
   visibility: visible !important;
   opacity: 1 !important;
   pointer-events: auto !important;
+}
+
+/* v5 dirt persistence */
+.pet-area:not(.care-active) .dirt-spot:not(.hidden) {
+  display: block;
+  visibility: visible;
+  opacity: 1;
+}
+
+.pet-area:not(.care-active) .dirt-spot.cleaned {
+  opacity: 1;
+  transform: none;
 }
