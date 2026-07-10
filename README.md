@@ -50,7 +50,7 @@ The creatures and accessories are not sprites. They are generated from CSS shape
 
 ## hands-on care
 
-The main care buttons now create tools directly inside the normal pet screen instead of opening a separate care window.
+The main care buttons now create tools directly inside the normal pet screen. There is no separate feeding, cleaning, or medicine window/panel.
 
 - `feed`: drag the selected food onto the creature’s mouth and release it.
 - `clean`: drag the sponge across the creature and rub every visible dirt spot. `bubble_soap` is consumed only after the cleaning is completed.

@@ -1,7 +1,7 @@
 "use strict";
 
-const SAVE_KEY = "pocket_sprout_save_v4";
-const LEGACY_SAVE_KEYS = ["pocket_sprout_save_v3", "pocket_sprout_save_v2", "pocket_sprout_save_v1"];
+const SAVE_KEY = "pocket_sprout_save_v5";
+const LEGACY_SAVE_KEYS = ["pocket_sprout_save_v4", "pocket_sprout_save_v3", "pocket_sprout_save_v2", "pocket_sprout_save_v1"];
 
 const SPECIES = [
   { id: "sproutling", label: "sproutling", pet: "#8f7dff", light: "#c9c1ff", dark: "#4e3aa8", accent: "#72df8e", extraColor: "#fff2bd", body: "round", ears: "cat", tail: "curled", wings: "none", extra: "sprout", face: "wide" },
@@ -101,11 +101,7 @@ const elements = {
   shopGrid: document.querySelector("#shop-grid"),
   inventorySummary: document.querySelector("#inventory-summary"),
   screen: document.querySelector(".screen"),
-  inlineCarePanel: document.querySelector("#inline-care-panel"),
-  careTitle: document.querySelector("#care-title"),
-  careInstruction: document.querySelector("#care-instruction"),
   careCancel: document.querySelector("#care-cancel"),
-  careProgressBar: document.querySelector("#care-progress-bar"),
   petBody: document.querySelector("#pet-body"),
   petMouth: document.querySelector("#pet-mouth"),
   foodTool: document.querySelector("#food-tool"),
@@ -143,7 +139,7 @@ const defaultState = () => {
   const species = getRandomSpeciesId();
 
   return {
-    version: 4,
+    version: 5,
     name: "sprout",
     birthday: now,
     lastUpdated: now,
@@ -240,7 +236,7 @@ function normalizeState(save) {
   return {
     ...base,
     ...save,
-    version: 4,
+    version: 5,
     name: typeof save.name === "string" && save.name.trim() ? save.name.slice(0, 14) : base.name,
     birthday: Number.isFinite(save.birthday) ? save.birthday : base.birthday,
     lastUpdated: Number.isFinite(save.lastUpdated) ? save.lastUpdated : base.lastUpdated,
@@ -681,7 +677,7 @@ function resetCareScene() {
     spot.classList.remove("cleaned");
   });
 
-  elements.careProgressBar.style.width = "0%";
+  elements.careCancel.classList.add("hidden");
   elements.petArea.classList.remove("care-active", "care-feed", "care-clean", "care-medicine", "mouth-ready", "body-ready");
 }
 
@@ -701,12 +697,11 @@ function openCareScene(kind, title, instruction, itemId = "") {
   };
 
   resetCareScene();
-  elements.inlineCarePanel.classList.remove("hidden");
-  elements.inlineCarePanel.setAttribute("aria-hidden", "false");
   elements.petArea.classList.add("care-active", `care-${kind}`);
-  elements.careTitle.textContent = title;
-  elements.careInstruction.textContent = instruction;
+  elements.careCancel.classList.remove("hidden");
+  setCareMessage(`${title}: ${instruction}`);
   render();
+  setCareMessage(`${title}: ${instruction}`);
   return true;
 }
 
@@ -721,8 +716,6 @@ function closeCareScene() {
     injecting: false
   };
 
-  elements.inlineCarePanel.classList.add("hidden");
-  elements.inlineCarePanel.setAttribute("aria-hidden", "true");
   resetCareScene();
 }
 
@@ -840,8 +833,7 @@ function cleanTouchedDirt() {
     window.setTimeout(() => spot.classList.add("hidden"), 150);
     careInteraction.cleaned += 1;
     const progress = Math.round((careInteraction.cleaned / elements.dirtSpots.length) * 100);
-    elements.careProgressBar.style.width = `${progress}%`;
-    elements.careInstruction.textContent = progress >= 100 ? "all clean. finishing wash..." : `keep rubbing. ${elements.dirtSpots.length - careInteraction.cleaned} dirt spots left.`;
+    setCareMessage(progress >= 100 ? "all clean. finishing wash..." : `keep rubbing the sponge on the creature. ${elements.dirtSpots.length - careInteraction.cleaned} dirt spots left.`);
 
     if (careInteraction.cleaned >= elements.dirtSpots.length) {
       window.setTimeout(completeCleanInteraction, 260);
@@ -904,8 +896,7 @@ function startInjectionAnimation() {
   }
 
   careInteraction.injecting = true;
-  elements.careInstruction.textContent = "medicine applied. hold still...";
-  elements.careProgressBar.style.width = "100%";
+  setCareMessage("medicine applied. hold still...");
   elements.syringeTool.classList.add("dragging");
   window.setTimeout(completeMedicineInteraction, 650);
 }
@@ -953,11 +944,10 @@ function handleCarePointerUp(event) {
 
   if (careInteraction.kind === "feed") {
     if (getOverlap(elements.foodTool, getFeedTarget())) {
-      elements.careProgressBar.style.width = "100%";
-      elements.careInstruction.textContent = `${state.name} is eating...`;
+      setCareMessage(`${state.name} is eating...`);
       window.setTimeout(completeFeedInteraction, 300);
     } else {
-      elements.careInstruction.textContent = `missed. put the food on ${state.name}'s ${getFeedTargetName()} and release it there.`;
+      setCareMessage(`missed. put the food on ${state.name}'s ${getFeedTargetName()} and release it there.`);
     }
   }
 
@@ -965,7 +955,7 @@ function handleCarePointerUp(event) {
     if (getOverlap(elements.syringeTool, elements.petBody)) {
       startInjectionAnimation();
     } else {
-      elements.careInstruction.textContent = `missed. put the syringe on ${state.name}'s body and release it there.`;
+      setCareMessage(`missed. put the syringe on ${state.name}'s body and release it there.`);
     }
   }
 

@@ -58,16 +58,7 @@
               <span class="wearable wearable-bow"></span>
             </div>
 
-            <div class="inline-care-panel hidden" id="inline-care-panel" aria-hidden="true">
-              <div>
-                <span class="care-kicker">hands_on_care</span>
-                <strong id="care-title">care</strong>
-              </div>
-              <button class="care-cancel" id="care-cancel" type="button">cancel</button>
-              <p id="care-instruction">interact directly with your creature.</p>
-              <div class="care-progress" aria-hidden="true"><span id="care-progress-bar"></span></div>
-            </div>
-
+            <button class="care-cancel-direct hidden" id="care-cancel" type="button">cancel_care</button>
             <button class="care-tool food-tool hidden" id="food-tool" type="button" aria-label="drag food onto the creature's mouth"><span></span></button>
             <button class="care-tool sponge-tool hidden" id="sponge-tool" type="button" aria-label="rub sponge across the creature"><span></span></button>
             <button class="care-tool syringe-tool hidden" id="syringe-tool" type="button" aria-label="drag syringe onto the creature"><span></span></button>
@@ -191,7 +182,7 @@
 
       <section class="how-to-play">
         <h2>how_it_works</h2>
-        <p>Care is now hands-on inside the main pet screen. Drag food onto the creature’s mouth, rub dirt away directly across the creature with the sponge, and apply medicine to the creature without opening a separate care window. If hunger, boredom, exhaustion, dirt, or sickness are neglected for too long, health can reach zero and the creature dies. Everything still saves locally in the player’s browser using localStorage.</p>
+        <p>Care is hands-on directly on the creature. Food, sponge, dirt, and syringe all appear inside the normal pet screen with no separate feeding or washing space. If hunger, boredom, exhaustion, dirt, or sickness are neglected for too long, health can reach zero and the creature dies. Everything still saves locally in the player’s browser using localStorage.</p>
       </section>
     </section>
   </main>
