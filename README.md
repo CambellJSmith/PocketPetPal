@@ -328,3 +328,13 @@ Current age thresholds:
 - `bring_pet_from_tag` can also read the URL record.
 - The local full save is preserved while the pet is away, so when the same pet comes back to its own computer, equipment/inventory details are retained locally.
 - The game refuses to write if the generated tag link is longer than a small-tag safety limit.
+
+
+## v29 140 byte tag write cap
+
+- Every NFC write path now uses a single URL record only.
+- Before writing, the game estimates the full NDEF URL record size.
+- If the estimated write is over 140 bytes, the game does not write to the tag.
+- `save_summary` now writes the same safe short travel URL instead of writing URL + text summary.
+- The pet-tag preview shows the estimated tag write size as `tag_write: X/140 bytes`.
+- The tag payload now uses `#3...` instead of `#p=...` to save two bytes.

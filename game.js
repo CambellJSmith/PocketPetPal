@@ -1,8 +1,9 @@
 "use strict";
 
-const SAVE_KEY = "pocket_sprout_save_v28";
+const SAVE_KEY = "pocket_sprout_save_v29";
 const CANONICAL_GAME_URL = "https://cambelljsmith.github.io/PocketPetPal/";
-const LEGACY_SAVE_KEYS = ["pocket_sprout_save_v27", "pocket_sprout_save_v26", "pocket_sprout_save_v25", "pocket_sprout_save_v24", "pocket_sprout_save_v23", "pocket_sprout_save_v22", "pocket_sprout_save_v21", "pocket_sprout_save_v20", "pocket_sprout_save_v19", "pocket_sprout_save_v18", "pocket_sprout_save_v17", "pocket_sprout_save_v16", "pocket_sprout_save_v15", "pocket_sprout_save_v14", "pocket_sprout_save_v13", "pocket_sprout_save_v12", "pocket_sprout_save_v11", "pocket_sprout_save_v10", "pocket_sprout_save_v9", "pocket_sprout_save_v8", "pocket_sprout_save_v7", "pocket_sprout_save_v5", "pocket_sprout_save_v4", "pocket_sprout_save_v3", "pocket_sprout_save_v2", "pocket_sprout_save_v1"];
+const MAX_NFC_WRITE_BYTES = 140;
+const LEGACY_SAVE_KEYS = ["pocket_sprout_save_v28", "pocket_sprout_save_v27", "pocket_sprout_save_v26", "pocket_sprout_save_v25", "pocket_sprout_save_v24", "pocket_sprout_save_v23", "pocket_sprout_save_v22", "pocket_sprout_save_v21", "pocket_sprout_save_v20", "pocket_sprout_save_v19", "pocket_sprout_save_v18", "pocket_sprout_save_v17", "pocket_sprout_save_v16", "pocket_sprout_save_v15", "pocket_sprout_save_v14", "pocket_sprout_save_v13", "pocket_sprout_save_v12", "pocket_sprout_save_v11", "pocket_sprout_save_v10", "pocket_sprout_save_v9", "pocket_sprout_save_v8", "pocket_sprout_save_v7", "pocket_sprout_save_v5", "pocket_sprout_save_v4", "pocket_sprout_save_v3", "pocket_sprout_save_v2", "pocket_sprout_save_v1"];
 const MINUTES_PER_DAY = 1440;
 const DAILY_DECAY = {
   food: 72,
@@ -204,7 +205,7 @@ const defaultState = () => {
   const species = getRandomSpeciesId();
 
   return {
-    version: 28,
+    version: 29,
     petId: createPetId(),
     playerName: "",
     petAway: false,
@@ -337,7 +338,7 @@ function base64UrlDecode(data) {
 function getPortablePetState(sourceState = state) {
   return {
     ...sourceState,
-    version: 28,
+    version: 29,
     petAway: false,
     visitingPet: null,
     lastUpdated: Date.now()
@@ -421,7 +422,7 @@ function restoreTinyTravelPayload(payload = "") {
 
   return normalizeState({
     ...base,
-    version: 28,
+    version: 29,
     petId: encodeTinyName(parts[1], 8),
     playerName: sanitizePlayerName(decodeTinyName(parts[2])),
     name: sanitizePetName(decodeTinyName(parts[3])) || "sprout",
@@ -455,7 +456,7 @@ function restoreTinyTravelPayload(payload = "") {
 
 function getTravelUrlForTag(sourceState = state) {
   const url = new URL(CANONICAL_GAME_URL);
-  url.hash = `p=${createTinyTravelPayload(sourceState)}`;
+  url.hash = createTinyTravelPayload(sourceState);
   return url.toString();
 }
 
@@ -465,9 +466,24 @@ function getTravelPayloadFromUrl(urlText = window.location.href) {
     const hash = url.hash.startsWith("#") ? url.hash.slice(1) : url.hash;
     const params = new URLSearchParams(hash);
 
-    return params.get("p") || url.searchParams.get("p") || "";
+    if (params.has("p")) {
+      return params.get("p") || "";
+    }
+
+    if (hash.startsWith("3.")) {
+      return hash;
+    }
+
+    return url.searchParams.get("p") || "";
   } catch {
-    const match = String(urlText || "").match(/(?:#|\?|&)p=([^&#]+)/);
+    const text = String(urlText || "");
+    const directMatch = text.match(/#(3\.[^&#]+)/);
+
+    if (directMatch) {
+      return decodeURIComponent(directMatch[1]);
+    }
+
+    const match = text.match(/(?:#|\?|&)p=([^&#]+)/);
     return match ? decodeURIComponent(match[1]) : "";
   }
 }
@@ -532,7 +548,7 @@ function decodeTravelPetFromTag(text) {
         const stats = Array.isArray(compact.a) ? compact.a : [];
         return normalizeState({
           ...base,
-          version: 28,
+          version: 29,
           petId: String(compact.i || createPetId()).slice(0, 24),
           playerName: sanitizePlayerName(String(compact.p || "")),
           name: sanitizePetName(String(compact.n || "sprout")) || "sprout",
@@ -721,6 +737,8 @@ function formatNfcSummaryText(summaryText = encodePetSummaryForNfc()) {
     return "could not read pet summary.";
   }
 
+  const byteInfo = getTravelTagByteInfo();
+
   return [
     `page: ${getNfcGameUrl()}`,
     `player: ${parsed.pl || "unnamed"}`,
@@ -728,7 +746,8 @@ function formatNfcSummaryText(summaryText = encodePetSummaryForNfc()) {
     `stage: ${parsed.st || "unknown"}`,
     `species: ${parsed.sp || "unknown"}`,
     `mood: ${parsed.m || "unknown"}`,
-    `coins: ${parsed.c || "0"}`
+    `coins: ${parsed.c || "0"}`,
+    `tag_write: ${byteInfo.estimatedBytes}/${MAX_NFC_WRITE_BYTES} bytes`
   ].join("\n");
 }
 
@@ -810,65 +829,50 @@ function decodeNfcRecordText(record) {
   return new TextDecoder(encoding).decode(record.data);
 }
 
-async function writePetSummaryToNfc() {
-  if (blockPlayerNameCare()) {
-    return;
-  }
-
-  if (!isWebNfcAvailable()) {
-    setNfcStatus(getNfcUnavailableReason());
-    return;
-  }
-
-  const ndef = new NDEFReader();
-  const gameUrl = getNfcGameUrl();
-  const petSummary = encodePetSummaryForNfc();
-
-  try {
-    setNfcStatus("hold your phone to the tag");
-    await ndef.write({
-      records: [
-        {
-          recordType: "url",
-          data: gameUrl
-        },
-        {
-          recordType: "text",
-          data: petSummary
-        }
-      ]
-    }, {
-      overwrite: true
-    });
-
-    state.lastMessage = "pet tag saved."; 
-    setNfcStatus("pet tag saved");
-    saveState();
-    render();
-  } catch (error) {
-    setNfcStatus("could not save pet tag");
-  }
+function getByteLength(text) {
+  return new TextEncoder().encode(String(text || "")).length;
 }
 
-async function writeTravelPetToTag(petState, successMessage) {
-  if (!isWebNfcAvailable()) {
-    setNfcStatus(getNfcUnavailableReason());
+function estimateUrlRecordBytes(urlText) {
+  const text = String(urlText || "");
+
+  if (text.startsWith("https://")) {
+    return getByteLength(text.slice("https://".length)) + 5;
+  }
+
+  if (text.startsWith("http://")) {
+    return getByteLength(text.slice("http://".length)) + 5;
+  }
+
+  return getByteLength(text) + 8;
+}
+
+function getTravelTagByteInfo(petState = state) {
+  const travelUrl = getTravelUrlForTag(petState);
+  const estimatedBytes = estimateUrlRecordBytes(travelUrl);
+
+  return {
+    travelUrl,
+    estimatedBytes,
+    withinLimit: estimatedBytes <= MAX_NFC_WRITE_BYTES
+  };
+}
+
+async function writeSingleUrlRecordUnderLimit(urlText, successMessage) {
+  const estimatedBytes = estimateUrlRecordBytes(urlText);
+
+  if (estimatedBytes > MAX_NFC_WRITE_BYTES) {
+    setNfcStatus(`tag link is ${estimatedBytes} bytes; max is ${MAX_NFC_WRITE_BYTES}`);
     return false;
   }
 
   const ndef = new NDEFReader();
-  const travelUrl = getTravelUrlForTag(petState);
-
-  if (travelUrl.length > 132) {
-    setNfcStatus("pet tag link is too long");
-    return false;
-  }
 
   try {
-    setNfcStatus("hold your phone to the tag");
+    setNfcStatus(`hold your phone to the tag (${estimatedBytes}/${MAX_NFC_WRITE_BYTES} bytes)`);
     await ndef.write({
       records: [
-        { recordType: "url", data: travelUrl }
+        { recordType: "url", data: urlText }
       ]
     }, {
       overwrite: true
@@ -883,13 +887,48 @@ async function writeTravelPetToTag(petState, successMessage) {
     if (errorName === "AbortError" || errorName === "NotAllowedError") {
       setNfcStatus("tag save was cancelled");
     } else if (errorName === "NotSupportedError" || errorName === "NetworkError" || errorMessage.includes("capacity") || errorMessage.includes("space")) {
-      setNfcStatus("tag is too small for travelling pet");
+      setNfcStatus("tag is too small");
     } else {
       setNfcStatus("could not save pet tag");
     }
 
     return false;
   }
+}
+
+async function writePetSummaryToNfc() {
+  if (blockPlayerNameCare()) {
+    return;
+  }
+
+  if (!isWebNfcAvailable()) {
+    setNfcStatus(getNfcUnavailableReason());
+    return;
+  }
+
+  const { travelUrl } = getTravelTagByteInfo(state);
+  const written = await writeSingleUrlRecordUnderLimit(travelUrl, "pet tag saved");
+
+  if (!written) {
+    state.lastMessage = "the tag was not changed because the write would not fit safely.";
+    saveState();
+    render();
+    return;
+  }
+
+  state.lastMessage = "pet tag saved.";
+  saveState();
+  render();
+}
+
+async function writeTravelPetToTag(petState, successMessage) {
+  if (!isWebNfcAvailable()) {
+    setNfcStatus(getNfcUnavailableReason());
+    return false;
+  }
+
+  const { travelUrl } = getTravelTagByteInfo(petState);
+  return writeSingleUrlRecordUnderLimit(travelUrl, successMessage);
 }
 
 async function sendCurrentPetToTag() {
@@ -1055,13 +1094,20 @@ async function readPetSummaryFromNfc() {
 
     ndef.onreading = (event) => {
       let foundSummary = "";
+      let foundTravelPet = null;
 
       for (const record of event.message.records) {
-        if (record.recordType !== "text") {
+        if (record.recordType !== "text" && record.recordType !== "url") {
           continue;
         }
 
         const text = decodeNfcRecordText(record);
+        const travelPet = decodeTravelPetFromTag(text);
+
+        if (travelPet) {
+          foundTravelPet = travelPet;
+          break;
+        }
 
         if (text.startsWith("ps:v1|")) {
           foundSummary = text;
@@ -1069,7 +1115,14 @@ async function readPetSummaryFromNfc() {
         }
       }
 
-      if (foundSummary) {
+      if (foundTravelPet) {
+        const originalState = state;
+        state = foundTravelPet;
+        elements.nfcSummary.textContent = formatNfcSummaryText();
+        state = originalState;
+        state.lastMessage = "pet tag checked.";
+        setNfcStatus("pet tag checked");
+      } else if (foundSummary) {
         elements.nfcSummary.textContent = formatNfcSummaryText(foundSummary);
         state.lastMessage = "pet tag checked."; 
         setNfcStatus("pet tag checked");
@@ -1544,7 +1597,7 @@ function normalizeState(save) {
   return {
     ...base,
     ...save,
-    version: 28,
+    version: 29,
     petId: typeof save.petId === "string" && save.petId.trim() ? save.petId.slice(0, 24) : base.petId,
     playerName: typeof save.playerName === "string" && save.playerName.trim() ? sanitizePlayerName(save.playerName) : base.playerName,
     petAway: Boolean(save.petAway),
