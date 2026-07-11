@@ -316,3 +316,15 @@ Current age thresholds:
 - Old `ppp_pet_v1:` travel records can still be read.
 - If a write still fails, the game now keeps the pet on the computer and shows a more useful message.
 - Very small tags may still be too small for travelling pets; use a larger writable tag if that happens.
+
+
+## v28 safe travel URL tags
+
+- Reworked travelling pets again after the previous compact text record could still wipe a small tag on failed write.
+- `send_my_pet_to_tag` now writes one short URL record only:
+  `https://cambelljsmith.github.io/PocketPetPal/#p=...`
+- The URL contains a very small travelling-pet payload.
+- The page can import that payload automatically when the tag is scanned.
+- `bring_pet_from_tag` can also read the URL record.
+- The local full save is preserved while the pet is away, so when the same pet comes back to its own computer, equipment/inventory details are retained locally.
+- The game refuses to write if the generated tag link is longer than a small-tag safety limit.
