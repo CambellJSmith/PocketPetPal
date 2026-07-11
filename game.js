@@ -1,8 +1,8 @@
 "use strict";
 
-const SAVE_KEY = "pocket_sprout_save_v25";
+const SAVE_KEY = "pocket_sprout_save_v27";
 const CANONICAL_GAME_URL = "https://cambelljsmith.github.io/PocketPetPal/";
-const LEGACY_SAVE_KEYS = ["pocket_sprout_save_v24", "pocket_sprout_save_v23", "pocket_sprout_save_v22", "pocket_sprout_save_v21", "pocket_sprout_save_v20", "pocket_sprout_save_v19", "pocket_sprout_save_v18", "pocket_sprout_save_v17", "pocket_sprout_save_v16", "pocket_sprout_save_v15", "pocket_sprout_save_v14", "pocket_sprout_save_v13", "pocket_sprout_save_v12", "pocket_sprout_save_v11", "pocket_sprout_save_v10", "pocket_sprout_save_v9", "pocket_sprout_save_v8", "pocket_sprout_save_v7", "pocket_sprout_save_v5", "pocket_sprout_save_v4", "pocket_sprout_save_v3", "pocket_sprout_save_v2", "pocket_sprout_save_v1"];
+const LEGACY_SAVE_KEYS = ["pocket_sprout_save_v26", "pocket_sprout_save_v25", "pocket_sprout_save_v24", "pocket_sprout_save_v23", "pocket_sprout_save_v22", "pocket_sprout_save_v21", "pocket_sprout_save_v20", "pocket_sprout_save_v19", "pocket_sprout_save_v18", "pocket_sprout_save_v17", "pocket_sprout_save_v16", "pocket_sprout_save_v15", "pocket_sprout_save_v14", "pocket_sprout_save_v13", "pocket_sprout_save_v12", "pocket_sprout_save_v11", "pocket_sprout_save_v10", "pocket_sprout_save_v9", "pocket_sprout_save_v8", "pocket_sprout_save_v7", "pocket_sprout_save_v5", "pocket_sprout_save_v4", "pocket_sprout_save_v3", "pocket_sprout_save_v2", "pocket_sprout_save_v1"];
 const MINUTES_PER_DAY = 1440;
 const DAILY_DECAY = {
   food: 72,
@@ -106,6 +106,8 @@ const elements = {
   visitorPet: document.querySelector("#visitor-pet"),
   visitorLabel: document.querySelector("#visitor-label"),
   travelEmpty: document.querySelector("#travel-empty"),
+  speechBubble: document.querySelector("#speech-bubble"),
+  speechText: document.querySelector("#speech-text"),
   petArea: document.querySelector("#pet-area"),
   starTarget: document.querySelector("#star-target"),
   miniGameButton: document.querySelector("#mini-game-button"),
@@ -202,7 +204,7 @@ const defaultState = () => {
   const species = getRandomSpeciesId();
 
   return {
-    version: 25,
+    version: 27,
     petId: createPetId(),
     playerName: "",
     petAway: false,
@@ -335,24 +337,179 @@ function base64UrlDecode(data) {
 function getPortablePetState(sourceState = state) {
   return {
     ...sourceState,
-    version: 25,
+    version: 27,
     petAway: false,
     visitingPet: null,
     lastUpdated: Date.now()
   };
 }
 
+function getCompactCounts(source = {}, itemIds = []) {
+  return itemIds.map((itemId) => Math.max(0, Math.min(99, Math.floor(Number(source[itemId]) || 0))));
+}
+
+function restoreCompactCounts(values = [], itemIds = [], defaults = {}) {
+  const output = { ...defaults };
+
+  itemIds.forEach((itemId, index) => {
+    output[itemId] = Math.max(0, Math.min(99, Math.floor(Number(values[index]) || 0)));
+  });
+
+  return output;
+}
+
+function compactAccessoryPositions(positions = {}) {
+  const output = [];
+
+  Object.entries(positions || {}).forEach(([itemId, position]) => {
+    const itemIndex = EQUIPMENT_ORDER.indexOf(itemId);
+
+    if (itemIndex < 0 || !ITEMS[itemId] || ITEMS[itemId].kind !== "accessory") {
+      return;
+    }
+
+    output.push([
+      itemIndex,
+      Math.round(clamp(Number(position?.x) || 0, 0, 100)),
+      Math.round(clamp(Number(position?.y) || 0, 0, 100))
+    ]);
+  });
+
+  return output;
+}
+
+function restoreCompactAccessoryPositions(values = []) {
+  const output = {};
+
+  values.forEach(([itemIndex, x, y]) => {
+    const itemId = EQUIPMENT_ORDER[itemIndex];
+
+    if (!itemId || !ITEMS[itemId] || ITEMS[itemId].kind !== "accessory") {
+      return;
+    }
+
+    output[itemId] = {
+      x: clamp(Number(x) || 0, 0, 100),
+      y: clamp(Number(y) || 0, 0, 100)
+    };
+  });
+
+  return output;
+}
+
+function compactEquipment(equipment = {}) {
+  return [
+    EQUIPMENT_ORDER.indexOf(equipment.hat || ""),
+    EQUIPMENT_ORDER.indexOf(equipment.face || ""),
+    EQUIPMENT_ORDER.indexOf(equipment.neck || "")
+  ];
+}
+
+function restoreCompactEquipment(values = []) {
+  const restored = defaultEquipment();
+  const slots = ["hat", "face", "neck"];
+
+  slots.forEach((slot, index) => {
+    const itemId = EQUIPMENT_ORDER[Number(values[index])];
+
+    if (itemId && ITEMS[itemId]?.slot === slot) {
+      restored[slot] = itemId;
+    }
+  });
+
+  return restored;
+}
+
+function createCompactTravelPet(sourceState = state) {
+  const pet = getPortablePetState(sourceState);
+
+  return {
+    v: 2,
+    i: pet.petId,
+    p: pet.playerName || "",
+    n: pet.name || "sprout",
+    b: Math.floor(Number(pet.birthday) || Date.now()),
+    u: Date.now(),
+    s: pet.speciesId,
+    a: [
+      Math.round(Number(pet.food) || 0),
+      Math.round(Number(pet.fun) || 0),
+      Math.round(Number(pet.energy) || 0),
+      Math.round(Number(pet.cleanliness) || 0),
+      Math.round(Number(pet.health) || 0),
+      Math.round(Number(pet.affection) || 0),
+      Math.round(Number(pet.discipline) || 0)
+    ],
+    c: Math.max(0, Math.floor(Number(pet.coins) || 0)),
+    r: Math.max(0, Math.floor(Number(pet.careScore) || 0)),
+    h: pet.hatchNamed ? 1 : 0,
+    z: pet.sickness ? 1 : 0,
+    d: pet.dead ? 1 : 0,
+    q: getCompactCounts(pet.inventory, SHOP_ORDER),
+    e: getCompactCounts(pet.inventory, EQUIPMENT_ORDER),
+    g: compactEquipment(pet.equipment),
+    x: compactAccessoryPositions(pet.accessoryPositions)
+  };
+}
+
+function restoreCompactTravelPet(compact = {}) {
+  const base = defaultState();
+  const stats = Array.isArray(compact.a) ? compact.a : [];
+
+  return normalizeState({
+    ...base,
+    version: 27,
+    petId: String(compact.i || createPetId()).slice(0, 24),
+    playerName: sanitizePlayerName(String(compact.p || "")),
+    name: sanitizePetName(String(compact.n || "sprout")) || "sprout",
+    birthday: Number(compact.b) || Date.now(),
+    lastUpdated: Number(compact.u) || Date.now(),
+    speciesId: SPECIES.some((species) => species.id === compact.s) ? compact.s : base.speciesId,
+    food: Number(stats[0]) || base.food,
+    fun: Number(stats[1]) || base.fun,
+    energy: Number(stats[2]) || base.energy,
+    cleanliness: Number(stats[3]) || base.cleanliness,
+    health: Number(stats[4]) || base.health,
+    affection: Number(stats[5]) || base.affection,
+    discipline: Number(stats[6]) || base.discipline,
+    coins: Number(compact.c) || 0,
+    careScore: Number(compact.r) || 0,
+    hatchNamed: Boolean(compact.h),
+    sickness: Boolean(compact.z),
+    dead: Boolean(compact.d),
+    inventory: {
+      ...restoreCompactCounts(compact.q, SHOP_ORDER, defaultInventory()),
+      ...restoreCompactCounts(compact.e, EQUIPMENT_ORDER, defaultInventory())
+    },
+    equipment: restoreCompactEquipment(compact.g),
+    accessoryPositions: restoreCompactAccessoryPositions(compact.x),
+    petAway: false,
+    visitingPet: null,
+    sleepStartedAt: 0,
+    sleepUntil: 0,
+    sleeping: false,
+    lastMessage: "pet came from the tag."
+  });
+}
+
 function encodeTravelPetForTag(sourceState = state) {
-  return `ppp_pet_v1:${base64UrlEncode(JSON.stringify({
-    kind: "pocket_pet_pal_travel_pet",
-    version: 1,
-    exportedAt: Date.now(),
-    state: getPortablePetState(sourceState)
-  }))}`;
+  return `ppp2:${base64UrlEncode(JSON.stringify(createCompactTravelPet(sourceState)))}`;
 }
 
 function decodeTravelPetFromTag(text) {
-  if (!text || !text.startsWith("ppp_pet_v1:")) {
+  if (!text) {
+    return null;
+  }
+
+  if (text.startsWith("ppp2:")) {
+    try {
+      return restoreCompactTravelPet(JSON.parse(base64UrlDecode(text.slice("ppp2:".length))));
+    } catch {
+      return null;
+    }
+  }
+
+  if (!text.startsWith("ppp_pet_v1:")) {
     return null;
   }
 
@@ -639,23 +796,14 @@ async function writeTravelPetToTag(petState, successMessage) {
 
   const ndef = new NDEFReader();
   const gameUrl = getNfcGameUrl();
-  const portablePet = getPortablePetState(petState);
-  const summary = (() => {
-    const originalState = state;
-    state = portablePet;
-    const output = encodePetSummaryForNfc();
-    state = originalState;
-    return output;
-  })();
-  const fullPet = encodeTravelPetForTag(portablePet);
+  const compactPet = encodeTravelPetForTag(petState);
 
   try {
     setNfcStatus("hold your phone to the tag");
     await ndef.write({
       records: [
         { recordType: "url", data: gameUrl },
-        { recordType: "text", data: summary },
-        { recordType: "text", data: fullPet }
+        { recordType: "text", data: compactPet }
       ]
     }, {
       overwrite: true
@@ -663,8 +811,18 @@ async function writeTravelPetToTag(petState, successMessage) {
 
     setNfcStatus(successMessage);
     return true;
-  } catch {
-    setNfcStatus("could not save pet tag");
+  } catch (error) {
+    const errorName = error?.name || "";
+    const errorMessage = String(error?.message || "").toLowerCase();
+
+    if (errorName === "AbortError" || errorName === "NotAllowedError") {
+      setNfcStatus("tag save was cancelled");
+    } else if (errorName === "NotSupportedError" || errorName === "NetworkError" || errorMessage.includes("capacity") || errorMessage.includes("space")) {
+      setNfcStatus("tag is too small for travelling pet");
+    } else {
+      setNfcStatus("could not save pet tag");
+    }
+
     return false;
   }
 }
@@ -684,6 +842,9 @@ async function sendCurrentPetToTag() {
   const written = await writeTravelPetToTag(petToSend, "pet saved to tag");
 
   if (!written) {
+    state.lastMessage = "the pet stayed here because the tag was not saved.";
+    saveState();
+    render();
     return;
   }
 
@@ -795,6 +956,9 @@ async function sendVisitorHomeToTag() {
   const written = await writeTravelPetToTag(visitor, "visitor saved to tag");
 
   if (!written) {
+    state.lastMessage = "the visitor stayed here because the tag was not saved.";
+    saveState();
+    render();
     return;
   }
 
@@ -1235,7 +1399,7 @@ function startAccessoryDrag(event) {
   element.setPointerCapture(event.pointerId);
   moveAccessoryToPointer(event);
   state.lastMessage = `moving ${ITEMS[itemId].label}.`;
-  elements.petMessage.textContent = state.lastMessage;
+  updateMessageDisplays();
 }
 
 function continueAccessoryDrag(event) {
@@ -1322,7 +1486,7 @@ function normalizeState(save) {
   return {
     ...base,
     ...save,
-    version: 25,
+    version: 27,
     petId: typeof save.petId === "string" && save.petId.trim() ? save.petId.slice(0, 24) : base.petId,
     playerName: typeof save.playerName === "string" && save.playerName.trim() ? sanitizePlayerName(save.playerName) : base.playerName,
     petAway: Boolean(save.petAway),
@@ -2030,6 +2194,35 @@ function getLastTickText() {
   return "";
 }
 
+function getPetSpeechBubbleText(message = state.lastMessage) {
+  if (!message || typeof message !== "string") {
+    return "";
+  }
+
+  const matches = [...message.matchAll(/[“"]([^”"]+)[”"]/g)];
+
+  if (matches.length === 0) {
+    return "";
+  }
+
+  return matches[matches.length - 1][1].trim();
+}
+
+function updateMessageDisplays() {
+  elements.petMessage.textContent = state.lastMessage;
+
+  if (!elements.speechBubble || !elements.speechText) {
+    return;
+  }
+
+  const speechText = state.petAway ? "" : getPetSpeechBubbleText(state.lastMessage);
+  const showSpeech = Boolean(speechText);
+
+  elements.speechText.textContent = speechText;
+  elements.speechBubble.hidden = !showSpeech;
+  elements.speechBubble.classList.toggle("hidden", !showSpeech);
+}
+
 function renderVisitorPet() {
   const visitor = state.visitingPet;
   const hasVisitor = Boolean(visitor);
@@ -2105,7 +2298,7 @@ function render() {
   elements.speciesLabel.textContent = isEggStage() ? "unknown" : species.label;
   elements.affectionLabel.textContent = Math.round(state.affection);
   elements.disciplineLabel.textContent = Math.round(state.discipline);
-  elements.petMessage.textContent = state.lastMessage;
+  updateMessageDisplays();
 
   elements.foodValue.textContent = getStatLabel(state.food);
   elements.funValue.textContent = getStatLabel(state.fun);

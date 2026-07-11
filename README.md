@@ -297,3 +297,22 @@ Current age thresholds:
 - `send_visitor_home` writes the visiting pet back to the tag and removes it from the screen.
 - The NFC tag also still writes the canonical page URL first.
 - This is a no-backend approximation of physical ownership. A tag with enough storage is needed for full travelling pets.
+
+
+## v26 pet speech bubble
+
+- Added a speech bubble inside the pet area.
+- When the pet says a dialogue line, the spoken text now appears in a bubble that points toward the pet's mouth.
+- The regular message panel is still kept for general system messages.
+- The speech bubble only appears for spoken dialogue and hides for non-speech status text.
+
+
+## v27 compact travel tags
+
+- Reworked `send_my_pet_to_tag` to use a compact travel-pet record instead of the full browser save JSON.
+- Travel tags now write only two NFC records:
+  - the PocketPetPal URL
+  - a compact `ppp2:` travelling pet record
+- Old `ppp_pet_v1:` travel records can still be read.
+- If a write still fails, the game now keeps the pet on the computer and shows a more useful message.
+- Very small tags may still be too small for travelling pets; use a larger writable tag if that happens.

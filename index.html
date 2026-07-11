@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>pocket_sprout</title>
   <meta name="description" content="A tiny browser-based virtual pet game for GitHub Pages.">
-  <link rel="stylesheet" href="style.css?v=25">
+  <link rel="stylesheet" href="style.css?v=27">
 </head>
 <body>
   <main class="page-shell">
@@ -38,6 +38,9 @@
 
           <div class="pet-area" id="pet-area">
             <div class="pet-shadow" id="pet-shadow" aria-hidden="true"></div>
+            <div class="speech-bubble hidden" id="speech-bubble" hidden>
+              <p id="speech-text"></p>
+            </div>
             <div class="pet" id="pet" aria-label="your pet">
               <span class="pet-tail"></span>
               <span class="pet-wing pet-wing-left"></span>
@@ -278,7 +281,7 @@
           </div>
 
           <pre class="nfc-summary" id="nfc-summary">loading_nfc_summary...</pre>
-          <p class="nfc-note">send your pet onto a physical tag, bring a travelling pet in, or invite a friend's pet to visit this screen. if this browser cannot save tags, open in Chrome and your pet will come with you.</p>
+          <p class="nfc-note">send your pet onto a physical tag, bring a travelling pet in, or invite a friend's pet to visit this screen. travelling pets use a compact tag save, but very small tags may still not have enough space.</p>
         </section>
       </section>
 
@@ -314,6 +317,6 @@
     </div>
   </section>
 
-  <script src="game.js?v=25"></script>
+  <script src="game.js?v=27"></script>
 </body>
 </html>
