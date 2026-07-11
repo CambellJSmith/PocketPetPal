@@ -1,8 +1,8 @@
 "use strict";
 
-const SAVE_KEY = "pocket_sprout_save_v21";
+const SAVE_KEY = "pocket_sprout_save_v25";
 const CANONICAL_GAME_URL = "https://cambelljsmith.github.io/PocketPetPal/";
-const LEGACY_SAVE_KEYS = ["pocket_sprout_save_v20", "pocket_sprout_save_v19", "pocket_sprout_save_v18", "pocket_sprout_save_v17", "pocket_sprout_save_v16", "pocket_sprout_save_v15", "pocket_sprout_save_v14", "pocket_sprout_save_v13", "pocket_sprout_save_v12", "pocket_sprout_save_v11", "pocket_sprout_save_v10", "pocket_sprout_save_v9", "pocket_sprout_save_v8", "pocket_sprout_save_v7", "pocket_sprout_save_v5", "pocket_sprout_save_v4", "pocket_sprout_save_v3", "pocket_sprout_save_v2", "pocket_sprout_save_v1"];
+const LEGACY_SAVE_KEYS = ["pocket_sprout_save_v24", "pocket_sprout_save_v23", "pocket_sprout_save_v22", "pocket_sprout_save_v21", "pocket_sprout_save_v20", "pocket_sprout_save_v19", "pocket_sprout_save_v18", "pocket_sprout_save_v17", "pocket_sprout_save_v16", "pocket_sprout_save_v15", "pocket_sprout_save_v14", "pocket_sprout_save_v13", "pocket_sprout_save_v12", "pocket_sprout_save_v11", "pocket_sprout_save_v10", "pocket_sprout_save_v9", "pocket_sprout_save_v8", "pocket_sprout_save_v7", "pocket_sprout_save_v5", "pocket_sprout_save_v4", "pocket_sprout_save_v3", "pocket_sprout_save_v2", "pocket_sprout_save_v1"];
 const MINUTES_PER_DAY = 1440;
 const DAILY_DECAY = {
   food: 72,
@@ -101,6 +101,11 @@ const elements = {
   resetButton: document.querySelector("#reset-button"),
   nameInput: document.querySelector("#name-input"),
   pet: document.querySelector("#pet"),
+  petShadow: document.querySelector("#pet-shadow"),
+  visitorSlot: document.querySelector("#visitor-slot"),
+  visitorPet: document.querySelector("#visitor-pet"),
+  visitorLabel: document.querySelector("#visitor-label"),
+  travelEmpty: document.querySelector("#travel-empty"),
   petArea: document.querySelector("#pet-area"),
   starTarget: document.querySelector("#star-target"),
   miniGameButton: document.querySelector("#mini-game-button"),
@@ -127,11 +132,16 @@ const elements = {
   energyBar: document.querySelector("#energy-bar"),
   cleanlinessBar: document.querySelector("#cleanliness-bar"),
   healthBar: document.querySelector("#health-bar"),
+  realTimePanel: document.querySelector("#real-time-panel"),
   realTimeSummary: document.querySelector("#real-time-summary"),
   nextFeedLabel: document.querySelector("#next-feed-label"),
   nextCleanLabel: document.querySelector("#next-clean-label"),
   nextMedicineLabel: document.querySelector("#next-medicine-label"),
   lastTickLabel: document.querySelector("#last-tick-label"),
+  playerNameModal: document.querySelector("#player-name-modal"),
+  playerNameInput: document.querySelector("#player-name-input"),
+  playerNameButton: document.querySelector("#player-name-button"),
+  playerNameError: document.querySelector("#player-name-error"),
   hatchNamingModal: document.querySelector("#hatch-naming-modal"),
   hatchNameInput: document.querySelector("#hatch-name-input"),
   hatchNameButton: document.querySelector("#hatch-name-button"),
@@ -145,6 +155,9 @@ const elements = {
   nfcWriteButton: document.querySelector("#nfc-write-button"),
   nfcReadButton: document.querySelector("#nfc-read-button"),
   nfcChromeButton: document.querySelector("#nfc-chrome-button"),
+  nfcSendPetButton: document.querySelector("#nfc-send-pet-button"),
+  nfcBringPetButton: document.querySelector("#nfc-bring-pet-button"),
+  nfcSendVisitorButton: document.querySelector("#nfc-send-visitor-button"),
   nfcStatus: document.querySelector("#nfc-status"),
   nfcSummary: document.querySelector("#nfc-summary"),
   tabButtons: [...document.querySelectorAll("[data-tab-target]")],
@@ -189,8 +202,11 @@ const defaultState = () => {
   const species = getRandomSpeciesId();
 
   return {
-    version: 21,
+    version: 25,
     petId: createPetId(),
+    playerName: "",
+    petAway: false,
+    visitingPet: null,
     name: "sprout",
     birthday: now,
     lastUpdated: now,
@@ -316,12 +332,41 @@ function base64UrlDecode(data) {
   return new TextDecoder().decode(bytes);
 }
 
-function getPortablePetState() {
+function getPortablePetState(sourceState = state) {
   return {
-    ...state,
-    version: 21,
+    ...sourceState,
+    version: 25,
+    petAway: false,
+    visitingPet: null,
     lastUpdated: Date.now()
   };
+}
+
+function encodeTravelPetForTag(sourceState = state) {
+  return `ppp_pet_v1:${base64UrlEncode(JSON.stringify({
+    kind: "pocket_pet_pal_travel_pet",
+    version: 1,
+    exportedAt: Date.now(),
+    state: getPortablePetState(sourceState)
+  }))}`;
+}
+
+function decodeTravelPetFromTag(text) {
+  if (!text || !text.startsWith("ppp_pet_v1:")) {
+    return null;
+  }
+
+  try {
+    const payload = JSON.parse(base64UrlDecode(text.slice("ppp_pet_v1:".length)));
+
+    if (payload.kind !== "pocket_pet_pal_travel_pet" || !payload.state) {
+      return null;
+    }
+
+    return normalizeState({ ...payload.state, petAway: false, visitingPet: null });
+  } catch {
+    return null;
+  }
 }
 
 function encodePetTransferForChrome() {
@@ -380,6 +425,10 @@ function importPetTransferFromUrl(fallbackState) {
 }
 
 function openCurrentPetInAndroidChrome() {
+  if (blockPlayerNameCare()) {
+    return;
+  }
+
   const transferUrl = getChromeTransferUrl();
 
   try {
@@ -388,7 +437,7 @@ function openCurrentPetInAndroidChrome() {
     // Clipboard is optional. The intent URL below is the important path.
   }
 
-  state.lastMessage = "opening chrome with this pet data.";
+  state.lastMessage = "opening in Chrome with this pet.";
   saveState();
 
   window.location.href = getAndroidChromeIntentUrl();
@@ -400,6 +449,7 @@ function getPetSummaryObject() {
 
   return {
     id: state.petId,
+    player: state.playerName || "",
     name: getDisplayName(stage),
     stage,
     species: species.id,
@@ -415,6 +465,7 @@ function encodePetSummaryForNfc() {
   return [
     "ps:v1",
     `id=${sanitizeNfcValue(summary.id)}`,
+    `pl=${sanitizeNfcValue(summary.player)}`,
     `n=${sanitizeNfcValue(summary.name)}`,
     `st=${sanitizeNfcValue(summary.stage)}`,
     `sp=${sanitizeNfcValue(summary.species)}`,
@@ -453,6 +504,7 @@ function formatNfcSummaryText(summaryText = encodePetSummaryForNfc()) {
 
   return [
     `page: ${getNfcGameUrl()}`,
+    `player: ${parsed.pl || "unnamed"}`,
     `pet: ${parsed.n || "unnamed"}`,
     `stage: ${parsed.st || "unknown"}`,
     `species: ${parsed.sp || "unknown"}`,
@@ -489,20 +541,39 @@ function renderNfcPanel() {
   }
 
   const unavailableReason = getNfcUnavailableReason();
+  const needsChrome = Boolean(unavailableReason);
+  const busy = miniGame.active || rpsGame.active || careInteraction.active;
+
   elements.nfcSummary.textContent = formatNfcSummaryText();
 
-  if (unavailableReason) {
-    elements.nfcStatus.textContent = "open_in_android_chrome_to_write_nfc";
+  if (needsChrome) {
+    elements.nfcStatus.textContent = "open this in Chrome to save your pet tag";
   } else {
-    elements.nfcStatus.textContent = "ready_to_write_pet_tag";
+    elements.nfcStatus.textContent = "ready to save your pet tag";
   }
 
-  const busy = miniGame.active || rpsGame.active || careInteraction.active;
-  elements.nfcWriteButton.disabled = Boolean(unavailableReason) || busy;
-  elements.nfcReadButton.disabled = Boolean(unavailableReason) || busy;
+  elements.nfcWriteButton.hidden = needsChrome;
+  elements.nfcReadButton.hidden = needsChrome;
+  elements.nfcWriteButton.disabled = needsChrome || busy || state.petAway;
+  elements.nfcReadButton.disabled = needsChrome || busy;
+
+  if (elements.nfcSendPetButton) {
+    elements.nfcSendPetButton.hidden = needsChrome || state.petAway;
+    elements.nfcSendPetButton.disabled = busy || state.petAway;
+  }
+
+  if (elements.nfcBringPetButton) {
+    elements.nfcBringPetButton.hidden = needsChrome;
+    elements.nfcBringPetButton.disabled = busy;
+  }
+
+  if (elements.nfcSendVisitorButton) {
+    elements.nfcSendVisitorButton.hidden = needsChrome || !state.visitingPet;
+    elements.nfcSendVisitorButton.disabled = busy || !state.visitingPet;
+  }
 
   if (elements.nfcChromeButton) {
-    elements.nfcChromeButton.hidden = !Boolean(unavailableReason);
+    elements.nfcChromeButton.hidden = !needsChrome;
     elements.nfcChromeButton.disabled = busy;
   }
 }
@@ -521,6 +592,10 @@ function decodeNfcRecordText(record) {
 }
 
 async function writePetSummaryToNfc() {
+  if (blockPlayerNameCare()) {
+    return;
+  }
+
   if (!isWebNfcAvailable()) {
     setNfcStatus(getNfcUnavailableReason());
     return;
@@ -531,7 +606,7 @@ async function writePetSummaryToNfc() {
   const petSummary = encodePetSummaryForNfc();
 
   try {
-    setNfcStatus("hold_phone_to_tag_to_write");
+    setNfcStatus("hold your phone to the tag");
     await ndef.write({
       records: [
         {
@@ -547,16 +622,195 @@ async function writePetSummaryToNfc() {
       overwrite: true
     });
 
-    state.lastMessage = "nfc tag written with url plus pet summary.";
-    setNfcStatus("nfc_write_success");
+    state.lastMessage = "pet tag saved."; 
+    setNfcStatus("pet tag saved");
     saveState();
     render();
   } catch (error) {
-    setNfcStatus(`nfc_write_failed_${error.name || "error"}`);
+    setNfcStatus("could not save pet tag");
   }
 }
 
+async function writeTravelPetToTag(petState, successMessage) {
+  if (!isWebNfcAvailable()) {
+    setNfcStatus(getNfcUnavailableReason());
+    return false;
+  }
+
+  const ndef = new NDEFReader();
+  const gameUrl = getNfcGameUrl();
+  const portablePet = getPortablePetState(petState);
+  const summary = (() => {
+    const originalState = state;
+    state = portablePet;
+    const output = encodePetSummaryForNfc();
+    state = originalState;
+    return output;
+  })();
+  const fullPet = encodeTravelPetForTag(portablePet);
+
+  try {
+    setNfcStatus("hold your phone to the tag");
+    await ndef.write({
+      records: [
+        { recordType: "url", data: gameUrl },
+        { recordType: "text", data: summary },
+        { recordType: "text", data: fullPet }
+      ]
+    }, {
+      overwrite: true
+    });
+
+    setNfcStatus(successMessage);
+    return true;
+  } catch {
+    setNfcStatus("could not save pet tag");
+    return false;
+  }
+}
+
+async function sendCurrentPetToTag() {
+  if (blockPlayerNameCare()) {
+    return;
+  }
+
+  if (state.petAway) {
+    state.lastMessage = "your pet is already on its tag.";
+    render();
+    return;
+  }
+
+  const petToSend = getPortablePetState(state);
+  const written = await writeTravelPetToTag(petToSend, "pet saved to tag");
+
+  if (!written) {
+    return;
+  }
+
+  state.petAway = true;
+  state.sleeping = false;
+  state.lastUpdated = Date.now();
+  state.lastMessage = `${petToSend.name} is now on the tag. bring it back from the pet_tag tab.`;
+  saveState();
+  render();
+}
+
+function readTravelPetFromMessage(message) {
+  let compactSummary = "";
+
+  for (const record of message.records) {
+    if (record.recordType !== "text") {
+      continue;
+    }
+
+    const text = decodeNfcRecordText(record);
+    const fullPet = decodeTravelPetFromTag(text);
+
+    if (fullPet) {
+      return { fullPet, compactSummary };
+    }
+
+    if (text.startsWith("ps:v1|")) {
+      compactSummary = text;
+    }
+  }
+
+  return { fullPet: null, compactSummary };
+}
+
+async function bringPetFromTag() {
+  if (blockPlayerNameCare()) {
+    return;
+  }
+
+  if (!isWebNfcAvailable()) {
+    setNfcStatus(getNfcUnavailableReason());
+    return;
+  }
+
+  try {
+    if (nfcScanAbortController) {
+      nfcScanAbortController.abort();
+    }
+
+    nfcScanAbortController = new AbortController();
+    const ndef = new NDEFReader();
+    setNfcStatus("hold your phone to the tag");
+    await ndef.scan({ signal: nfcScanAbortController.signal });
+
+    ndef.onreadingerror = () => {
+      setNfcStatus("could not read pet tag");
+    };
+
+    ndef.onreading = (event) => {
+      const { fullPet, compactSummary } = readTravelPetFromMessage(event.message);
+
+      if (!fullPet) {
+        if (compactSummary) {
+          elements.nfcSummary.textContent = formatNfcSummaryText(compactSummary);
+          setNfcStatus("this tag has a summary, but no travelling pet");
+        } else {
+          setNfcStatus("no travelling pet found on this tag");
+        }
+
+        nfcScanAbortController?.abort();
+        nfcScanAbortController = null;
+        return;
+      }
+
+      if (state.petAway || fullPet.petId === state.petId) {
+        const currentPlayerName = state.playerName || fullPet.playerName || "";
+        state = normalizeState({ ...fullPet, playerName: fullPet.playerName || currentPlayerName, petAway: false, visitingPet: null });
+        state.lastMessage = `${state.name} came back from the tag.`;
+      } else {
+        state.visitingPet = normalizeState({ ...fullPet, petAway: false, visitingPet: null });
+        state.lastMessage = `${state.visitingPet.name} is visiting.`;
+      }
+
+      setNfcStatus("pet brought in");
+      nfcScanAbortController?.abort();
+      nfcScanAbortController = null;
+      saveState();
+      render();
+    };
+  } catch (error) {
+    if (error.name !== "AbortError") {
+      setNfcStatus("could not read pet tag");
+    }
+  }
+}
+
+async function sendVisitorHomeToTag() {
+  if (blockPlayerNameCare()) {
+    return;
+  }
+
+  if (!state.visitingPet) {
+    state.lastMessage = "there is no visiting pet here.";
+    render();
+    return;
+  }
+
+  const visitor = getPortablePetState(state.visitingPet);
+  const written = await writeTravelPetToTag(visitor, "visitor saved to tag");
+
+  if (!written) {
+    return;
+  }
+
+  const visitorName = visitor.name || "visitor";
+  state.visitingPet = null;
+  state.lastMessage = `${visitorName} went back onto the tag.`;
+  saveState();
+  render();
+}
+
+
 async function readPetSummaryFromNfc() {
+  if (blockPlayerNameCare()) {
+    return;
+  }
+
   if (!isWebNfcAvailable()) {
     setNfcStatus(getNfcUnavailableReason());
     return;
@@ -570,11 +824,11 @@ async function readPetSummaryFromNfc() {
     nfcScanAbortController = new AbortController();
 
     const ndef = new NDEFReader();
-    setNfcStatus("hold_phone_to_tag_to_read");
+    setNfcStatus("hold your phone to the tag");
     await ndef.scan({ signal: nfcScanAbortController.signal });
 
     ndef.onreadingerror = () => {
-      setNfcStatus("nfc_read_failed");
+      setNfcStatus("could not check pet tag");
     };
 
     ndef.onreading = (event) => {
@@ -595,10 +849,10 @@ async function readPetSummaryFromNfc() {
 
       if (foundSummary) {
         elements.nfcSummary.textContent = formatNfcSummaryText(foundSummary);
-        state.lastMessage = "pet summary read from nfc tag.";
-        setNfcStatus("nfc_read_success");
+        state.lastMessage = "pet tag checked."; 
+        setNfcStatus("pet tag checked");
       } else {
-        setNfcStatus("no_pet_summary_found_on_tag");
+        setNfcStatus("no pet found on this tag");
       }
 
       nfcScanAbortController?.abort();
@@ -611,7 +865,7 @@ async function readPetSummaryFromNfc() {
       return;
     }
 
-    setNfcStatus(`nfc_read_failed_${error.name || "error"}`);
+    setNfcStatus("could not check pet tag");
   }
 }
 
@@ -1051,6 +1305,9 @@ function normalizeState(save) {
   const inventory = { ...defaultInventory(), ...(save.inventory || {}) };
   const equipment = { ...defaultEquipment(), ...(save.equipment || {}) };
   const accessoryPositions = normalizeAccessoryPositions(save.accessoryPositions || {});
+  const visitingPet = save.visitingPet && typeof save.visitingPet === "object"
+    ? normalizeState({ ...save.visitingPet, visitingPet: null, petAway: false })
+    : null;
 
   Object.keys(inventory).forEach((itemId) => {
     inventory[itemId] = Math.max(0, Math.floor(Number(inventory[itemId]) || 0));
@@ -1065,8 +1322,11 @@ function normalizeState(save) {
   return {
     ...base,
     ...save,
-    version: 21,
+    version: 25,
     petId: typeof save.petId === "string" && save.petId.trim() ? save.petId.slice(0, 24) : base.petId,
+    playerName: typeof save.playerName === "string" && save.playerName.trim() ? sanitizePlayerName(save.playerName) : base.playerName,
+    petAway: Boolean(save.petAway),
+    visitingPet,
     name: typeof save.name === "string" && save.name.trim() ? save.name.slice(0, 14) : base.name,
     birthday: Number.isFinite(save.birthday) ? save.birthday : base.birthday,
     lastUpdated: Number.isFinite(save.lastUpdated) ? save.lastUpdated : base.lastUpdated,
@@ -1197,7 +1457,7 @@ function applyDecay() {
   const now = Date.now();
   const elapsedMinutes = Math.min((now - state.lastUpdated) / 60000, 4320);
 
-  if (elapsedMinutes <= 0 || state.dead) {
+  if (elapsedMinutes <= 0 || state.dead || state.petAway) {
     state.lastUpdated = now;
     return;
   }
@@ -1326,9 +1586,55 @@ function getStage() {
   return "elder";
 }
 
+function getStageForPet(petState) {
+  const age = Math.max(0, Math.floor((Date.now() - Number(petState.birthday || Date.now())) / 60000));
+
+  if (age < 2) return "egg";
+  if (age < 60) return "baby";
+  if (age < 360) return "child";
+  if (age < 1440) return "teen";
+  if (age < 4320) return "adult";
+  return "elder";
+}
+
+function getMoodForPet(petState) {
+  if (petState.dead) return "dead";
+  if (petState.sickness || petState.health < 35) return "sick";
+  if (petState.food < 30 || petState.fun < 30 || petState.energy < 25 || petState.cleanliness < 30 || petState.affection < 25) return "sad";
+  if (petState.food > 70 && petState.fun > 70 && petState.energy > 60 && petState.cleanliness > 70 && petState.affection > 60) return "happy";
+  return "calm";
+}
+
+function applySpeciesStylesToElement(element, species) {
+  element.style.setProperty("--pet", species.pet);
+  element.style.setProperty("--pet-light", species.light);
+  element.style.setProperty("--pet-dark", species.dark);
+  element.style.setProperty("--pet-accent", species.accent);
+  element.style.setProperty("--pet-extra", species.extraColor);
+}
+
+function getPetClassListForState(petState, extraClasses = []) {
+  const stage = getStageForPet(petState);
+  const mood = getMoodForPet(petState);
+  const species = getSpecies(petState.speciesId);
+
+  return [
+    "pet",
+    ...extraClasses,
+    `stage-${stage}`,
+    `mood-${mood}`,
+    `body-${species.body}`,
+    `ears-${species.ears}`,
+    `tail-${species.tail}`,
+    `wings-${species.wings}`,
+    `extra-${species.extra}`,
+    `face-${species.face}`
+  ].join(" ");
+}
+
 function isEggStage(stageOverride = "") {
   const stage = stageOverride || getStage();
-  return !state.dead && stage === "egg";
+  return !state.petAway && !state.dead && stage === "egg";
 }
 
 function needsHatchName(stageOverride = "") {
@@ -1350,6 +1656,67 @@ function getDisplayName(stageOverride = "") {
   return state.name;
 }
 
+function needsPlayerName() {
+  return !state.playerName || !state.playerName.trim();
+}
+
+function sanitizePlayerName(rawName) {
+  return rawName.trim().replace(/[^a-zA-Z0-9_\-\s']/g, "").replace(/\s+/g, " ").slice(0, 24);
+}
+
+function showPlayerNameIfNeeded() {
+  if (!elements.playerNameModal) {
+    return;
+  }
+
+  const needsName = needsPlayerName();
+
+  elements.playerNameModal.classList.toggle("hidden", !needsName);
+  elements.playerNameModal.setAttribute("aria-hidden", needsName ? "false" : "true");
+
+  if (needsName) {
+    window.setTimeout(() => elements.playerNameInput?.focus(), 0);
+  }
+}
+
+function completePlayerNaming() {
+  const cleanName = sanitizePlayerName(elements.playerNameInput.value);
+
+  if (!cleanName) {
+    elements.playerNameError.textContent = "enter_your_name_first";
+    return;
+  }
+
+  state.playerName = cleanName;
+  state.lastMessage = `welcome, ${state.playerName}.`;
+  elements.playerNameInput.value = "";
+  elements.playerNameError.textContent = "";
+  saveState();
+  render();
+}
+
+function blockPlayerNameCare() {
+  if (!needsPlayerName()) {
+    return false;
+  }
+
+  closeCareScene();
+  state.lastMessage = "enter your name first.";
+  render();
+  return true;
+}
+
+function blockAwayPetCare() {
+  if (!state.petAway) {
+    return false;
+  }
+
+  closeCareScene();
+  state.lastMessage = "your pet is on its tag. bring it back from the pet_tag tab.";
+  render();
+  return true;
+}
+
 function sanitizePetName(rawName) {
   return rawName.trim().toLowerCase().replace(/[^a-z0-9_\-\s]/g, "").replace(/\s+/g, "_").slice(0, 14);
 }
@@ -1359,7 +1726,7 @@ function showHatchNamingIfNeeded(stageOverride = "") {
     return;
   }
 
-  const needsName = needsHatchName(stageOverride);
+  const needsName = !needsPlayerName() && needsHatchName(stageOverride);
 
   elements.hatchNamingModal.classList.toggle("hidden", !needsName);
   elements.hatchNamingModal.setAttribute("aria-hidden", needsName ? "false" : "true");
@@ -1542,11 +1909,7 @@ function setBar(bar, value) {
 }
 
 function applySpeciesStyles(species) {
-  elements.pet.style.setProperty("--pet", species.pet);
-  elements.pet.style.setProperty("--pet-light", species.light);
-  elements.pet.style.setProperty("--pet-dark", species.dark);
-  elements.pet.style.setProperty("--pet-accent", species.accent);
-  elements.pet.style.setProperty("--pet-extra", species.extraColor);
+  applySpeciesStylesToElement(elements.pet, species);
 }
 
 function getEquipmentClasses() {
@@ -1593,33 +1956,45 @@ function minutesUntilStat(targetValue, currentValue, dailyLoss) {
   return ((currentValue - targetValue) / dailyLoss) * MINUTES_PER_DAY;
 }
 
-function getNextFeedText() {
-  if (state.dead) {
-    return "dead";
+function getCareWindowText(minutes) {
+  if (!Number.isFinite(minutes) || minutes <= 0) {
+    return "now";
   }
 
-  if (isEggStage()) {
-    return "after_hatch";
+  if (minutes <= 45) {
+    return "soon";
+  }
+
+  if (minutes <= 360) {
+    return "later today";
+  }
+
+  if (minutes <= 900) {
+    return "much later";
+  }
+
+  return "tomorrow";
+}
+
+function getNextFeedText() {
+  if (state.dead) {
+    return "no care needed";
   }
 
   if (isSleeping()) {
-    return "after_wake";
+    return "when awake";
   }
 
-  return formatMinutes(minutesUntilStat(45, state.food, DAILY_DECAY.food));
+  return getCareWindowText(minutesUntilStat(45, state.food, DAILY_DECAY.food));
 }
 
 function getNextCleanText() {
   if (state.dead) {
-    return "dead";
-  }
-
-  if (isEggStage()) {
-    return "after_hatch";
+    return "no care needed";
   }
 
   if (isSleeping()) {
-    return "after_wake";
+    return "when awake";
   }
 
   const nextDirtThreshold = state.cleanliness > 78 ? 78 : state.cleanliness > 62 ? 62 : state.cleanliness > 46 ? 46 : state.cleanliness > 30 ? 30 : state.cleanliness > 14 ? 14 : 0;
@@ -1628,64 +2003,89 @@ function getNextCleanText() {
     return "now";
   }
 
-  return formatMinutes(minutesUntilStat(nextDirtThreshold, state.cleanliness, DAILY_DECAY.cleanliness));
+  return getCareWindowText(minutesUntilStat(nextDirtThreshold, state.cleanliness, DAILY_DECAY.cleanliness));
 }
 
 function getMedicineText() {
   if (state.dead) {
-    return "dead";
-  }
-
-  if (isEggStage()) {
-    return "after_hatch";
+    return "no care needed";
   }
 
   if (isSleeping()) {
-    return state.sickness ? "after_wake" : "rare";
+    return state.sickness ? "when awake" : "only if sick";
   }
 
   if (state.sickness) {
-    return "needed";
+    return "needed now";
   }
 
   if (state.health <= 65) {
-    return "low_health";
+    return "watch health";
   }
 
-  return "rare";
+  return "only if sick";
 }
 
 function getLastTickText() {
-  const seconds = Math.max(0, Math.floor((Date.now() - state.lastUpdated) / 1000));
+  return "";
+}
 
-  if (seconds < 60) {
-    return `${seconds}s`;
+function renderVisitorPet() {
+  const visitor = state.visitingPet;
+  const hasVisitor = Boolean(visitor);
+
+  elements.petArea.classList.toggle("has-visitor", hasVisitor);
+  elements.petArea.classList.toggle("pet-is-away", Boolean(state.petAway));
+  elements.pet.hidden = Boolean(state.petAway);
+  elements.travelEmpty.hidden = !state.petAway;
+  elements.visitorSlot.hidden = !hasVisitor;
+
+  if (elements.petShadow) {
+    elements.petShadow.hidden = Boolean(state.petAway && !hasVisitor);
   }
 
-  return formatMinutes(seconds / 60);
+  if (!hasVisitor) {
+    return;
+  }
+
+  const species = getSpecies(visitor.speciesId);
+  applySpeciesStylesToElement(elements.visitorPet, species);
+  elements.visitorPet.className = getPetClassListForState(visitor, ["visitor-pet"]);
+  elements.visitorLabel.textContent = `${visitor.name || "visitor"} visiting from ${visitor.playerName || "another player"}`;
 }
 
 function renderRealTimePanel() {
-  if (!elements.realTimeSummary) {
+  if (!elements.realTimeSummary || !elements.realTimePanel) {
+    return;
+  }
+
+  const hidden = needsPlayerName() || isEggStage() || needsHatchName();
+
+  elements.realTimePanel.hidden = hidden;
+
+  if (hidden) {
     return;
   }
 
   elements.nextFeedLabel.textContent = getNextFeedText();
   elements.nextCleanLabel.textContent = getNextCleanText();
   elements.nextMedicineLabel.textContent = getMedicineText();
-  elements.lastTickLabel.textContent = getLastTickText();
 
-  if (isEggStage()) {
-    elements.realTimeSummary.textContent = "real_time_paused_until_hatch";
+  if (elements.lastTickLabel) {
+    elements.lastTickLabel.textContent = "";
+  }
+
+  if (state.dead) {
+    elements.realTimeSummary.textContent = "care has ended";
     return;
   }
 
   if (isSleeping()) {
-    elements.realTimeSummary.textContent = "sleeping_deeply";
+    elements.realTimeSummary.textContent = "sleeping deeply";
     return;
   }
 
-  elements.realTimeSummary.textContent = "real_time_active";
+  elements.realTimeSummary.textContent = "daily care is active";
 }
 
 function render() {
@@ -1696,9 +2096,9 @@ function render() {
   hideEggSpeciesMessage();
   applySpeciesStyles(species);
 
-  elements.nameInput.value = getDisplayName(stage);
-  elements.nameInput.disabled = isEggStage(stage) || needsHatchName(stage);
-  elements.stageLabel.textContent = state.dead ? "dead" : stage;
+  elements.nameInput.value = state.petAway ? "on_tag" : getDisplayName(stage);
+  elements.nameInput.disabled = state.petAway || isEggStage(stage) || needsHatchName(stage);
+  elements.stageLabel.textContent = state.petAway ? "on_tag" : state.dead ? "dead" : stage;
   elements.ageLabel.textContent = getAgeLabel();
   elements.coinLabel.textContent = state.coins;
   elements.moodLabel.textContent = mood;
@@ -1720,24 +2120,19 @@ function render() {
   setBar(elements.healthBar, state.health);
 
   elements.pet.className = [
-    "pet",
-    `stage-${stage}`,
-    `mood-${mood}`,
-    `body-${species.body}`,
-    `ears-${species.ears}`,
-    `tail-${species.tail}`,
-    `wings-${species.wings}`,
-    `extra-${species.extra}`,
-    `face-${species.face}`,
+    getPetClassListForState(state),
     ...getEquipmentClasses()
   ].join(" ");
 
   renderAccessoryPositions();
+  renderVisitorPet();
 
   elements.screen.classList.toggle("dead-screen", state.dead);
   elements.screen.classList.toggle("egg-wait-screen", isEggStage(stage));
   elements.screen.classList.toggle("sleep-screen", isSleeping());
+  elements.screen.classList.toggle("player-naming-screen", needsPlayerName());
   elements.screen.classList.toggle("hatch-naming-screen", needsHatchName(stage));
+  showPlayerNameIfNeeded();
   showHatchNamingIfNeeded(stage);
   setDirtSpotsForCleanliness();
   renderRealTimePanel();
@@ -1772,7 +2167,7 @@ function render() {
   elements.resetButton.disabled = miniGame.active || rpsGame.active || careInteraction.active;
 
   if (elements.accessoryResetButton) {
-    elements.accessoryResetButton.disabled = state.dead || miniGame.active || rpsGame.active || careInteraction.active || Object.keys(state.accessoryPositions).length === 0;
+    elements.accessoryResetButton.disabled = state.petAway || state.dead || miniGame.active || rpsGame.active || careInteraction.active || Object.keys(state.accessoryPositions).length === 0;
   }
 
   if (elements.rpsPanel) {
@@ -1788,7 +2183,7 @@ function render() {
 }
 
 function getInventoryButtonMarkup(item, action, buttonClass = "") {
-  return `<button class="${buttonClass}" type="button" data-inventory-item="${item.id}" ${state.dead || isEggStage() || needsHatchName() || isSleeping() || miniGame.active || rpsGame.active || careInteraction.active ? "disabled" : ""}>${isEggStage() ? "wait" : needsHatchName() ? "name_first" : isSleeping() ? "sleeping" : rpsGame.active ? "playing" : action}</button>`;
+  return `<button class="${buttonClass}" type="button" data-inventory-item="${item.id}" ${state.petAway || state.dead || isEggStage() || needsHatchName() || isSleeping() || miniGame.active || rpsGame.active || careInteraction.active ? "disabled" : ""}>${isEggStage() ? "wait" : needsHatchName() ? "name_first" : isSleeping() ? "sleeping" : rpsGame.active ? "playing" : action}</button>`;
 }
 
 function renderOwnedItemCard(itemId) {
@@ -1816,7 +2211,7 @@ function renderEquipmentItemCard(itemId) {
   const item = ITEMS[itemId];
   const owned = state.inventory[itemId] > 0;
   const equipped = item.slot && state.equipment[item.slot] === itemId;
-  const disabledByState = state.dead || isEggStage() || needsHatchName() || isSleeping() || miniGame.active || rpsGame.active || careInteraction.active;
+  const disabledByState = state.petAway || state.dead || isEggStage() || needsHatchName() || isSleeping() || miniGame.active || rpsGame.active || careInteraction.active;
   const disabledBuy = disabledByState || state.coins < item.price;
   let button = "";
 
@@ -1870,7 +2265,7 @@ function renderShop() {
     const item = ITEMS[itemId];
     const owned = state.inventory[itemId] || 0;
     const alreadyOwned = item.permanent && owned > 0;
-    const disabled = state.dead || miniGame.active || rpsGame.active || careInteraction.active || state.coins < item.price || alreadyOwned;
+    const disabled = state.petAway || state.dead || miniGame.active || rpsGame.active || careInteraction.active || state.coins < item.price || alreadyOwned;
     const label = alreadyOwned ? "owned" : `buy_${item.price}`;
 
     return `
@@ -1909,6 +2304,14 @@ function consumeItem(itemId) {
 
 function useItem(itemId) {
   if (state.dead || miniGame.active || rpsGame.active || careInteraction.active) {
+    return;
+  }
+
+  if (blockPlayerNameCare()) {
+    return;
+  }
+
+  if (blockAwayPetCare()) {
     return;
   }
 
@@ -2054,6 +2457,14 @@ function buyItem(itemId) {
     return;
   }
 
+  if (blockPlayerNameCare()) {
+    return;
+  }
+
+  if (blockAwayPetCare()) {
+    return;
+  }
+
   const item = ITEMS[itemId];
 
   if (!item) {
@@ -2139,6 +2550,14 @@ function resetCareScene() {
 }
 
 function openCareScene(kind, title, instruction, itemId = "") {
+  if (blockPlayerNameCare()) {
+    return false;
+  }
+
+  if (blockAwayPetCare()) {
+    return false;
+  }
+
   if (blockHatchNamingCare()) {
     return false;
   }
@@ -2476,6 +2895,14 @@ function care(action) {
     return;
   }
 
+  if (blockPlayerNameCare()) {
+    return;
+  }
+
+  if (blockAwayPetCare()) {
+    return;
+  }
+
   if (blockHatchNamingCare()) {
     return;
   }
@@ -2589,6 +3016,14 @@ function startRpsGame() {
     return;
   }
 
+  if (blockPlayerNameCare()) {
+    return;
+  }
+
+  if (blockAwayPetCare()) {
+    return;
+  }
+
   if (blockHatchNamingCare()) {
     return;
   }
@@ -2676,6 +3111,14 @@ function playRpsRound(playerChoice) {
 
 function startMiniGame() {
   if (state.dead || miniGame.active || rpsGame.active || careInteraction.active) {
+    return;
+  }
+
+  if (blockPlayerNameCare()) {
+    return;
+  }
+
+  if (blockAwayPetCare()) {
     return;
   }
 
@@ -2787,6 +3230,20 @@ function resetPet() {
 }
 
 document.addEventListener("click", (event) => {
+  const blockedControl = event.target.closest("[data-action], #mini-game-button, #rps-game-button, [data-inventory-item], [data-equipment-buy], [data-shop-item], #nfc-write-button, #nfc-read-button, #nfc-chrome-button, #nfc-send-pet-button, #nfc-bring-pet-button, #nfc-send-visitor-button");
+
+  if (!blockedControl || !needsPlayerName()) {
+    return;
+  }
+
+  event.preventDefault();
+  event.stopPropagation();
+  state.lastMessage = "enter your name first.";
+  saveState();
+  render();
+}, true);
+
+document.addEventListener("click", (event) => {
   const careButton = event.target.closest("[data-action], #mini-game-button, #rps-game-button, [data-inventory-item]");
 
   if (!careButton || !isSleeping()) {
@@ -2858,6 +3315,9 @@ elements.tabButtons.forEach((button) => {
 elements.nfcWriteButton.addEventListener("click", writePetSummaryToNfc);
 elements.nfcReadButton.addEventListener("click", readPetSummaryFromNfc);
 elements.nfcChromeButton.addEventListener("click", openCurrentPetInAndroidChrome);
+elements.nfcSendPetButton.addEventListener("click", sendCurrentPetToTag);
+elements.nfcBringPetButton.addEventListener("click", bringPetFromTag);
+elements.nfcSendVisitorButton.addEventListener("click", sendVisitorHomeToTag);
 
 elements.shopGrid.addEventListener("click", (event) => {
   const button = event.target.closest("[data-shop-item]");
@@ -2906,6 +3366,13 @@ elements.nameInput.addEventListener("change", () => {
   state.lastMessage = `your pet is now called ${state.name}.`;
   saveState();
   render();
+});
+
+elements.playerNameButton.addEventListener("click", completePlayerNaming);
+elements.playerNameInput.addEventListener("keydown", (event) => {
+  if (event.key === "Enter") {
+    completePlayerNaming();
+  }
 });
 
 elements.hatchNameButton.addEventListener("click", completeHatchNaming);

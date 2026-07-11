@@ -252,3 +252,48 @@ Current age thresholds:
 - When Chrome opens the page, the game imports that transfer into Chrome's localStorage and removes the transfer parameter from the address bar.
 - This solves the localStorage problem where the pet exists in one browser but Chrome needs the data to write the NFC tag.
 - The NFC tag itself remains clean: canonical URL plus tiny pet summary only.
+
+
+## v22 friendly pet tag flow
+
+- Renamed the NFC tab to `pet_tag`.
+- Renamed actions to `save_to_tag`, `check_tag`, and `open_in_chrome`.
+- If the browser cannot save/check physical tags, the save/check buttons are hidden.
+- Unsupported browsers only show `open_in_chrome`.
+- Status messages are now user-facing rather than technical.
+
+
+## v23 player name
+
+- Added a one-time player name prompt.
+- The game only asks for the player name if no saved player name exists.
+- Player name is stored in the normal localStorage save.
+- Chrome handoff carries the player name because it carries the full current save.
+- The pet tag summary now includes the player name using the compact `pl=` field:
+  `ps:v1|id=...|pl=...|n=...|st=...|sp=...|m=...|c=...|t=...`
+
+
+## v24 friendly care rhythm
+
+- Removed developer-style care clock copy from the player UI.
+- The care rhythm panel is hidden while the creature is still an egg or while naming is required.
+- Removed `last_tick` from the UI.
+- Replaced technical strings with natural text:
+  - `daily care is active`
+  - `sleeping deeply`
+  - `soon`
+  - `later today`
+  - `only if sick`
+
+
+## v25 travel tags and visitors
+
+- Added travel-tag behaviour.
+- `send_my_pet_to_tag` writes a full portable pet to the NFC tag and marks the local pet as away.
+- When away, the pet vanishes from the computer UI and care actions are locked.
+- `bring_pet_from_tag` reads a travelling pet from an NFC tag.
+  - If this computer's own pet is away, it restores that pet as the main pet.
+  - If this computer already has a different local pet, the scanned pet appears as a visitor beside it.
+- `send_visitor_home` writes the visiting pet back to the tag and removes it from the screen.
+- The NFC tag also still writes the canonical page URL first.
+- This is a no-backend approximation of physical ownership. A tag with enough storage is needed for full travelling pets.

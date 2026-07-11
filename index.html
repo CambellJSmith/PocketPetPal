@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>pocket_sprout</title>
   <meta name="description" content="A tiny browser-based virtual pet game for GitHub Pages.">
-  <link rel="stylesheet" href="style.css?v=21">
+  <link rel="stylesheet" href="style.css?v=25">
 </head>
 <body>
   <main class="page-shell">
@@ -37,7 +37,7 @@
           </div>
 
           <div class="pet-area" id="pet-area">
-            <div class="pet-shadow" aria-hidden="true"></div>
+            <div class="pet-shadow" id="pet-shadow" aria-hidden="true"></div>
             <div class="pet" id="pet" aria-label="your pet">
               <span class="pet-tail"></span>
               <span class="pet-wing pet-wing-left"></span>
@@ -56,6 +56,31 @@
               <span class="wearable wearable-hat" data-accessory-slot="hat" aria-label="draggable hat accessory"></span>
               <span class="wearable wearable-glasses" data-accessory-slot="face" aria-label="draggable face accessory"></span>
               <span class="wearable wearable-bow" data-accessory-slot="neck" aria-label="draggable neck accessory"></span>
+            </div>
+
+            <div class="visitor-slot hidden" id="visitor-slot" hidden>
+              <div class="visitor-label" id="visitor-label">visitor</div>
+              <div class="pet visitor-pet" id="visitor-pet" aria-label="visiting pet">
+                <span class="pet-tail"></span>
+                <span class="pet-wing pet-wing-left"></span>
+                <span class="pet-wing pet-wing-right"></span>
+                <span class="pet-ear pet-ear-left"></span>
+                <span class="pet-ear pet-ear-right"></span>
+                <span class="pet-body"></span>
+                <span class="pet-face">
+                  <span class="pet-eye pet-eye-left"></span>
+                  <span class="pet-eye pet-eye-right"></span>
+                  <span class="pet-cheek pet-cheek-left"></span>
+                  <span class="pet-cheek pet-cheek-right"></span>
+                  <span class="pet-mouth"></span>
+                </span>
+                <span class="pet-extra"></span>
+              </div>
+            </div>
+
+            <div class="travel-empty hidden" id="travel-empty" hidden>
+              <strong>your pet is on its tag</strong>
+              <span>bring it back from the pet_tag tab.</span>
             </div>
 
             <button class="care-cancel-direct hidden" id="care-cancel" type="button">cancel_care</button>
@@ -116,27 +141,23 @@
             </div>
           </div>
 
-          <section class="real-time-panel" aria-label="real-time care rhythm">
+          <section class="real-time-panel" id="real-time-panel" aria-label="care rhythm">
             <div class="real-time-heading">
-              <span class="meta-label">care_clock</span>
-              <strong id="real-time-summary">real_time_active</strong>
+              <span class="meta-label">care rhythm</span>
+              <strong id="real-time-summary">daily care is active</strong>
             </div>
             <div class="real-time-grid">
               <div>
-                <span class="meta-label">feed_around</span>
+                <span class="meta-label">meal</span>
                 <strong id="next-feed-label">--</strong>
               </div>
               <div>
-                <span class="meta-label">clean_around</span>
+                <span class="meta-label">wash</span>
                 <strong id="next-clean-label">--</strong>
               </div>
               <div>
                 <span class="meta-label">medicine</span>
-                <strong id="next-medicine-label">rare</strong>
-              </div>
-              <div>
-                <span class="meta-label">last_tick</span>
-                <strong id="last-tick-label">0s</strong>
+                <strong id="next-medicine-label">only if sick</strong>
               </div>
             </div>
           </section>
@@ -201,7 +222,7 @@
           <button class="tab-button active" id="tab-supplies" type="button" role="tab" aria-selected="true" aria-controls="panel-supplies" data-tab-target="supplies">supplies</button>
           <button class="tab-button" id="tab-equipment" type="button" role="tab" aria-selected="false" aria-controls="panel-equipment" data-tab-target="equipment">equipment</button>
           <button class="tab-button" id="tab-shop" type="button" role="tab" aria-selected="false" aria-controls="panel-shop" data-tab-target="shop">shop</button>
-          <button class="tab-button" id="tab-nfc" type="button" role="tab" aria-selected="false" aria-controls="panel-nfc" data-tab-target="nfc">nfc</button>
+          <button class="tab-button" id="tab-nfc" type="button" role="tab" aria-selected="false" aria-controls="panel-nfc" data-tab-target="nfc">pet_tag</button>
         </div>
 
         <section class="management-panel tab-panel active" id="panel-supplies" role="tabpanel" aria-labelledby="tab-supplies" data-tab-panel="supplies">
@@ -241,30 +262,45 @@
         <section class="management-panel tab-panel" id="panel-nfc" role="tabpanel" aria-labelledby="tab-nfc" data-tab-panel="nfc" hidden>
           <div class="panel-heading">
             <div>
-              <p class="eyebrow compact">physical tag</p>
-              <h2 id="nfc-title">nfc</h2>
+              <p class="eyebrow compact">pocket pal</p>
+              <h2 id="nfc-title">pet_tag</h2>
             </div>
             <p id="nfc-status">checking_nfc</p>
           </div>
 
           <div class="nfc-tools">
-            <button class="utility-button" id="nfc-write-button" type="button">write_pet_tag</button>
-            <button class="utility-button secondary" id="nfc-read-button" type="button">read_pet_tag</button>
-            <button class="utility-button chrome-button" id="nfc-chrome-button" type="button" hidden>open_in_android_chrome</button>
+            <button class="utility-button" id="nfc-send-pet-button" type="button">send_my_pet_to_tag</button>
+            <button class="utility-button secondary" id="nfc-bring-pet-button" type="button">bring_pet_from_tag</button>
+            <button class="utility-button secondary" id="nfc-send-visitor-button" type="button" hidden>send_visitor_home</button>
+            <button class="utility-button" id="nfc-write-button" type="button">save_summary</button>
+            <button class="utility-button secondary" id="nfc-read-button" type="button">check_tag</button>
+            <button class="utility-button chrome-button" id="nfc-chrome-button" type="button" hidden>open_in_chrome</button>
           </div>
 
           <pre class="nfc-summary" id="nfc-summary">loading_nfc_summary...</pre>
-          <p class="nfc-note">writes the PocketPetPal page link first, then a small pet summary. if this browser cannot write nfc, open in android chrome and carry this pet across.</p>
+          <p class="nfc-note">send your pet onto a physical tag, bring a travelling pet in, or invite a friend's pet to visit this screen. if this browser cannot save tags, open in Chrome and your pet will come with you.</p>
         </section>
       </section>
 
       <section class="how-to-play">
         <h2>how_it_works</h2>
-        <p>Egg stage is passive: players can watch the egg and browse or buy from the shop. As soon as it hatches, the player must name the pet before care actions unlock. Care is hands-on directly on the creature after that. Food, sponge, dirt, and syringe all appear inside the normal pet screen with no separate feeding or washing space. If hunger, boredom, exhaustion, dirt, or sickness are neglected for too long, health can reach zero and the creature dies. Dialogue is loaded from the editable dialogue.csv file. Rock_paper_scissors can be played against the pet for streak-based coin rewards. Supplies, equipment, and shop are split into tabs. Equipment is bought and enabled from the equipment tab; the shop only sells consumables. The NFC tab can write the PocketPetPal URL plus a compact pet summary to an NFC tag, and can carry the current pet into Android Chrome if needed. Equipped accessories can be dragged directly on the pet and their positions save. The creature now grows through egg, baby, child, teen, adult, and elder stages with visible body changes. Everything still saves locally in the player’s browser using localStorage.</p>
+        <p>Egg stage is passive: players can watch the egg and browse or buy from the shop. As soon as it hatches, the player must name the pet before care actions unlock. Care is hands-on directly on the creature after that. Food, sponge, dirt, and syringe all appear inside the normal pet screen with no separate feeding or washing space. If hunger, boredom, exhaustion, dirt, or sickness are neglected for too long, health can reach zero and the creature dies. Dialogue is loaded from the editable dialogue.csv file. Rock_paper_scissors can be played against the pet for streak-based coin rewards. Supplies, equipment, and shop are split into tabs. Equipment is bought and enabled from the equipment tab; the shop only sells consumables. The pet tag tab can save the PocketPetPal link plus a small pet summary, and can carry the current pet into Chrome if needed. Equipped accessories can be dragged directly on the pet and their positions save. The creature now grows through egg, baby, child, teen, adult, and elder stages with visible body changes. The player name is asked once and saved locally. Pets can travel by tag: sending one away hides it from this browser until it is brought back. Everything still saves locally in the player’s browser using localStorage.</p>
       </section>
     </section>
   </main>
 
+
+  <section class="player-name-modal hidden" id="player-name-modal" aria-hidden="true" aria-labelledby="player-name-title">
+    <div class="hatch-naming-card">
+      <p class="eyebrow compact">player</p>
+      <h2 id="player-name-title">your_name</h2>
+      <p>Enter your name once so this pet tag knows who it belongs to.</p>
+      <label for="player-name-input">player_name</label>
+      <input id="player-name-input" class="name-input hatch-name-input" maxlength="24" autocomplete="name" placeholder="your name">
+      <p class="hatch-name-error" id="player-name-error" aria-live="polite"></p>
+      <button class="utility-button" id="player-name-button" type="button">continue</button>
+    </div>
+  </section>
 
   <section class="hatch-naming-modal hidden" id="hatch-naming-modal" aria-hidden="true" aria-labelledby="hatch-naming-title">
     <div class="hatch-naming-card">
@@ -278,6 +314,6 @@
     </div>
   </section>
 
-  <script src="game.js?v=21"></script>
+  <script src="game.js?v=25"></script>
 </body>
 </html>

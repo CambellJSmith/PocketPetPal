@@ -1155,7 +1155,7 @@ h1 {
 }
 
 .meta-grid {
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
 }
 
 .meta-grid div {
@@ -1215,7 +1215,7 @@ h1 {
 
 .controls {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 0.65rem;
   padding-top: 1rem;
 }
@@ -1963,7 +1963,7 @@ h1 {
 
 .real-time-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 0.45rem;
 }
 
@@ -2153,7 +2153,7 @@ h1 {
 
 .rps-buttons {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 0.45rem;
   margin-top: 0.55rem;
 }
@@ -2217,7 +2217,7 @@ h1 {
 
 .tab-bar {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 0.45rem;
   padding: 0.35rem;
   border: 0.12rem solid rgba(51, 65, 38, 0.22);
@@ -2314,4 +2314,112 @@ h1 {
 
 .nfc-tools button[hidden] {
   display: none;
+}
+
+/* v22 friendly pet tag flow */
+.nfc-tools button[hidden] {
+  display: none;
+}
+
+/* v23 player name modal */
+.player-name-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 210;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgba(28, 38, 24, 0.62);
+  backdrop-filter: blur(0.25rem);
+}
+
+.player-name-modal.hidden {
+  display: none;
+}
+
+.player-naming-screen .pet {
+  animation-duration: 1.8s;
+}
+
+/* v24 friendly care rhythm */
+.real-time-panel[hidden] {
+  display: none;
+}
+
+/* v25 travel tags and visitors */
+.pet[hidden],
+.visitor-slot[hidden],
+.travel-empty[hidden] {
+  display: none;
+}
+
+.pet-area.has-visitor {
+  place-items: center start;
+  padding-left: 1.2rem;
+  padding-right: 1.2rem;
+}
+
+.visitor-slot {
+  position: absolute;
+  right: 0.55rem;
+  bottom: 1.1rem;
+  display: grid;
+  place-items: center;
+  gap: 0.2rem;
+  transform: scale(0.72);
+  transform-origin: bottom right;
+}
+
+.visitor-pet {
+  animation-duration: 2.8s;
+}
+
+.visitor-label {
+  max-width: 11rem;
+  padding: 0.22rem 0.45rem;
+  border-radius: 999rem;
+  background: rgba(255, 242, 189, 0.9);
+  color: var(--screen-dark);
+  font-size: 0.68rem;
+  font-weight: 950;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.travel-empty {
+  display: grid;
+  place-items: center;
+  gap: 0.25rem;
+  width: min(18rem, 90%);
+  min-height: 7.5rem;
+  padding: 1rem;
+  border: 0.14rem dashed rgba(51, 65, 38, 0.35);
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.22);
+  color: var(--screen-dark);
+  text-align: center;
+}
+
+.travel-empty strong {
+  font-size: 1rem;
+  font-weight: 950;
+}
+
+.travel-empty span {
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 850;
+}
+
+.pet-is-away .pet-shadow {
+  display: none;
+}
+
+@media (max-width: 36rem) {
+  .visitor-slot {
+    transform: scale(0.58);
+    right: 0.2rem;
+  }
 }
